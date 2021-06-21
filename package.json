@@ -1,0 +1,34 @@
+{
+  "name": "mor-dss",
+  "version": "1.0.0",
+  "description": "MOR DSS contracts",
+  "files": [
+    "/contracts/**/*.sol",
+    "/build/contracts/*.json"
+  ],
+  "dependencies": {},
+  "devDependencies": {
+    "@truffle/hdwallet-provider": "^1.2.2",
+    "dotenv": "^8.2.0",
+    "ganache-cli": "^6.12.2",
+    "truffle": "^5.1.66",
+    "truffle-flattener": "^1.5.0"
+  },
+  "scripts": {
+    "build": "truffle compile",
+    "deploy": "truffle migrate",
+    "deploy:bscmain": "truffle migrate --network bscmain",
+    "source": "truffle-flattener contracts/*.sol | sed '/^.*SPDX-License-Identifier:.*$/d' | sed '1s/^/\\/\\/ SPDX-License-Identifier: GPL-3.0-only\\n\\n/' > Contracts.sol",
+    "test": "GAS_LIMIT=30000000 truffle test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/GrowthDeFi/mor-dss.git"
+  },
+  "author": "raugfer",
+  "license": "GPL-3.0-only",
+  "bugs": {
+    "url": "https://github.com/GrowthDeFi/mor-dss/issues"
+  },
+  "homepage": "https://github.com/GrowthDeFi/mor-dss#readme"
+}
