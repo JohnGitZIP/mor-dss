@@ -36,6 +36,7 @@ contract DSAuth is DSAuthEvents {
 
     function setOwner(address owner_)
         public
+        virtual
         auth
     {
         owner = owner_;
@@ -44,6 +45,7 @@ contract DSAuth is DSAuthEvents {
 
     function setAuthority(DSAuthority authority_)
         public
+        virtual
         auth
     {
         authority = authority_;

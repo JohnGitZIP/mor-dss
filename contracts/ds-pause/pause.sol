@@ -13,7 +13,8 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-pragma solidity >=0.5.0 <0.6.0;
+pragma solidity >=0.4.23;
+// pragma solidity >=0.5.0 <0.6.0;
 
 import {DSNote} from "../ds-note/note.sol";
 import {DSAuth, DSAuthority} from "../ds-auth/auth.sol";
@@ -24,11 +25,11 @@ contract DSPause is DSAuth, DSNote {
 
     modifier wait { require(msg.sender == address(proxy), "ds-pause-undelayed-call"); _; }
 
-    function setOwner(address owner_) public wait {
+    function setOwner(address owner_) public override wait {
         owner = owner_;
         emit LogSetOwner(owner);
     }
-    function setAuthority(DSAuthority authority_) public wait {
+    function setAuthority(DSAuthority authority_) public override wait {
         authority = authority_;
         emit LogSetAuthority(address(authority));
     }
