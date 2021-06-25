@@ -32,7 +32,7 @@ const DS_AUTHORITY = '0x0000000000000000000000000000000000000000'; // review thi
 const ESM_MIN = '50000000000000000000000'; // review this
 const ETH = '0x2170Ed0880ac9A755fd29B2688956BD959F933F8'; // bscmain
 const BAT = '0x101d82428437127bF1608F699CD651e6Abf9766E'; // bscmain
-const USDC = '0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d'; // bscmain
+const vUSDC = '0xecA88125a5ADbe82614ffC12D0DB554E2e2867C8'; // bscmain (< 18 decimals)
 const MEDIAN_BAR = 13;
 const MEDIAN_ADDRESS_LIST = [];
 const LERP_START_TIME = NOW + 10 * 24 * 60 * 60;
@@ -213,7 +213,7 @@ module.exports = async (deployer, network, [account]) => {
   await dssDeploy.releaseAuthFlip(web3.utils.asciiToHex('BAT-A'));
 
   console.log('Deploying AuthGemJoin5...');
-  await deployer.deploy(AuthGemJoin5, await dssDeploy.vat(), web3.utils.asciiToHex('PSM-USDC-A'), USDC);
+  await deployer.deploy(AuthGemJoin5, await dssDeploy.vat(), web3.utils.asciiToHex('PSM-USDC-A'), vUSDC);
   const authGemJoin5 = await AuthGemJoin5.deployed();
 
   console.log('Deploying DssPsm...');
