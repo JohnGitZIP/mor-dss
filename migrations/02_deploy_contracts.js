@@ -19,6 +19,11 @@ const GemJoin = artifacts.require('GemJoin');
 const DSPause = artifacts.require('DSPause');
 const OSM = artifacts.require('OSM');
 const Median = artifacts.require('Median');
+const AuthGemJoin5 = artifacts.require('AuthGemJoin5');
+const DssPsm = artifacts.require('DssPsm');
+const Lerp = artifacts.require('Lerp');
+
+const NOW = Math.floor(Date.now() / 1000);
 
 const CHAIN_ID = 56; // bscmain
 const GRO = '0x336eD56D8615271b38EcEE6F4786B55d0EE91b96'; // bscmain (needs mint() move() burn())
@@ -27,8 +32,13 @@ const DS_AUTHORITY = '0x0000000000000000000000000000000000000000'; // review thi
 const ESM_MIN = '50000000000000000000000'; // review this
 const ETH = '0x2170Ed0880ac9A755fd29B2688956BD959F933F8'; // bscmain
 const BAT = '0x101d82428437127bF1608F699CD651e6Abf9766E'; // bscmain
+const USDC = '0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d'; // bscmain
 const MEDIAN_BAR = 13;
 const MEDIAN_ADDRESS_LIST = [];
+const LERP_START_TIME = NOW + 10 * 24 * 60 * 60;
+const LERP_START = 10000000000000000n;
+const LERP_END = 1000000000000000n;
+const LERP_DURATION = 7 * 24 * 60 * 60;
 
 module.exports = async (deployer, network, [account]) => {
   const web3 = DssDeploy.interfaceAdapter.web3;
@@ -201,4 +211,24 @@ module.exports = async (deployer, network, [account]) => {
 
   console.log('Releasing Auth Flip #2');
   await dssDeploy.releaseAuthFlip(web3.utils.asciiToHex('BAT-A'));
+
+  console.log('Deploying AuthGemJoin5...');
+  await deployer.deploy(AuthGemJoin5, await dssDeploy.vat(), web3.utils.asciiToHex('PSM-USDC-A'), USDC);
+  const authGemJoin5 = await AuthGemJoin5.deployed();
+
+  console.log('Deploying DssPsm...');
+  await deployer.deploy(DssPsm, authGemJoin5.address, await dssDeploy.daiJoin(), await dssDeploy.vow());
+  const dssPsm = await DssPsm.deployed();
+
+  console.log('Deploying Lerp...');
+  await deployer.deploy(Lerp, dssPsm.address, web3.utils.asciiToHex('tin'), LERP_START_TIME, LERP_START, LERP_END, LERP_DURATION);
+  const lerp = await Lerp.deployed();
+
+  await authGemJoin5.rely(await pause.proxy());
+  await authGemJoin5.rely(dssPsm.address);
+  await authGemJoin5.deny(await dssDeploy.owner());
+
+  await dssPsm.rely(await pause.proxy());
+  await dssPsm.rely(lerp.address);
+  await dssPsm.deny(await dssDeploy.owner());
 };
