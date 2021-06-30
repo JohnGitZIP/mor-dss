@@ -22,6 +22,7 @@ const Median = artifacts.require('Median');
 const AuthGemJoin5 = artifacts.require('AuthGemJoin5');
 const DssPsm = artifacts.require('DssPsm');
 const Lerp = artifacts.require('Lerp');
+const DSToken = artifacts.require('DSToken');
 
 const NOW = Math.floor(Date.now() / 1000);
 
@@ -42,6 +43,12 @@ const LERP_DURATION = 7 * 24 * 60 * 60;
 
 module.exports = async (deployer, network, [account]) => {
   const web3 = DssDeploy.interfaceAdapter.web3;
+
+  // deploys VatFab
+  console.log('Publishing Gov Token contract...');
+  await deployer.deploy(DSToken, "MKR");
+  const token = await DSToken.deployed();
+  const GOV = token.address;
 
   // deploys VatFab
   console.log('Publishing VatFab contract...');
@@ -144,7 +151,7 @@ module.exports = async (deployer, network, [account]) => {
   await dssDeploy.deployTaxation();
 
   console.log('Deploying Auctions...');
-  await dssDeploy.deployAuctions(GRO);
+  await dssDeploy.deployAuctions(GOV);
 
   console.log('Deploying Liquidator...');
   await dssDeploy.deployLiquidator();
@@ -157,7 +164,7 @@ module.exports = async (deployer, network, [account]) => {
   const pause = await DSPause.at(await dssDeploy.pause());
 
   console.log('Deploying ESM...');
-  await dssDeploy.deployESM(GRO, ESM_MIN);
+  await dssDeploy.deployESM(GOV, ESM_MIN);
 
   console.log('Deploying Collateral Flip #1...');
   {
