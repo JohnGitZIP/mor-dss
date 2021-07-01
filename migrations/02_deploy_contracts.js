@@ -296,8 +296,8 @@ module.exports = async (deployer, network, [account]) => {
 
   console.log('Building Proxy Deployer...');
   await proxyRegistry.build();
-  const proxyDeployer = await proxyRegistry.proxies(account);
-  await dsRoles.setRootUser(proxyDeployer, true);
+  const proxyDeployer = await DSProxy.at(await proxyRegistry.proxies(account));
+  await dsRoles.setRootUser(proxyDeployer.address, true);
 
   console.log('Publishing IOU Token...');
   await deployer.deploy(DSToken, "IOU");
