@@ -23,6 +23,9 @@ const AuthGemJoin5 = artifacts.require('AuthGemJoin5');
 const DssPsm = artifacts.require('DssPsm');
 const Lerp = artifacts.require('Lerp');
 const DSToken = artifacts.require('DSToken');
+const DssProxyActions = artifacts.require('DssProxyActions');
+const DssProxyActionsEnd = artifacts.require('DssProxyActionsEnd');
+const DssProxyActionsDsr = artifacts.require('DssProxyActionsDsr');
 
 const NOW = Math.floor(Date.now() / 1000);
 
@@ -209,6 +212,16 @@ module.exports = async (deployer, network, [account]) => {
     await gemJoin.deny(await dssDeploy.owner());
     await dssDeploy.deployCollateralFlip(web3.utils.asciiToHex('BAT-A'), gemJoin.address, osm.address);
   }
+
+  console.log('Deploying Proxy Actions...');
+  await deployer.deploy(DssProxyActions);
+  const dssProxyActions = await DssProxyActions.deployed();
+
+  await deployer.deploy(DssProxyActionsEnd);
+  const dssProxyActionsEnd = await DssProxyActionsEnd.deployed();
+
+  await deployer.deploy(DssProxyActionsDsr);
+  const dssProxyActionsDsr = await DssProxyActionsDsr.deployed();
 
   console.log('Releasing Auth...');
   await dssDeploy.releaseAuth();
