@@ -42,6 +42,7 @@ const DSProxy = artifacts.require('DSProxy');
 const DSChief = artifacts.require('DSChief');
 const VoteProxyFactory = artifacts.require('VoteProxyFactory');
 const DssAutoLine = artifacts.require('DssAutoLine');
+const DssFlash =  artifacts.require('DssFlash');
 
 const NOW = Math.floor(Date.now() / 1000);
 
@@ -431,6 +432,15 @@ module.exports = async (deployer, network, [account]) => {
   const MCD_IAM_AUTO_LINE = dssAutoLine.address;
   console.log('MCD_IAM_AUTO_LINE=' + MCD_IAM_AUTO_LINE);
   await rely(MCD_VAT, MCD_IAM_AUTO_LINE);
+
+  console.log('Publishing Flash...');
+  await deployer.deploy(DssFlash, MCD_JOIN_DAI, MCD_VOW);
+  const dssFlash = await DssFlash.deployed();
+  const MCD_FLASH = dssFlash.address;
+  console.log('MCD_FLASH=' + MCD_FLASH);
+  await rely(MCD_VAT, MCD_FLASH);
+  await dssFlash.rely(MCD_PAUSE_PROXY);
+  await dssFlash.deny(account);
 
   // PSM
 
