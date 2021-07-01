@@ -38,6 +38,8 @@ const ClipperMom = artifacts.require('ClipperMom');
 const IlkRegistry = artifacts.require('IlkRegistry');
 const GovActions = artifacts.require('GovActions');
 const DssDeployPauseProxyActions = artifacts.require('DssDeployPauseProxyActions');
+const DSChief = artifacts.require('DSChief');
+const VoteProxyFactory = artifacts.require('VoteProxyFactory');
 
 const NOW = Math.floor(Date.now() / 1000);
 
@@ -305,6 +307,10 @@ module.exports = async (deployer, network, [account]) => {
   await deployer.deploy(DSChief, GOV, IOU, 5);
   const dsChief = await DSChief.deployed();
   iouToken.setOwner(dsChief.address);
+
+  console.log('Publishing Vote Proxy Factory...');
+  await deployer.deploy(VoteProxyFactory, dsChief.address);
+  const voteProxyFactory = await VoteProxyFactory.deployed();
 
   // PSM
 
