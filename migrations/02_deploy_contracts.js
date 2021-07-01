@@ -17,6 +17,7 @@ const EndFab = artifacts.require('EndFab');
 const ESMFab = artifacts.require('ESMFab');
 const PauseFab = artifacts.require('PauseFab');
 const DssDeploy = artifacts.require('DssDeploy');
+const DSRoles = artifacts.require('DSRoles');
 const GemJoin = artifacts.require('GemJoin');
 const DSPause = artifacts.require('DSPause');
 const OSM = artifacts.require('OSM');
@@ -63,12 +64,6 @@ module.exports = async (deployer, network, [account]) => {
   console.log('Publishing Proxy Registry...');
   await deployer.deploy(ProxyRegistry, dsProxyFactory.address);
   const proxyRegistry = await ProxyRegistry.deployed();
-
-  // deploys VatFab
-  console.log('Publishing Gov Token contract...');
-  await deployer.deploy(DSToken, "MKR");
-  const token = await DSToken.deployed();
-  const GOV = token.address;
 
   // deploys VatFab
   console.log('Publishing VatFab contract...');
@@ -150,6 +145,11 @@ module.exports = async (deployer, network, [account]) => {
   await deployer.deploy(PauseFab);
   const pauseFab = await PauseFab.deployed();
 
+  console.log('Publishing Gov Token contract...');
+  await deployer.deploy(DSToken, "MKR");
+  const token = await DSToken.deployed();
+  const GOV = token.address;
+
   // deploys DssDeploy
   console.log('Publishing DssDeploy contract...');
   await deployer.deploy(DssDeploy);
@@ -160,6 +160,11 @@ module.exports = async (deployer, network, [account]) => {
 
   console.log('Adding fabs #2...');
   await dssDeploy.addFabs2(flapFab.address, flopFab.address, flipFab.address, clipFab.address, spotFab.address, potFab.address, endFab.address, esmFab.address, pauseFab.address);
+
+  console.log('Deploying DSRoles...');
+  await deployer.deploy(DSRoles);
+  const dsRoles = await DSRoles.deployed();
+  await dsRoles.setRootUser(account, true);
 
   console.log('Deploying Vat...');
   await dssDeploy.deployVat();
