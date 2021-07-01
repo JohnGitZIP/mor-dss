@@ -37,6 +37,7 @@ const FlipperMom = artifacts.require('FlipperMom');
 const ClipperMom = artifacts.require('ClipperMom');
 const IlkRegistry = artifacts.require('IlkRegistry');
 const GovActions = artifacts.require('GovActions');
+const DssDeployPauseProxyActions = artifacts.require('DssDeployPauseProxyActions');
 
 const NOW = Math.floor(Date.now() / 1000);
 
@@ -273,10 +274,6 @@ module.exports = async (deployer, network, [account]) => {
   await deployer.deploy(IlkRegistry, await dssDeploy.vat(), await dssDeploy.dog(), await dssDeploy.cat(), await dssDeploy.spotter());
   const ilkRegistry = await IlkRegistry.deployed();
 
-  console.log('Deploying Gov Actions...');
-  await deployer.deploy(GovActions);
-  const govActions = await GovActions.deployed();
-
   console.log('Releasing Auth...');
   await dssDeploy.releaseAuth();
 
@@ -285,6 +282,14 @@ module.exports = async (deployer, network, [account]) => {
 
   console.log('Releasing Auth Flip #2');
   await dssDeploy.releaseAuthFlip(web3.utils.asciiToHex('BAT-A'));
+
+  console.log('Deploying Gov Actions...');
+  await deployer.deploy(GovActions);
+  const govActions = await GovActions.deployed();
+
+  console.log('Deploying Pause Proxy Actions...');
+  await deployer.deploy(DssDeployPauseProxyActions);
+  const dssDeployPauseProxyActions = await DssDeployPauseProxyActions.deployed();
 
   // PSM
 
