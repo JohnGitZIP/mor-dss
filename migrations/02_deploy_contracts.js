@@ -40,6 +40,7 @@ const GovActions = artifacts.require('GovActions');
 const DssDeployPauseProxyActions = artifacts.require('DssDeployPauseProxyActions');
 const DSChief = artifacts.require('DSChief');
 const VoteProxyFactory = artifacts.require('VoteProxyFactory');
+const DssAutoLine = artifacts.require('DssAutoLine');
 
 const NOW = Math.floor(Date.now() / 1000);
 
@@ -311,6 +312,11 @@ module.exports = async (deployer, network, [account]) => {
   console.log('Publishing Vote Proxy Factory...');
   await deployer.deploy(VoteProxyFactory, dsChief.address);
   const voteProxyFactory = await VoteProxyFactory.deployed();
+
+  console.log('Publishing Auto Line...');
+  await deployer.deploy(DssAutoLine, await dssDeploy.vat());
+  const dssAutoLine = await DssAutoLine.deployed();
+  await proxyDeployer.execute(dssDeployPauseProxyActions.address, web3.eth.abi.encodeFunctionCall('rely(address,address,address,address)', [await dssDeploy.pause(), govActions.address, await dssDeploy.vat(), dssAutoLine.address]));
 
   // PSM
 
