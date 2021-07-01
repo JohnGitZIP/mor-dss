@@ -36,6 +36,7 @@ const OsmMom = artifacts.require('OsmMom');
 const FlipperMom = artifacts.require('FlipperMom');
 const ClipperMom = artifacts.require('ClipperMom');
 const IlkRegistry = artifacts.require('IlkRegistry');
+const GovActions = artifacts.require('GovActions');
 
 const NOW = Math.floor(Date.now() / 1000);
 
@@ -268,9 +269,13 @@ module.exports = async (deployer, network, [account]) => {
   await deployer.deploy(ClipperMom, await dssDeploy.spotter());
   const clipperMom = await ClipperMom.deployed();
 
-  console.log('Deploying IlkRegistry Mom...');
+  console.log('Deploying ILK Registry...');
   await deployer.deploy(IlkRegistry, await dssDeploy.vat(), await dssDeploy.dog(), await dssDeploy.cat(), await dssDeploy.spotter());
   const ilkRegistry = await IlkRegistry.deployed();
+
+  console.log('Deploying Gov Actions...');
+  await deployer.deploy(GovActions);
+  const govActions = await GovActions.deployed();
 
   console.log('Releasing Auth...');
   await dssDeploy.releaseAuth();
@@ -280,6 +285,8 @@ module.exports = async (deployer, network, [account]) => {
 
   console.log('Releasing Auth Flip #2');
   await dssDeploy.releaseAuthFlip(web3.utils.asciiToHex('BAT-A'));
+
+  // PSM
 
   console.log('Deploying AuthGemJoin5...');
   await deployer.deploy(AuthGemJoin5, await dssDeploy.vat(), web3.utils.asciiToHex('PSM-USDC-A'), vUSDC);
