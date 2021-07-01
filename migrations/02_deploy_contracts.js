@@ -26,6 +26,8 @@ const DSToken = artifacts.require('DSToken');
 const DssProxyActions = artifacts.require('DssProxyActions');
 const DssProxyActionsEnd = artifacts.require('DssProxyActionsEnd');
 const DssProxyActionsDsr = artifacts.require('DssProxyActionsDsr');
+const DssCdpManager = artifacts.require('DssCdpManager');
+const GetCdps = artifacts.require('GetCdps');
 
 const NOW = Math.floor(Date.now() / 1000);
 
@@ -222,6 +224,13 @@ module.exports = async (deployer, network, [account]) => {
 
   await deployer.deploy(DssProxyActionsDsr);
   const dssProxyActionsDsr = await DssProxyActionsDsr.deployed();
+
+  console.log('Deploying CDP Manager...');
+  await deployer.deploy(DssCdpManager, await dssDeploy.vat());
+  const dssCdpManager = await DssCdpManager.deployed();
+
+  await deployer.deploy(GetCdps);
+  const getCdps = await GetCdps.deployed();
 
   console.log('Releasing Auth...');
   await dssDeploy.releaseAuth();
