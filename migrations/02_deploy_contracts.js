@@ -45,9 +45,6 @@ const DssAutoLine = artifacts.require('DssAutoLine');
 
 const NOW = Math.floor(Date.now() / 1000);
 
-const CHAIN_ID = 56; // bscmain
-const GRO = '0x336eD56D8615271b38EcEE6F4786B55d0EE91b96'; // bscmain (needs mint() move() burn())
-const DS_AUTHORITY = '0x0000000000000000000000000000000000000000'; // review this
 const ESM_MIN = '50000000000000000000000'; // review this
 const ETH = '0x2170Ed0880ac9A755fd29B2688956BD959F933F8'; // bscmain
 const BAT = '0x101d82428437127bF1608F699CD651e6Abf9766E'; // bscmain
@@ -61,6 +58,8 @@ const LERP_DURATION = 7 * 24 * 60 * 60;
 
 module.exports = async (deployer, network, [account]) => {
   const web3 = DssDeploy.interfaceAdapter.web3;
+
+  const chainId = await web3.eth.net.getId();
 
   // deploys DSProxyFactory
   console.log('Publishing Proxy Factory...');
@@ -216,7 +215,7 @@ module.exports = async (deployer, network, [account]) => {
   console.log('MCD_SPOT=' + MCD_SPOT);
 
   console.log('Deploying Dai...');
-  await dssDeploy.deployDai(CHAIN_ID);
+  await dssDeploy.deployDai(chainId);
   const MCD_DAI = await dssDeploy.dai();
   console.log('MCD_DAI=' + MCD_DAI);
   const MCD_JOIN_DAI = await dssDeploy.daiJoin();
