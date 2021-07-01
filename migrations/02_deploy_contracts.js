@@ -316,7 +316,16 @@ module.exports = async (deployer, network, [account]) => {
   console.log('Publishing Auto Line...');
   await deployer.deploy(DssAutoLine, await dssDeploy.vat());
   const dssAutoLine = await DssAutoLine.deployed();
-  await proxyDeployer.execute(dssDeployPauseProxyActions.address, web3.eth.abi.encodeFunctionCall('rely(address,address,address,address)', [await dssDeploy.pause(), govActions.address, await dssDeploy.vat(), dssAutoLine.address]));
+  await proxyDeployer.execute(dssDeployPauseProxyActions.address, web3.eth.abi.encodeFunctionCall({
+    type: 'function',
+    name: 'rely',
+    inputs: [
+      { type: 'address', name: 'pause' },
+      { type: 'address', name: 'actions' },
+      { type: 'address', name: 'who' },
+      { type: 'address', name: 'to' },
+    ],
+  }, [await dssDeploy.pause(), govActions.address, await dssDeploy.vat(), dssAutoLine.address]));
 
   // PSM
 
