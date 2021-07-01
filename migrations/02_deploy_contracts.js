@@ -291,6 +291,11 @@ module.exports = async (deployer, network, [account]) => {
   await deployer.deploy(DssDeployPauseProxyActions);
   const dssDeployPauseProxyActions = await DssDeployPauseProxyActions.deployed();
 
+  console.log('Building Proxy Deployer...');
+  await proxyRegistry.build();
+  const proxyDeployer = await proxyRegistry.proxies(account);
+  await dsRoles.setRootUser(proxyDeployer, true);
+
   // PSM
 
   console.log('Deploying AuthGemJoin5...');
