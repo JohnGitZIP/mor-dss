@@ -38,7 +38,7 @@ const ClipperMom = artifacts.require('ClipperMom');
 const IlkRegistry = artifacts.require('IlkRegistry');
 const GovActions = artifacts.require('GovActions');
 const DssDeployPauseProxyActions = artifacts.require('DssDeployPauseProxyActions');
-const DSProxy = artifacts.require('DssDeployPauseProxyActions');
+const DSProxy = artifacts.require('DSProxy');
 const DSChief = artifacts.require('DSChief');
 const VoteProxyFactory = artifacts.require('VoteProxyFactory');
 const DssAutoLine = artifacts.require('DssAutoLine');
@@ -297,7 +297,9 @@ module.exports = async (deployer, network, [account]) => {
 
   console.log('Building Proxy Deployer...');
   await proxyRegistry.build();
-  const proxyDeployer = await DSProxy.at(await proxyRegistry.proxies(account));
+  const PROXY_DEPLOYER = await proxyRegistry.proxies(account);
+  console.log('PROXY_DEPLOYER=' + PROXY_DEPLOYER);
+  const proxyDeployer = await DSProxy.at(PROXY_DEPLOYER);
   await dsRoles.setRootUser(proxyDeployer.address, true);
 
   async function rely(who, to) {
