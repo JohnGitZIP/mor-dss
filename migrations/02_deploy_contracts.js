@@ -296,6 +296,16 @@ module.exports = async (deployer, network, [account]) => {
   const proxyDeployer = await proxyRegistry.proxies(account);
   await dsRoles.setRootUser(proxyDeployer, true);
 
+  console.log('Publishing IOU Token...');
+  await deployer.deploy(DSToken, "IOU");
+  const iouToken = await DSToken.deployed();
+  const IOU = iouToken.address;
+
+  console.log('Publishing DS Chief...');
+  await deployer.deploy(DSChief, GOV, IOU, 5);
+  const dsChief = await DSChief.deployed();
+  iouToken.setOwner(dsChief.address);
+
   // PSM
 
   console.log('Deploying AuthGemJoin5...');

@@ -44,7 +44,7 @@ contract DSRoles is DSAuth, DSAuthority
 
     function isUserRoot(address who)
         public
-        view
+        view virtual
         returns (bool)
     {
         return _root_users[who];
@@ -87,7 +87,7 @@ contract DSRoles is DSAuth, DSAuthority
     }
 
     function setRootUser(address who, bool enabled)
-        public
+        public virtual
         auth
     {
         _root_users[who] = enabled;
