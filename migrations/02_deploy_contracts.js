@@ -38,6 +38,7 @@ const ClipperMom = artifacts.require('ClipperMom');
 const IlkRegistry = artifacts.require('IlkRegistry');
 const GovActions = artifacts.require('GovActions');
 const DssDeployPauseProxyActions = artifacts.require('DssDeployPauseProxyActions');
+const DSProxy = artifacts.require('DssDeployPauseProxyActions');
 const DSChief = artifacts.require('DSChief');
 const VoteProxyFactory = artifacts.require('VoteProxyFactory');
 const DssAutoLine = artifacts.require('DssAutoLine');
@@ -299,6 +300,20 @@ module.exports = async (deployer, network, [account]) => {
   const proxyDeployer = await DSProxy.at(await proxyRegistry.proxies(account));
   await dsRoles.setRootUser(proxyDeployer.address, true);
 
+  async function rely(who, to) {
+    const jsonInterface = {
+      type: 'function',
+      name: 'rely',
+      inputs: [
+        { type: 'address', name: 'pause' },
+        { type: 'address', name: 'actions' },
+        { type: 'address', name: 'who' },
+        { type: 'address', name: 'to' },
+      ],
+    };
+    return await proxyDeployer.execute(dssDeployPauseProxyActions.address, web3.eth.abi.encodeFunctionCall(jsonInterface, [pause.address, govActions.address, who, to]));
+  }
+
   console.log('Publishing IOU Token...');
   await deployer.deploy(DSToken, "IOU");
   const iouToken = await DSToken.deployed();
@@ -316,16 +331,7 @@ module.exports = async (deployer, network, [account]) => {
   console.log('Publishing Auto Line...');
   await deployer.deploy(DssAutoLine, await dssDeploy.vat());
   const dssAutoLine = await DssAutoLine.deployed();
-  await proxyDeployer.execute(dssDeployPauseProxyActions.address, web3.eth.abi.encodeFunctionCall({
-    type: 'function',
-    name: 'rely',
-    inputs: [
-      { type: 'address', name: 'pause' },
-      { type: 'address', name: 'actions' },
-      { type: 'address', name: 'who' },
-      { type: 'address', name: 'to' },
-    ],
-  }, [await dssDeploy.pause(), govActions.address, await dssDeploy.vat(), dssAutoLine.address]));
+  await rely(await dssDeploy.vat(), dssAutoLine.address);
 
   // PSM
 
