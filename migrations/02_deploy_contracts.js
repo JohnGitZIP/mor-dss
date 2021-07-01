@@ -32,6 +32,7 @@ const DsrManager = artifacts.require('DsrManager');
 const OsmMom = artifacts.require('OsmMom');
 const FlipperMom = artifacts.require('FlipperMom');
 const ClipperMom = artifacts.require('ClipperMom');
+const IlkRegistry = artifacts.require('IlkRegistry');
 
 const NOW = Math.floor(Date.now() / 1000);
 
@@ -251,6 +252,10 @@ module.exports = async (deployer, network, [account]) => {
   console.log('Deploying Clipper Mom...');
   await deployer.deploy(ClipperMom, await dssDeploy.spotter());
   const clipperMom = await ClipperMom.deployed();
+
+  console.log('Deploying IlkRegistry Mom...');
+  await deployer.deploy(IlkRegistry, await dssDeploy.vat(), await dssDeploy.dog(), await dssDeploy.cat(), await dssDeploy.spotter());
+  const ilkRegistry = await IlkRegistry.deployed();
 
   console.log('Releasing Auth...');
   await dssDeploy.releaseAuth();
