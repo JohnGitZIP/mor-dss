@@ -30,6 +30,8 @@ const DssCdpManager = artifacts.require('DssCdpManager');
 const GetCdps = artifacts.require('GetCdps');
 const DsrManager = artifacts.require('DsrManager');
 const OsmMom = artifacts.require('OsmMom');
+const FlipperMom = artifacts.require('FlipperMom');
+const ClipperMom = artifacts.require('ClipperMom');
 
 const NOW = Math.floor(Date.now() / 1000);
 
@@ -241,6 +243,14 @@ module.exports = async (deployer, network, [account]) => {
   console.log('Deploying OSM Mom...');
   await deployer.deploy(OsmMom);
   const osmMom = await OsmMom.deployed();
+
+  console.log('Deploying Flipper Mom...');
+  await deployer.deploy(FlipperMom, await dssDeploy.cat());
+  const flipperMom = await FlipperMom.deployed();
+
+  console.log('Deploying Clipper Mom...');
+  await deployer.deploy(ClipperMom, await dssDeploy.spotter());
+  const clipperMom = await ClipperMom.deployed();
 
   console.log('Releasing Auth...');
   await dssDeploy.releaseAuth();
