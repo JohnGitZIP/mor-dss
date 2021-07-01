@@ -1,4 +1,4 @@
-const ProxyFactory = artifacts.require('ProxyFactory');
+const DSProxyFactory = artifacts.require('DSProxyFactory');
 const ProxyRegistry = artifacts.require('ProxyRegistry');
 const VatFab = artifacts.require('VatFab');
 const JugFab = artifacts.require('JugFab');
@@ -57,11 +57,11 @@ module.exports = async (deployer, network, [account]) => {
   const web3 = DssDeploy.interfaceAdapter.web3;
 
   console.log('Publishing Proxy Factory...');
-  await deployer.deploy(ProxyFactory);
-  const proxyFactory = await ProxyFactory.deployed();
+  await deployer.deploy(DSProxyFactory);
+  const dsProxyFactory = await DSProxyFactory.deployed();
 
   console.log('Publishing Proxy Registry...');
-  await deployer.deploy(ProxyRegistry, proxyFactory.address);
+  await deployer.deploy(ProxyRegistry, dsProxyFactory.address);
   const proxyRegistry = await ProxyRegistry.deployed();
 
   // deploys VatFab
