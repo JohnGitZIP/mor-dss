@@ -1,3 +1,5 @@
+const ProxyFactory = artifacts.require('ProxyFactory');
+const ProxyRegistry = artifacts.require('ProxyRegistry');
 const VatFab = artifacts.require('VatFab');
 const JugFab = artifacts.require('JugFab');
 const VowFab = artifacts.require('VowFab');
@@ -53,6 +55,14 @@ const LERP_DURATION = 7 * 24 * 60 * 60;
 
 module.exports = async (deployer, network, [account]) => {
   const web3 = DssDeploy.interfaceAdapter.web3;
+
+  console.log('Publishing Proxy Factory...');
+  await deployer.deploy(ProxyFactory);
+  const proxyFactory = await ProxyFactory.deployed();
+
+  console.log('Publishing Proxy Registry...');
+  await deployer.deploy(ProxyRegistry, proxyFactory.address);
+  const proxyRegistry = await ProxyRegistry.deployed();
 
   // deploys VatFab
   console.log('Publishing Gov Token contract...');
