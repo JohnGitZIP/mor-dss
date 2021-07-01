@@ -57,6 +57,13 @@ const LERP_START = 10000000000000000n;
 const LERP_END = 1000000000000000n;
 const LERP_DURATION = 7 * 24 * 60 * 60;
 
+function units(coins, decimals) {
+  let i = coins.indexOf('.');
+  if (i < 0) i = coins.length;
+  const s = coins.slice(i + 1);
+  return coins.slice(0, i) + s + '0'.repeat(decimals - s.length);
+}
+
 module.exports = async (deployer, network, [account]) => {
   const web3 = DssDeploy.interfaceAdapter.web3;
 
@@ -407,6 +414,22 @@ module.exports = async (deployer, network, [account]) => {
     return await proxyDeployer.methods['execute(address,bytes)'](PROXY_PAUSE_ACTIONS, calldata);
   }
 
+  async function file(who, what, data) {
+    const jsonInterface = {
+      type: 'function',
+      name: 'file',
+      inputs: [
+        { type: 'address', name: 'pause' },
+        { type: 'address', name: 'actions' },
+        { type: 'address', name: 'who' },
+        { type: 'bytes32', name: 'what' },
+        { type: 'uint256', name: 'data' },
+      ],
+    };
+    const calldata = web3.eth.abi.encodeFunctionCall(jsonInterface, [MCD_PAUSE, MCD_GOV_ACTIONS, who, web3.utils.asciiToHex(what), data]);
+    return await proxyDeployer.methods['execute(address,bytes)'](PROXY_PAUSE_ACTIONS, calldata);
+  }
+
   console.log('Publishing IOU Token...');
   await deployer.deploy(DSToken, "IOU");
   const iouToken = await DSToken.deployed();
@@ -441,6 +464,16 @@ module.exports = async (deployer, network, [account]) => {
   await rely(MCD_VAT, MCD_FLASH);
   await dssFlash.rely(MCD_PAUSE_PROXY);
   await dssFlash.deny(account);
+
+  console.log('Configuring Core...');
+  await file(MCD_VAT, 'Line', units('1000000', 45));
+  await file(MCD_VOW, 'wait', '0');
+  await file(MCD_VOW, 'bump', units('0.1', 45));
+  await file(MCD_VOW, 'dump', units('0.01', 18));
+  await file(MCD_VOW, 'sump', units('0.1', 45));
+  await file(MCD_VOW, 'hump', units('0', 45));
+  await file(MCD_CAT, 'box', units('10000', 45));
+  await file(MCD_DOG, 'Hole', units('10000', 45));
 
   // PSM
 
