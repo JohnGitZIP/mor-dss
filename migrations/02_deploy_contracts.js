@@ -1,3 +1,4 @@
+const DSValue = artifacts.require('DSValue');
 const RestrictedTokenFaucet = artifacts.require('RestrictedTokenFaucet');
 const DSProxyFactory = artifacts.require('DSProxyFactory');
 const ProxyRegistry = artifacts.require('ProxyRegistry');
@@ -76,12 +77,33 @@ module.exports = async (deployer, network, [account]) => {
 
   const config = require('./config/freshtest.json');
   const config_import = config.import || {};
+  const config_tokens = config.tokens || {};
+
+  // FEEDS
+
+  const VAL_ = {};
+  for (const token_name in config_tokens) {
+    const token_config = config_tokens[token_name];
+    const token_import = token_config.import || {};
+    const token_pipDeploy = token_config.pipDeploy || {};
+    VAL_[token_name] = token_import.pip;
+    if (token_import.pip === undefined) {
+      if (token_pipDeploy.type == 'median') {
+        throw new Error('Unimplemented');
+      }
+      if (token_pipDeploy.type == 'value') {
+        await deployer.deploy(DSValue);
+        const dsValue = await DSValue.deployed();
+        VAL_[token_name] = dsValue.address;
+        console.log('VAL_' + token_name + '=' + VAL_[token_name]);
+      }
+    }
+  }
 
   // FAUCET
 
   let FAUCET = config_import.faucet;
   if (config_import.faucet === undefined) {
-    // deploys RestrictedTokenFaucet
     console.log('Publishing Token Faucet...');
     await deployer.deploy(RestrictedTokenFaucet);
     const restrictedTokenFaucet = await RestrictedTokenFaucet.deployed();
@@ -95,14 +117,12 @@ module.exports = async (deployer, network, [account]) => {
 
   let PROXY_REGISTRY = config_import.proxyRegistry;
   if (config_import.proxyRegistry === undefined) {
-    // deploys DSProxyFactory
     console.log('Publishing Proxy Factory...');
     await deployer.deploy(DSProxyFactory);
     const dsProxyFactory = await DSProxyFactory.deployed();
     const PROXY_FACTORY = dsProxyFactory.address;
     console.log('PROXY_FACTORY=' + PROXY_FACTORY);
 
-    // deploys ProxyRegistry
     console.log('Publishing Proxy Registry...');
     await deployer.deploy(ProxyRegistry, PROXY_FACTORY);
     const proxyRegistry = await ProxyRegistry.deployed();
@@ -113,112 +133,96 @@ module.exports = async (deployer, network, [account]) => {
 
   // FABS
 
-  // deploys VatFab
   console.log('Publishing VatFab...');
   await deployer.deploy(VatFab);
   const vatFab = await VatFab.deployed();
   const VAT_FAB = vatFab.address;
   console.log('VAT_FAB=' + VAT_FAB);
 
-  // deploys JugFab
   console.log('Publishing JugFab...');
   await deployer.deploy(JugFab);
   const jugFab = await JugFab.deployed();
   const JUG_FAB = jugFab.address;
   console.log('JUG_FAB=' + JUG_FAB);
 
-  // deploys VowFab
   console.log('Publishing VowFab...');
   await deployer.deploy(VowFab);
   const vowFab = await VowFab.deployed();
   const VOW_FAB = vowFab.address;
   console.log('VOW_FAB=' + VOW_FAB);
 
-  // deploys CatFab
   console.log('Publishing CatFab...');
   await deployer.deploy(CatFab);
   const catFab = await CatFab.deployed();
   const CAT_FAB = catFab.address;
   console.log('CAT_FAB=' + CAT_FAB);
 
-  // deploys DogFab
   console.log('Publishing DogFab...');
   await deployer.deploy(DogFab);
   const dogFab = await DogFab.deployed();
   const DOG_FAB = dogFab.address;
   console.log('DOG_FAB=' + DOG_FAB);
 
-  // deploys DaiFab
   console.log('Publishing DaiFab...');
   await deployer.deploy(DaiFab);
   const daiFab = await DaiFab.deployed();
   const DAI_FAB = daiFab.address;
   console.log('DAI_FAB=' + DAI_FAB);
 
-  // deploys DaiJoinFab
   console.log('Publishing DaiJoinFab...');
   await deployer.deploy(DaiJoinFab);
   const daiJoinFab = await DaiJoinFab.deployed();
   const MCD_JOIN_FAB = daiJoinFab.address;
   console.log('MCD_JOIN_FAB=' + MCD_JOIN_FAB);
 
-  // deploys FlapFab
   console.log('Publishing FlapFab...');
   await deployer.deploy(FlapFab);
   const flapFab = await FlapFab.deployed();
   const FLAP_FAB = flapFab.address;
   console.log('FLAP_FAB=' + FLAP_FAB);
 
-  // deploys FlopFab
   console.log('Publishing FlopFab...');
   await deployer.deploy(FlopFab);
   const flopFab = await FlopFab.deployed();
   const FLOP_FAB = flopFab.address;
   console.log('FLOP_FAB=' + FLOP_FAB);
 
-  // deploys FlipFab
   console.log('Publishing FlipFab...');
   await deployer.deploy(FlipFab);
   const flipFab = await FlipFab.deployed();
   const FLIP_FAB = flipFab.address;
   console.log('FLIP_FAB=' + FLIP_FAB);
 
-  // deploys ClipFab
   console.log('Publishing ClipFab...');
   await deployer.deploy(ClipFab);
   const clipFab = await ClipFab.deployed();
   const CLIP_FAB = clipFab.address;
   console.log('CLIP_FAB=' + CLIP_FAB);
 
-  // deploys SpotFab
   console.log('Publishing SpotFab...');
   await deployer.deploy(SpotFab);
   const spotFab = await SpotFab.deployed();
   const SPOT_FAB = spotFab.address;
   console.log('SPOT_FAB=' + SPOT_FAB);
 
-  // deploys PotFab
   console.log('Publishing PotFab...');
   await deployer.deploy(PotFab);
   const potFab = await PotFab.deployed();
   const POT_FAB = potFab.address;
   console.log('POT_FAB=' + POT_FAB);
 
-  // deploys EndFab
   console.log('Publishing EndFab...');
   await deployer.deploy(EndFab);
   const endFab = await EndFab.deployed();
   const END_FAB = endFab.address;
   console.log('END_FAB=' + END_FAB);
 
-  // deploys ESMFab
   console.log('Publishing ESMFab...');
   await deployer.deploy(ESMFab);
   const esmFab = await ESMFab.deployed();
   const ESM_FAB = esmFab.address;
   console.log('ESM_FAB=' + ESM_FAB);
 
-  // deploys PauseFab
   console.log('Publishing PauseFab...');
   await deployer.deploy(PauseFab);
   const pauseFab = await PauseFab.deployed();
@@ -247,12 +251,14 @@ module.exports = async (deployer, network, [account]) => {
 
   // AUTHORITY
 
-  console.log('Deploying DSRoles...');
-  await deployer.deploy(DSRoles);
-  const dsRoles = await DSRoles.deployed();
-  const MCD_ADM = dsRoles.address;
-  console.log('MCD_ADM=' + MCD_ADM);
-  await dsRoles.setRootUser(account, true);
+  // if (true) {
+    console.log('Deploying DSRoles...');
+    await deployer.deploy(DSRoles);
+    const dsRoles = await DSRoles.deployed();
+    const MCD_ADM = dsRoles.address;
+    console.log('MCD_ADM=' + MCD_ADM);
+    await dsRoles.setRootUser(account, true);
+  // }
 
   // CORE
 
@@ -327,6 +333,8 @@ module.exports = async (deployer, network, [account]) => {
     govToken.setAuthority(GOV_GUARD);
     mkrAuthority.rely(MCD_FLOP);
   }
+
+  // DEPLOY COLLATERALS
 
   console.log('Deploying Collateral Flip #1...');
   {
