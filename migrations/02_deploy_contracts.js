@@ -44,7 +44,7 @@ const DSProxy = artifacts.require('DSProxy');
 const DSChief = artifacts.require('DSChief');
 const VoteProxyFactory = artifacts.require('VoteProxyFactory');
 const DssAutoLine = artifacts.require('DssAutoLine');
-const DssFlash =  artifacts.require('DssFlash');
+const DssFlash = artifacts.require('DssFlash');
 
 const NOW = Math.floor(Date.now() / 1000);
 
@@ -58,10 +58,14 @@ const LERP_START = 10000000000000000n;
 const LERP_END = 1000000000000000n;
 const LERP_DURATION = 7 * 24 * 60 * 60;
 
+const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
+
 function units(coins, decimals) {
+  if (typeof coins !== 'string') throw new Error('Invalid amount');
   let i = coins.indexOf('.');
   if (i < 0) i = coins.length;
   const s = coins.slice(i + 1);
+  if (decimals < s.length) throw new Error('Invalid decimals');
   return BigInt(coins.slice(0, i) + s + '0'.repeat(decimals - s.length));
 }
 
@@ -71,28 +75,43 @@ module.exports = async (deployer, network, [account]) => {
   const chainId = await web3.eth.net.getId();
 
   const config = require('./config/freshtest.json');
+  const config_import = config.import || {};
 
-  // deploys RestrictedTokenFaucet
-  console.log('Publishing Token Faucet...');
-  await deployer.deploy(RestrictedTokenFaucet);
-  const restrictedTokenFaucet = await RestrictedTokenFaucet.deployed();
-  const FAUCET = restrictedTokenFaucet.address;
-  console.log('FAUCET=' + FAUCET);
-  restrictedTokenFaucet.hope('0x0000000000000000000000000000000000000000');
+  // FAUCET
 
-  // deploys DSProxyFactory
-  console.log('Publishing Proxy Factory...');
-  await deployer.deploy(DSProxyFactory);
-  const dsProxyFactory = await DSProxyFactory.deployed();
-  const PROXY_FACTORY = dsProxyFactory.address;
-  console.log('PROXY_FACTORY=' + PROXY_FACTORY);
+  let FAUCET = config_import.faucet;
+  if (config_import.faucet === undefined) {
+    // deploys RestrictedTokenFaucet
+    console.log('Publishing Token Faucet...');
+    await deployer.deploy(RestrictedTokenFaucet);
+    const restrictedTokenFaucet = await RestrictedTokenFaucet.deployed();
+    FAUCET = restrictedTokenFaucet.address;
+    console.log('FAUCET=' + FAUCET);
+    restrictedTokenFaucet.hope(ZERO_ADDRESS);
+  }
+  const restrictedTokenFaucet = await RestrictedTokenFaucet.at(FAUCET);
 
-  // deploys ProxyRegistry
-  console.log('Publishing Proxy Registry...');
-  await deployer.deploy(ProxyRegistry, PROXY_FACTORY);
-  const proxyRegistry = await ProxyRegistry.deployed();
-  const PROXY_REGISTRY = proxyRegistry.address;
-  console.log('PROXY_REGISTRY=' + PROXY_REGISTRY);
+  // PROXY REGISTRY
+
+  let PROXY_REGISTRY = config_import.proxyRegistry;
+  if (config_import.proxyRegistry === undefined) {
+    // deploys DSProxyFactory
+    console.log('Publishing Proxy Factory...');
+    await deployer.deploy(DSProxyFactory);
+    const dsProxyFactory = await DSProxyFactory.deployed();
+    const PROXY_FACTORY = dsProxyFactory.address;
+    console.log('PROXY_FACTORY=' + PROXY_FACTORY);
+
+    // deploys ProxyRegistry
+    console.log('Publishing Proxy Registry...');
+    await deployer.deploy(ProxyRegistry, PROXY_FACTORY);
+    const proxyRegistry = await ProxyRegistry.deployed();
+    PROXY_REGISTRY = proxyRegistry.address;
+    console.log('PROXY_REGISTRY=' + PROXY_REGISTRY);
+  }
+  const proxyRegistry = await ProxyRegistry.at(PROXY_REGISTRY);
+
+  // FABS
 
   // deploys VatFab
   console.log('Publishing VatFab...');
@@ -206,18 +225,27 @@ module.exports = async (deployer, network, [account]) => {
   const PAUSE_FAB = pauseFab.address;
   console.log('PAUSE_FAB=' + PAUSE_FAB);
 
-  console.log('Publishing Gov Token...');
-  await deployer.deploy(DSToken, "MKR");
-  const govToken = await DSToken.deployed();
-  const MCD_GOV = govToken.address;
-  console.log('MCD_GOV=' + MCD_GOV);
+  // GOV TOKEN
 
-  // deploys DssDeploy
+  let MCD_GOV = config_import.gov;
+  if (config_import.gov === undefined) {
+    console.log('Publishing Gov Token...');
+    await deployer.deploy(DSToken, "MKR");
+    const govToken = await DSToken.deployed();
+    MCD_GOV = govToken.address;
+    console.log('MCD_GOV=' + MCD_GOV);
+  }
+  const govToken = await DSToken.at(MCD_GOV);
+
+  // CORE DEPLOYER
+
   console.log('Publishing DssDeploy...');
   await deployer.deploy(DssDeploy);
   const dssDeploy = await DssDeploy.deployed();
   await dssDeploy.addFabs1(VAT_FAB, JUG_FAB, VOW_FAB, CAT_FAB, DOG_FAB, DAI_FAB, MCD_JOIN_FAB);
   await dssDeploy.addFabs2(FLAP_FAB, FLOP_FAB, FLIP_FAB, CLIP_FAB, SPOT_FAB, POT_FAB, END_FAB, ESM_FAB, PAUSE_FAB);
+
+  // AUTHORITY
 
   console.log('Deploying DSRoles...');
   await deployer.deploy(DSRoles);
@@ -225,6 +253,8 @@ module.exports = async (deployer, network, [account]) => {
   const MCD_ADM = dsRoles.address;
   console.log('MCD_ADM=' + MCD_ADM);
   await dsRoles.setRootUser(account, true);
+
+  // CORE
 
   console.log('Deploying Vat...');
   await dssDeploy.deployVat();
@@ -281,17 +311,22 @@ module.exports = async (deployer, network, [account]) => {
   const MCD_ESM = await dssDeploy.esm();
   console.log('MCD_ESM=' + MCD_ESM);
 
-  console.log('Configuring Faucet...');
-  await govToken.mint(FAUCET, units('1000000', 18));
-  await restrictedTokenFaucet.gulp(MCD_GOV);
+  // FAUCET CONFIG
 
-  console.log('Publishing MKR Authority ...');
-  await deployer.deploy(MkrAuthority);
-  const mkrAuthority = await MkrAuthority.deployed();
-  const GOV_GUARD = mkrAuthority.address;
-  console.log('GOV_GUARD=' + GOV_GUARD);
-  govToken.setAuthority(GOV_GUARD);
-  mkrAuthority.rely(MCD_FLOP);
+  let mkrAuthority;
+  if (config_import.gov === undefined) {
+    console.log('Configuring Faucet...');
+    await govToken.mint(FAUCET, units('1000000', 18));
+    await restrictedTokenFaucet.gulp(MCD_GOV);
+
+    console.log('Publishing MKR Authority ...');
+    await deployer.deploy(MkrAuthority);
+    mkrAuthority = await MkrAuthority.deployed();
+    const GOV_GUARD = mkrAuthority.address;
+    console.log('GOV_GUARD=' + GOV_GUARD);
+    govToken.setAuthority(GOV_GUARD);
+    mkrAuthority.rely(MCD_FLOP);
+  }
 
   console.log('Deploying Collateral Flip #1...');
   {
@@ -337,6 +372,8 @@ module.exports = async (deployer, network, [account]) => {
     await dssDeploy.deployCollateralFlip(web3.utils.asciiToHex('BAT-A'), gemJoin.address, osm.address);
   }
 
+  // PROXY ACTIONS
+
   console.log('Deploying Proxy Actions...');
   await deployer.deploy(DssProxyActions);
   const dssProxyActions = await DssProxyActions.deployed();
@@ -353,6 +390,8 @@ module.exports = async (deployer, network, [account]) => {
   const PROXY_ACTIONS_DSR = dssProxyActionsDsr.address;
   console.log('PROXY_ACTIONS_DSR=' + PROXY_ACTIONS_DSR);
 
+  // CDP MANAGER
+
   console.log('Deploying CDP Manager...');
   await deployer.deploy(DssCdpManager, MCD_VAT);
   const dssCdpManager = await DssCdpManager.deployed();
@@ -364,11 +403,15 @@ module.exports = async (deployer, network, [account]) => {
   const GET_CDPS = getCdps.address;
   console.log('GET_CDPS=' + GET_CDPS);
 
+  // DSR MANAGER
+
   console.log('Deploying DSR Manager...');
   await deployer.deploy(DsrManager, MCD_POT, MCD_JOIN_DAI);
   const dsrManager = await DsrManager.deployed();
   const DSR_MANAGER = dsrManager.address;
   console.log('DSR_MANAGER=' + DSR_MANAGER);
+
+  // OSM MOM
 
   console.log('Deploying OSM Mom...');
   await deployer.deploy(OsmMom);
@@ -376,11 +419,15 @@ module.exports = async (deployer, network, [account]) => {
   const OSM_MOM = osmMom.address;
   console.log('OSM_MOM=' + OSM_MOM);
 
+  // FLIPPER MOM
+
   console.log('Deploying Flipper Mom...');
   await deployer.deploy(FlipperMom, MCD_CAT);
   const flipperMom = await FlipperMom.deployed();
   const FLIPPER_MOM = flipperMom.address;
   console.log('FLIPPER_MOM=' + FLIPPER_MOM);
+
+  // CLIPPER MOM
 
   console.log('Deploying Clipper Mom...');
   await deployer.deploy(ClipperMom, MCD_SPOT);
@@ -388,11 +435,15 @@ module.exports = async (deployer, network, [account]) => {
   const CLIPPER_MOM = clipperMom.address;
   console.log('CLIPPER_MOM=' + CLIPPER_MOM);
 
+  // ILK REGISTRY
+
   console.log('Deploying ILK Registry...');
   await deployer.deploy(IlkRegistry, MCD_VAT, MCD_DOG, MCD_CAT, MCD_SPOT);
   const ilkRegistry = await IlkRegistry.deployed();
   const ILK_REGISTRY = ilkRegistry.address;
   console.log('ILK_REGISTRY=' + ILK_REGISTRY);
+
+  // REMOVE AUTH
 
   console.log('Releasing Auth...');
   await dssDeploy.releaseAuth();
@@ -403,11 +454,15 @@ module.exports = async (deployer, network, [account]) => {
   console.log('Releasing Auth Flip #2');
   await dssDeploy.releaseAuthFlip(web3.utils.asciiToHex('BAT-A'));
 
+  // GOV ACTIONS
+
   console.log('Deploying Gov Actions...');
   await deployer.deploy(GovActions);
   const govActions = await GovActions.deployed();
   const MCD_GOV_ACTIONS = govActions.address;
   console.log('MCD_GOV_ACTIONS=' + MCD_GOV_ACTIONS);
+
+  // PAUSE PROXY ACTIONS
 
   console.log('Deploying Pause Proxy Actions...');
   await deployer.deploy(DssDeployPauseProxyActions);
@@ -415,9 +470,14 @@ module.exports = async (deployer, network, [account]) => {
   const PROXY_PAUSE_ACTIONS = dssDeployPauseProxyActions.address;
   console.log('PROXY_PAUSE_ACTIONS=' + PROXY_PAUSE_ACTIONS);
 
-  console.log('Building Proxy Deployer...');
-  await proxyRegistry.build();
-  const PROXY_DEPLOYER = await proxyRegistry.proxies(account);
+  // PROXY DEPLOYER
+
+  let PROXY_DEPLOYER = await proxyRegistry.proxies(account);
+  if (PROXY_DEPLOYER === ZERO_ADDRESS) {
+    console.log('Building Proxy Deployer...');
+    await proxyRegistry.build();
+    PROXY_DEPLOYER = await proxyRegistry.proxies(account);
+  }
   console.log('PROXY_DEPLOYER=' + PROXY_DEPLOYER);
   const proxyDeployer = await DSProxy.at(PROXY_DEPLOYER);
   await dsRoles.setRootUser(PROXY_DEPLOYER, true);
@@ -484,24 +544,37 @@ module.exports = async (deployer, network, [account]) => {
     return await proxyDeployer.methods['execute(address,bytes)'](PROXY_PAUSE_ACTIONS, calldata);
   }
 
-  console.log('Publishing IOU Token...');
-  await deployer.deploy(DSToken, "IOU");
-  const iouToken = await DSToken.deployed();
-  const MCD_IOU = iouToken.address;
-  console.log('MCD_IOU=' + MCD_IOU);
+  // ADM CHIEF
 
-  console.log('Publishing DS Chief...');
-  await deployer.deploy(DSChief, MCD_GOV, MCD_IOU, 5);
-  const dsChief = await DSChief.deployed();
-  const MCD_ADM_CHIEF = dsChief.address;
-  console.log('MCD_ADM_CHIEF=' + MCD_ADM_CHIEF);
-  iouToken.setOwner(MCD_ADM_CHIEF);
+  let MCD_ADM_CHIEF = config_import.authority;
+  if (MCD_ADM_CHIEF === undefined) {
+    console.log('Publishing IOU Token...');
+    await deployer.deploy(DSToken, "IOU");
+    const iouToken = await DSToken.deployed();
+    const MCD_IOU = iouToken.address;
+    console.log('MCD_IOU=' + MCD_IOU);
 
-  console.log('Publishing Vote Proxy Factory...');
-  await deployer.deploy(VoteProxyFactory, dsChief.address);
-  const voteProxyFactory = await VoteProxyFactory.deployed();
-  const VOTE_PROXY_FACTORY = voteProxyFactory.address;
-  console.log('VOTE_PROXY_FACTORY=' + VOTE_PROXY_FACTORY);
+    console.log('Publishing DS Chief...');
+    await deployer.deploy(DSChief, MCD_GOV, MCD_IOU, 5);
+    const dsChief = await DSChief.deployed();
+    MCD_ADM_CHIEF = dsChief.address;
+    console.log('MCD_ADM_CHIEF=' + MCD_ADM_CHIEF);
+    iouToken.setOwner(MCD_ADM_CHIEF);
+
+    console.log('Publishing Vote Proxy Factory...');
+    await deployer.deploy(VoteProxyFactory, dsChief.address);
+    const voteProxyFactory = await VoteProxyFactory.deployed();
+    const VOTE_PROXY_FACTORY = voteProxyFactory.address;
+    console.log('VOTE_PROXY_FACTORY=' + VOTE_PROXY_FACTORY);
+  }
+
+  // GOV GUARD CONFIG
+
+  if (config_import.gov === undefined) {
+    await mkrAuthority.setRoot(MCD_PAUSE_PROXY);
+  }
+
+  // AUTO LINE
 
   console.log('Publishing Auto Line...');
   await deployer.deploy(DssAutoLine, MCD_VAT);
@@ -509,6 +582,8 @@ module.exports = async (deployer, network, [account]) => {
   const MCD_IAM_AUTO_LINE = dssAutoLine.address;
   console.log('MCD_IAM_AUTO_LINE=' + MCD_IAM_AUTO_LINE);
   await rely(MCD_VAT, MCD_IAM_AUTO_LINE);
+
+  // FLASH
 
   console.log('Publishing Flash...');
   await deployer.deploy(DssFlash, MCD_JOIN_DAI, MCD_VOW);
@@ -519,34 +594,82 @@ module.exports = async (deployer, network, [account]) => {
   await dssFlash.rely(MCD_PAUSE_PROXY);
   await dssFlash.deny(account);
 
+  // CORE CONFIG
+
   console.log('Configuring Core...');
-  await file(MCD_VAT, 'Line', units(config.vat_line, 45));
-  await file(MCD_VOW, 'wait', config.vow_wait);
-  await file(MCD_VOW, 'bump', units(config.vow_bump, 45));
-  await file(MCD_VOW, 'dump', units(config.vow_dump, 18));
-  await file(MCD_VOW, 'sump', units(config.vow_sump, 45));
-  await file(MCD_VOW, 'hump', units(config.vow_hump, 45));
-  await file(MCD_CAT, 'box', units(config.cat_box, 45));
-  await file(MCD_DOG, 'Hole', units(config.dog_hole, 45));
-  await file(MCD_JUG, 'base', units(Math.exp(Math.log(config.jug_base / 100 + 1) / (60 * 60 * 24 * 365)).toFixed(27), 27)); // review
-  await dripAndFile(MCD_POT, 'dsr', units(Math.exp(Math.log(config.pot_dsr / 100 + 1) / (60 * 60 * 24 * 365)).toFixed(27), 27)); // review
-  await file(MCD_END, 'wait', config.end_wait);
-  await file(MCD_FLAP, 'beg', units(config.flap_beg, 16) + units('100', 16));
-  await file(MCD_FLAP, 'ttl', config.flap_ttl);
-  await file(MCD_FLAP, 'tau', config.flap_tau);
-  await file(MCD_FLOP, 'beg', units(config.flop_beg, 16) + units('100', 16));
-  await file(MCD_FLOP, 'pad', units(config.flop_pad, 16) + units('100', 16));
-  await file(MCD_FLOP, 'ttl', config.flop_ttl);
-  await file(MCD_FLOP, 'tau', config.flop_tau);
-  await file(MCD_FLASH, 'max', units(config.flash_max, 18));
-  await file(MCD_FLASH, 'toll', units(config.flash_toll, 16));
+  if (Number(config.vat_line) > 0) {
+    await file(MCD_VAT, 'Line', units(config.vat_line, 45));
+  }
+  if (Number(config.vow_wait) >= 0) {
+    await file(MCD_VOW, 'wait', units(config.vow_wait, 0));
+  }
+  if (Number(config.vow_bump) >= 0) {
+    await file(MCD_VOW, 'bump', units(config.vow_bump, 45));
+  }
+  if (Number(config.vow_dump) >= 0) {
+    await file(MCD_VOW, 'dump', units(config.vow_dump, 18));
+  }
+  if (Number(config.vow_sump) >= 0) {
+    await file(MCD_VOW, 'sump', units(config.vow_sump, 45));
+  }
+  if (Number(config.vow_hump) >= 0) {
+    await file(MCD_VOW, 'hump', units(config.vow_hump, 45));
+  }
+  if (Number(config.cat_box) > 0) {
+    await file(MCD_CAT, 'box', units(config.cat_box, 45));
+  }
+  if (Number(config.dog_hole) > 0) {
+    await file(MCD_DOG, 'Hole', units(config.dog_hole, 45));
+  }
+  if (Number(config.jug_base) >= 0) {
+    await file(MCD_JUG, 'base', units(Math.exp(Math.log(Number(config.jug_base) / 100 + 1) / (60 * 60 * 24 * 365)).toFixed(27), 27) - 10n ** 27n); // review
+  }
+  if (Number(config.pot_dsr) >= 0) {
+    await dripAndFile(MCD_POT, 'dsr', units(Math.exp(Math.log(Number(config.pot_dsr) / 100 + 1) / (60 * 60 * 24 * 365)).toFixed(27), 27)); // review
+  }
+  if (Number(config.end_wait) >= 0) {
+    await file(MCD_END, 'wait', units(config.end_wait, 0));
+  }
+  if (Number(config.flap_beg) >= 0) {
+    await file(MCD_FLAP, 'beg', units(config.flap_beg, 16) + units('100', 16));
+  }
+  if (Number(config.flap_ttl) >= 0) {
+    await file(MCD_FLAP, 'ttl', units(config.flap_ttl, 0));
+  }
+  if (Number(config.flap_tau) >= 0) {
+    await file(MCD_FLAP, 'tau', units(config.flap_tau, 0));
+  }
+  if (Number(config.flop_beg) >= 0) {
+    await file(MCD_FLOP, 'beg', units(config.flop_beg, 16) + units('100', 16));
+  }
+  if (Number(config.flop_pad) >= 0) {
+    await file(MCD_FLOP, 'pad', units(config.flop_pad, 16) + units('100', 16));
+  }
+  if (Number(config.flop_ttl) >= 0) {
+    await file(MCD_FLOP, 'ttl', units(config.flop_ttl, 0));
+  }
+  if (Number(config.flop_tau) >= 0) {
+    await file(MCD_FLOP, 'tau', units(config.flop_tau, 0));
+  }
+  if (Number(config.flash_max) >= 0) {
+    await file(MCD_FLASH, 'max', units(config.flash_max, 18));
+  }
+  if (Number(config.flash_toll) >= 0) {
+    await file(MCD_FLASH, 'toll', units(config.flash_toll, 16));
+  }
+
+  // SET ILKS OSM-MOM
 
   console.log('Configuring OSM Mom...');
   await osmMom.setAuthority(MCD_ADM_CHIEF);
   await osmMom.setOwner(MCD_PAUSE_PROXY);
 
+  // SET PAUSE AUTH DELAY
+
   console.log('Configuring Authority & Delay...');
-  await setAuthorityAndDelay(MCD_ADM_CHIEF, config.pauseDelay);
+  if (Number(config.pauseDelay) >= 0) {
+    await setAuthorityAndDelay(MCD_ADM_CHIEF, units(config.pauseDelay, 0));
+  }
 
   // PSM
 
