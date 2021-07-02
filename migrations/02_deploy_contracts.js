@@ -990,6 +990,25 @@ module.exports = async (deployer, network, [account]) => {
     }
   }
 
+  // SET ILKS DUNK
+
+  console.log('Configuring ILK Dunks...');
+  for (const token_name in config_tokens) {
+    const token_config = config_tokens[token_name];
+    const token_ilks = token_config.ilks || {};
+
+    for (const ilk in token_ilks) {
+      const ilk_config = token_ilks[ilk];
+      const ilk_flipDeploy = ilk_config.flipDeploy || {};
+      const ilk_name =  web3.utils.asciiToHex(token_name + '-' + ilk);
+
+      if (ilk_config.flipDeploy !== undefined) {
+        const dunk = units(ilk_flipDeploy.dunk, 45);
+        await filex(MCD_CAT, ilk_name, 'dunk', dunk);
+      }
+    }
+  }
+
   // SET ILKS OSM-MOM
 
   console.log('Configuring OSM Mom...');
