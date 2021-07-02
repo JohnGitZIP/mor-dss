@@ -1,3 +1,4 @@
+const RestrictedTokenFaucet = artifacts.require('RestrictedTokenFaucet');
 const DSProxyFactory = artifacts.require('DSProxyFactory');
 const ProxyRegistry = artifacts.require('ProxyRegistry');
 const VatFab = artifacts.require('VatFab');
@@ -68,6 +69,14 @@ module.exports = async (deployer, network, [account]) => {
   const web3 = DssDeploy.interfaceAdapter.web3;
 
   const chainId = await web3.eth.net.getId();
+
+  // deploys RestrictedTokenFaucet
+  console.log('Publishing Token Faucet...');
+  await deployer.deploy(RestrictedTokenFaucet);
+  const restrictedTokenFaucet = await RestrictedTokenFaucet.deployed();
+  const FAUCET = restrictedTokenFaucet.address;
+  console.log('FAUCET=' + FAUCET);
+  restrictedTokenFaucet.hope('0x0000000000000000000000000000000000000000');
 
   // deploys DSProxyFactory
   console.log('Publishing Proxy Factory...');
