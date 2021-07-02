@@ -1045,6 +1045,43 @@ module.exports = async (deployer, network, [account]) => {
     }
   }
 
+  // SET ILKS TAU
+
+  console.log('Configuring ILK Taus...');
+  for (const token_name in config_tokens) {
+    const token_config = config_tokens[token_name];
+    const token_ilks = token_config.ilks || {};
+
+    for (const ilk in token_ilks) {
+      const ilk_config = token_ilks[ilk];
+      const ilk_flipDeploy = ilk_config.flipDeploy || {};
+
+      if (ilk_config.flipDeploy !== undefined) {
+        const tau = units(ilk_flipDeploy.tau, 0);
+        await file(MCD_FLIP_[token_name][ilk], 'tau', tau);
+      }
+    }
+  }
+
+  // SET ILKS HOLE
+
+  console.log('Configuring ILK Holes...');
+  for (const token_name in config_tokens) {
+    const token_config = config_tokens[token_name];
+    const token_ilks = token_config.ilks || {};
+
+    for (const ilk in token_ilks) {
+      const ilk_config = token_ilks[ilk];
+      const ilk_clipDeploy = ilk_config.clipDeploy || {};
+      const ilk_name =  web3.utils.asciiToHex(token_name + '-' + ilk);
+
+      if (ilk_config.clipDeploy !== undefined) {
+        const hole = units(ilk_clipDeploy.hole, 45);
+        await filex(MCD_DOG, ilk_name, 'hole', hole);
+      }
+    }
+  }
+
   // SET ILKS OSM-MOM
 
   console.log('Configuring OSM Mom...');
