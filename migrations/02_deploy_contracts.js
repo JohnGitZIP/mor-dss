@@ -61,7 +61,7 @@ function units(coins, decimals) {
   let i = coins.indexOf('.');
   if (i < 0) i = coins.length;
   const s = coins.slice(i + 1);
-  return coins.slice(0, i) + s + '0'.repeat(decimals - s.length);
+  return BigInt(coins.slice(0, i) + s + '0'.repeat(decimals - s.length));
 }
 
 module.exports = async (deployer, network, [account]) => {
@@ -280,15 +280,15 @@ module.exports = async (deployer, network, [account]) => {
     await median.lift(MEDIAN_ADDRESS_LIST);
     await median.kiss(osm.address);
     await median.rely(MCD_PAUSE_PROXY);
-    await median.deny(await dssDeploy.owner());
+    await median.deny(account);
     await osm.kiss(MCD_END);
     await osm.kiss(MCD_SPOT);
     await osm.rely(MCD_PAUSE_PROXY);
-    await osm.deny(await dssDeploy.owner());
+    await osm.deny(account);
     await deployer.deploy(GemJoin, MCD_VAT, web3.utils.asciiToHex('ETH-A'), ETH);
     const gemJoin = await GemJoin.deployed();
     await gemJoin.rely(MCD_PAUSE_PROXY);
-    await gemJoin.deny(await dssDeploy.owner());
+    await gemJoin.deny(account);
     await dssDeploy.deployCollateralFlip(web3.utils.asciiToHex('ETH-A'), gemJoin.address, osm.address);
   }
 
@@ -302,15 +302,15 @@ module.exports = async (deployer, network, [account]) => {
     await median.lift(MEDIAN_ADDRESS_LIST);
     await median.kiss(osm.address);
     await median.rely(MCD_PAUSE_PROXY);
-    await median.deny(await dssDeploy.owner());
+    await median.deny(account);
     await osm.kiss(MCD_END);
     await osm.kiss(MCD_SPOT);
     await osm.rely(MCD_PAUSE_PROXY);
-    await osm.deny(await dssDeploy.owner());
+    await osm.deny(account);
     await deployer.deploy(GemJoin, MCD_VAT, web3.utils.asciiToHex('BAT-A'), BAT);
     const gemJoin = await GemJoin.deployed();
     await gemJoin.rely(MCD_PAUSE_PROXY);
-    await gemJoin.deny(await dssDeploy.owner());
+    await gemJoin.deny(account);
     await dssDeploy.deployCollateralFlip(web3.utils.asciiToHex('BAT-A'), gemJoin.address, osm.address);
   }
 
@@ -430,6 +430,37 @@ module.exports = async (deployer, network, [account]) => {
     return await proxyDeployer.methods['execute(address,bytes)'](PROXY_PAUSE_ACTIONS, calldata);
   }
 
+  async function dripAndFile(who, what, data) {
+    const jsonInterface = {
+      type: 'function',
+      name: 'dripAndFile',
+      inputs: [
+        { type: 'address', name: 'pause' },
+        { type: 'address', name: 'actions' },
+        { type: 'address', name: 'who' },
+        { type: 'bytes32', name: 'what' },
+        { type: 'uint256', name: 'data' },
+      ],
+    };
+    const calldata = web3.eth.abi.encodeFunctionCall(jsonInterface, [MCD_PAUSE, MCD_GOV_ACTIONS, who, web3.utils.asciiToHex(what), data]);
+    return await proxyDeployer.methods['execute(address,bytes)'](PROXY_PAUSE_ACTIONS, calldata);
+  }
+
+  async function setAuthorityAndDelay(newAuthority, newDelay) {
+    const jsonInterface = {
+      type: 'function',
+      name: 'setAuthorityAndDelay',
+      inputs: [
+        { type: 'address', name: 'pause' },
+        { type: 'address', name: 'actions' },
+        { type: 'address', name: 'newAuthority' },
+        { type: 'uint256', name: 'newDelay' },
+      ],
+    };
+    const calldata = web3.eth.abi.encodeFunctionCall(jsonInterface, [MCD_PAUSE, MCD_GOV_ACTIONS, newAuthority, newDelay]);
+    return await proxyDeployer.methods['execute(address,bytes)'](PROXY_PAUSE_ACTIONS, calldata);
+  }
+
   console.log('Publishing IOU Token...');
   await deployer.deploy(DSToken, "IOU");
   const iouToken = await DSToken.deployed();
@@ -474,6 +505,25 @@ module.exports = async (deployer, network, [account]) => {
   await file(MCD_VOW, 'hump', units('0', 45));
   await file(MCD_CAT, 'box', units('10000', 45));
   await file(MCD_DOG, 'Hole', units('10000', 45));
+  await file(MCD_JUG, 'base', units(Math.exp(Math.log('0' / 100 + 1) / (60 * 60 * 24 * 365)).toFixed(27), 27)); // review
+  await dripAndFile(MCD_POT, 'dsr', units(Math.exp(Math.log('1' / 100 + 1) / (60 * 60 * 24 * 365)).toFixed(27), 27)); // review
+  await file(MCD_END, 'wait', '0');
+  await file(MCD_FLAP, 'beg', units('5', 16) + units('100', 16));
+  await file(MCD_FLAP, 'ttl', '10800');
+  await file(MCD_FLAP, 'tau', '172800');
+  await file(MCD_FLOP, 'beg', units('5', 16) + units('100', 16));
+  await file(MCD_FLOP, 'pad', units('50', 16) + units('100', 16));
+  await file(MCD_FLOP, 'ttl', '10800');
+  await file(MCD_FLOP, 'tau', '172800');
+  await file(MCD_FLASH, 'max', units('500000000', 18));
+  await file(MCD_FLASH, 'toll', units('0.05', 16));
+
+  console.log('Configuring OSM Mom...');
+  await osmMom.setAuthority(MCD_ADM_CHIEF);
+  await osmMom.setOwner(MCD_PAUSE_PROXY);
+
+  console.log('Configuring Authority & Delay...');
+  await setAuthorityAndDelay(MCD_ADM_CHIEF, '0');
 
   // PSM
 
@@ -484,16 +534,20 @@ module.exports = async (deployer, network, [account]) => {
   console.log('Deploying DssPsm...');
   await deployer.deploy(DssPsm, authGemJoin5.address, MCD_JOIN_DAI, MCD_VOW);
   const dssPsm = await DssPsm.deployed();
+  const DSS_PSM = dssPsm.address;
+  console.log('DSS_PSM=' + DSS_PSM);
 
   console.log('Deploying Lerp...');
-  await deployer.deploy(Lerp, dssPsm.address, web3.utils.asciiToHex('tin'), LERP_START_TIME, LERP_START, LERP_END, LERP_DURATION);
+  await deployer.deploy(Lerp, DSS_PSM, web3.utils.asciiToHex('tin'), LERP_START_TIME, LERP_START, LERP_END, LERP_DURATION);
   const lerp = await Lerp.deployed();
+  const LERP = lerp.address;
+  console.log('LERP=' + LERP);
 
   await authGemJoin5.rely(MCD_PAUSE_PROXY);
-  await authGemJoin5.rely(dssPsm.address);
-  await authGemJoin5.deny(await dssDeploy.owner());
+  await authGemJoin5.rely(DSS_PSM);
+  await authGemJoin5.deny(account);
 
   await dssPsm.rely(MCD_PAUSE_PROXY);
-  await dssPsm.rely(lerp.address);
-  await dssPsm.deny(await dssDeploy.owner());
+  await dssPsm.rely(LERP);
+  await dssPsm.deny(account);
 };
