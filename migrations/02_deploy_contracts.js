@@ -1082,6 +1082,101 @@ module.exports = async (deployer, network, [account]) => {
     }
   }
 
+  // SET ILKS CHIP
+
+  console.log('Configuring ILK Chips...');
+  for (const token_name in config_tokens) {
+    const token_config = config_tokens[token_name];
+    const token_ilks = token_config.ilks || {};
+
+    for (const ilk in token_ilks) {
+      const ilk_config = token_ilks[ilk];
+      const ilk_clipDeploy = ilk_config.clipDeploy || {};
+      const ilk_name =  web3.utils.asciiToHex(token_name + '-' + ilk);
+
+      if (ilk_config.clipDeploy !== undefined) {
+        const chip = units(ilk_clipDeploy.chip, 16);
+        await file(MCD_CLIP_[token_name][ilk], 'chip', chip);
+      }
+    }
+  }
+
+  // SET ILKS TIP
+
+  console.log('Configuring ILK Tips...');
+  for (const token_name in config_tokens) {
+    const token_config = config_tokens[token_name];
+    const token_ilks = token_config.ilks || {};
+
+    for (const ilk in token_ilks) {
+      const ilk_config = token_ilks[ilk];
+      const ilk_clipDeploy = ilk_config.clipDeploy || {};
+      const ilk_name =  web3.utils.asciiToHex(token_name + '-' + ilk);
+
+      if (ilk_config.clipDeploy !== undefined) {
+        const tip = units(ilk_clipDeploy.tip, 45);
+        await file(MCD_CLIP_[token_name][ilk], 'tip', tip);
+      }
+    }
+  }
+
+  // SET ILKS BUF
+
+  console.log('Configuring ILK Bufs...');
+  for (const token_name in config_tokens) {
+    const token_config = config_tokens[token_name];
+    const token_ilks = token_config.ilks || {};
+
+    for (const ilk in token_ilks) {
+      const ilk_config = token_ilks[ilk];
+      const ilk_clipDeploy = ilk_config.clipDeploy || {};
+      const ilk_name =  web3.utils.asciiToHex(token_name + '-' + ilk);
+
+      if (ilk_config.clipDeploy !== undefined) {
+        const buf = units(ilk_clipDeploy.buf, 25);
+        await file(MCD_CLIP_[token_name][ilk], 'buf', buf);
+      }
+    }
+  }
+
+  // SET ILKS TAIL
+
+  console.log('Configuring ILK Tails...');
+  for (const token_name in config_tokens) {
+    const token_config = config_tokens[token_name];
+    const token_ilks = token_config.ilks || {};
+
+    for (const ilk in token_ilks) {
+      const ilk_config = token_ilks[ilk];
+      const ilk_clipDeploy = ilk_config.clipDeploy || {};
+      const ilk_name =  web3.utils.asciiToHex(token_name + '-' + ilk);
+
+      if (ilk_config.clipDeploy !== undefined) {
+        const tail = units(ilk_clipDeploy.tail, 0);
+        await file(MCD_CLIP_[token_name][ilk], 'tail', tail);
+      }
+    }
+  }
+
+  // SET ILKS CUSP
+
+  console.log('Configuring ILK Cusps...');
+  for (const token_name in config_tokens) {
+    const token_config = config_tokens[token_name];
+    const token_ilks = token_config.ilks || {};
+
+    for (const ilk in token_ilks) {
+      const ilk_config = token_ilks[ilk];
+      const ilk_clipDeploy = ilk_config.clipDeploy || {};
+      const ilk_name =  web3.utils.asciiToHex(token_name + '-' + ilk);
+
+      if (ilk_config.clipDeploy !== undefined) {
+        const cusp = units(ilk_clipDeploy.cusp, 25);
+        await file(MCD_CLIP_[token_name][ilk], 'cusp', cusp);
+      }
+    }
+  }
+
   // SET ILKS OSM-MOM
 
   console.log('Configuring OSM Mom...');
