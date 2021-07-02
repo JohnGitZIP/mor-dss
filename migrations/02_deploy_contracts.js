@@ -48,7 +48,6 @@ const DssFlash =  artifacts.require('DssFlash');
 
 const NOW = Math.floor(Date.now() / 1000);
 
-const ESM_MIN = '50000000000000000000000'; // review this
 const ETH = '0x2170Ed0880ac9A755fd29B2688956BD959F933F8'; // bscmain
 const BAT = '0x101d82428437127bF1608F699CD651e6Abf9766E'; // bscmain
 const vUSDC = '0xecA88125a5ADbe82614ffC12D0DB554E2e2867C8'; // bscmain (< 18 decimals)
@@ -70,6 +69,8 @@ module.exports = async (deployer, network, [account]) => {
   const web3 = DssDeploy.interfaceAdapter.web3;
 
   const chainId = await web3.eth.net.getId();
+
+  const config = require('./config/freshtest.json');
 
   // deploys RestrictedTokenFaucet
   console.log('Publishing Token Faucet...');
@@ -276,7 +277,7 @@ module.exports = async (deployer, network, [account]) => {
   console.log('MCD_PAUSE_PROXY=' + MCD_PAUSE_PROXY);
 
   console.log('Deploying ESM...');
-  await dssDeploy.deployESM(MCD_GOV, ESM_MIN);
+  await dssDeploy.deployESM(MCD_GOV, units(config.esm_min, 18));
   const MCD_ESM = await dssDeploy.esm();
   console.log('MCD_ESM=' + MCD_ESM);
 
@@ -519,33 +520,33 @@ module.exports = async (deployer, network, [account]) => {
   await dssFlash.deny(account);
 
   console.log('Configuring Core...');
-  await file(MCD_VAT, 'Line', units('1000000', 45));
-  await file(MCD_VOW, 'wait', '0');
-  await file(MCD_VOW, 'bump', units('0.1', 45));
-  await file(MCD_VOW, 'dump', units('0.01', 18));
-  await file(MCD_VOW, 'sump', units('0.1', 45));
-  await file(MCD_VOW, 'hump', units('0', 45));
-  await file(MCD_CAT, 'box', units('10000', 45));
-  await file(MCD_DOG, 'Hole', units('10000', 45));
-  await file(MCD_JUG, 'base', units(Math.exp(Math.log('0' / 100 + 1) / (60 * 60 * 24 * 365)).toFixed(27), 27)); // review
-  await dripAndFile(MCD_POT, 'dsr', units(Math.exp(Math.log('1' / 100 + 1) / (60 * 60 * 24 * 365)).toFixed(27), 27)); // review
-  await file(MCD_END, 'wait', '0');
-  await file(MCD_FLAP, 'beg', units('5', 16) + units('100', 16));
-  await file(MCD_FLAP, 'ttl', '10800');
-  await file(MCD_FLAP, 'tau', '172800');
-  await file(MCD_FLOP, 'beg', units('5', 16) + units('100', 16));
-  await file(MCD_FLOP, 'pad', units('50', 16) + units('100', 16));
-  await file(MCD_FLOP, 'ttl', '10800');
-  await file(MCD_FLOP, 'tau', '172800');
-  await file(MCD_FLASH, 'max', units('500000000', 18));
-  await file(MCD_FLASH, 'toll', units('0.05', 16));
+  await file(MCD_VAT, 'Line', units(config.vat_line, 45));
+  await file(MCD_VOW, 'wait', config.vow_wait);
+  await file(MCD_VOW, 'bump', units(config.vow_bump, 45));
+  await file(MCD_VOW, 'dump', units(config.vow_dump, 18));
+  await file(MCD_VOW, 'sump', units(config.vow_sump, 45));
+  await file(MCD_VOW, 'hump', units(config.vow_hump, 45));
+  await file(MCD_CAT, 'box', units(config.cat_box, 45));
+  await file(MCD_DOG, 'Hole', units(config.dog_hole, 45));
+  await file(MCD_JUG, 'base', units(Math.exp(Math.log(config.jug_base / 100 + 1) / (60 * 60 * 24 * 365)).toFixed(27), 27)); // review
+  await dripAndFile(MCD_POT, 'dsr', units(Math.exp(Math.log(config.pot_dsr / 100 + 1) / (60 * 60 * 24 * 365)).toFixed(27), 27)); // review
+  await file(MCD_END, 'wait', config.end_wait);
+  await file(MCD_FLAP, 'beg', units(config.flap_beg, 16) + units('100', 16));
+  await file(MCD_FLAP, 'ttl', config.flap_ttl);
+  await file(MCD_FLAP, 'tau', config.flap_tau);
+  await file(MCD_FLOP, 'beg', units(config.flop_beg, 16) + units('100', 16));
+  await file(MCD_FLOP, 'pad', units(config.flop_pad, 16) + units('100', 16));
+  await file(MCD_FLOP, 'ttl', config.flop_ttl);
+  await file(MCD_FLOP, 'tau', config.flop_tau);
+  await file(MCD_FLASH, 'max', units(config.flash_max, 18));
+  await file(MCD_FLASH, 'toll', units(config.flash_toll, 16));
 
   console.log('Configuring OSM Mom...');
   await osmMom.setAuthority(MCD_ADM_CHIEF);
   await osmMom.setOwner(MCD_PAUSE_PROXY);
 
   console.log('Configuring Authority & Delay...');
-  await setAuthorityAndDelay(MCD_ADM_CHIEF, '0');
+  await setAuthorityAndDelay(MCD_ADM_CHIEF, config.pauseDelay);
 
   // PSM
 
