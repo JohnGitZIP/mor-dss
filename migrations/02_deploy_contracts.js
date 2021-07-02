@@ -384,7 +384,7 @@ module.exports = async (deployer, network, [account]) => {
         const ilk_config = token_ilks[ilk];
         const ilk_flipDeploy = ilk_config.flipDeploy || {};
         const ilk_clipDeploy = ilk_config.clipDeploy || {};
-        const ilk_name =  web3.utils.asciiToHex(token_name + '-' + ilk);
+        const ilk_name = web3.utils.asciiToHex(token_name + '-' + ilk);
 
         await deployer.deploy(GemJoin, MCD_VAT, ilk_name, T_[token_name], ...extraParams);
         const gemJoin = await GemJoin.deployed();
@@ -392,7 +392,7 @@ module.exports = async (deployer, network, [account]) => {
         console.log('MCD_JOIN_' + token_name + '_' + ilk + '=' + MCD_JOIN_[token_name][ilk]);
 
         if (ilk_config.flipDeploy !== undefined) {
-          await dssDeploy.deployCollateralFlip(ilk_name, MCD_JOIN_[token_name][ilk], PIP_[token_name]); // review PIP
+          await dssDeploy.deployCollateralFlip(ilk_name, MCD_JOIN_[token_name][ilk], PIP_[token_name]);
           const { flip } = await dssDeploy.ilks(ilk_name);
           MCD_FLIP_[token_name][ilk] = flip;
           console.log('MCD_FLIP_' + token_name + '_' + ilk + '=' + MCD_FLIP_[token_name][ilk]);
@@ -413,57 +413,13 @@ module.exports = async (deployer, network, [account]) => {
           console.log('MCD_CLIP_CALC_' + token_name + '_' + ilk + '=' + MCD_CLIP_CALC_[token_name][ilk]);
           await calc.rely(MCD_PAUSE_PROXY);
           await calc.deny(account);
-          await dssDeploy.deployCollateralClip(ilk_name, MCD_JOIN_[token_name][ilk], PIP_[token_name], MCD_CLIP_CALC_[token_name][ilk]); // review PIP
+          await dssDeploy.deployCollateralClip(ilk_name, MCD_JOIN_[token_name][ilk], PIP_[token_name], MCD_CLIP_CALC_[token_name][ilk]);
           const { clip } = await dssDeploy.ilks(ilk_name);
           MCD_CLIP_[token_name][ilk] = clip;
           console.log('MCD_CLIP_' + token_name + '_' + ilk + '=' + MCD_CLIP_[token_name][ilk]);
         }
       }
     }
-  }
-
-  // review compare creation steps
-  console.log('Deploying Collateral Flip #1...');
-  {
-    await deployer.deploy(Median);
-    const median = await Median.deployed();
-    await deployer.deploy(OSM, median.address);
-    const osm = await OSM.deployed();
-    await median.setBar(MEDIAN_BAR);
-    await median.lift(MEDIAN_ADDRESS_LIST);
-    await median.kiss(osm.address);
-    await median.rely(MCD_PAUSE_PROXY);
-    await median.deny(account);
-    await osm.kiss(MCD_END);
-    await osm.kiss(MCD_SPOT);
-    await osm.rely(MCD_PAUSE_PROXY);
-    await osm.deny(account);
-    await deployer.deploy(GemJoin, MCD_VAT, web3.utils.asciiToHex('ETH-D'), ETH);
-    const gemJoin = await GemJoin.deployed();
-    await gemJoin.rely(MCD_PAUSE_PROXY);
-    await gemJoin.deny(account);
-    await dssDeploy.deployCollateralFlip(web3.utils.asciiToHex('ETH-D'), gemJoin.address, osm.address);
-  }
-  console.log('Deploying Collateral Flip #2...');
-  {
-    await deployer.deploy(Median);
-    const median = await Median.deployed();
-    await deployer.deploy(OSM, median.address);
-    const osm = await OSM.deployed();
-    await median.setBar(MEDIAN_BAR);
-    await median.lift(MEDIAN_ADDRESS_LIST);
-    await median.kiss(osm.address);
-    await median.rely(MCD_PAUSE_PROXY);
-    await median.deny(account);
-    await osm.kiss(MCD_END);
-    await osm.kiss(MCD_SPOT);
-    await osm.rely(MCD_PAUSE_PROXY);
-    await osm.deny(account);
-    await deployer.deploy(GemJoin, MCD_VAT, web3.utils.asciiToHex('BAT-A'), BAT);
-    const gemJoin = await GemJoin.deployed();
-    await gemJoin.rely(MCD_PAUSE_PROXY);
-    await gemJoin.deny(account);
-    await dssDeploy.deployCollateralFlip(web3.utils.asciiToHex('BAT-A'), gemJoin.address, osm.address);
   }
 
   // PROXY ACTIONS
@@ -548,7 +504,7 @@ module.exports = async (deployer, network, [account]) => {
 
     for (const ilk in token_ilks) {
       const ilk_config = token_ilks[ilk];
-      const ilk_name =  web3.utils.asciiToHex(token_name + '-' + ilk);
+      const ilk_name = web3.utils.asciiToHex(token_name + '-' + ilk);
 
       const gemJoin = await GemJoin.at(MCD_JOIN_[token_name][ilk]);
       await gemJoin.rely(MCD_PAUSE_PROXY);
@@ -875,7 +831,7 @@ module.exports = async (deployer, network, [account]) => {
 
     for (const ilk in token_ilks) {
       const ilk_config = token_ilks[ilk];
-      const ilk_name =  web3.utils.asciiToHex(token_name + '-' + ilk);
+      const ilk_name = web3.utils.asciiToHex(token_name + '-' + ilk);
 
       const mat = units(ilk_config.mat, 25);
       await filex(MCD_SPOT, ilk_name, 'mat', mat);
@@ -891,7 +847,7 @@ module.exports = async (deployer, network, [account]) => {
 
     for (const ilk in token_ilks) {
       const ilk_config = token_ilks[ilk];
-      const ilk_name =  web3.utils.asciiToHex(token_name + '-' + ilk);
+      const ilk_name = web3.utils.asciiToHex(token_name + '-' + ilk);
 
       const line = units(ilk_config.line, 45);
       const autoLine = units(ilk_config.autoLine, 45);
@@ -918,7 +874,7 @@ module.exports = async (deployer, network, [account]) => {
 
     for (const ilk in token_ilks) {
       const ilk_config = token_ilks[ilk];
-      const ilk_name =  web3.utils.asciiToHex(token_name + '-' + ilk);
+      const ilk_name = web3.utils.asciiToHex(token_name + '-' + ilk);
 
       const dust = units(ilk_config.dust, 45);
       await filex(MCD_VAT, ilk_name, 'dust', dust);
@@ -934,7 +890,7 @@ module.exports = async (deployer, network, [account]) => {
 
     for (const ilk in token_ilks) {
       const ilk_config = token_ilks[ilk];
-      const ilk_name =  web3.utils.asciiToHex(token_name + '-' + ilk);
+      const ilk_name = web3.utils.asciiToHex(token_name + '-' + ilk);
 
       const duty = units(Math.exp(Math.log(Number(ilk_config.dust) / 100 + 1) / (60 * 60 * 24 * 365)).toFixed(27), 27); // review
       await dripAndFilex(MCD_JUG, ilk_name, 'duty', duty);
@@ -957,7 +913,7 @@ module.exports = async (deployer, network, [account]) => {
     }
     if (whitelisted) {
       for (const ilk in token_ilks) {
-        const ilk_name =  web3.utils.asciiToHex(token_name + '-' + ilk);
+        const ilk_name = web3.utils.asciiToHex(token_name + '-' + ilk);
 
         await spot.poke(ilk_name);
       }
@@ -975,7 +931,7 @@ module.exports = async (deployer, network, [account]) => {
       const ilk_config = token_ilks[ilk];
       const ilk_flipDeploy = ilk_config.flipDeploy || {};
       const ilk_clipDeploy = ilk_config.clipDeploy || {};
-      const ilk_name =  web3.utils.asciiToHex(token_name + '-' + ilk);
+      const ilk_name = web3.utils.asciiToHex(token_name + '-' + ilk);
 
       if (ilk_config.flipDeploy !== undefined) {
         const chop = units(ilk_flipDeploy.chop, 16) + units('100', 16);
@@ -1000,7 +956,7 @@ module.exports = async (deployer, network, [account]) => {
     for (const ilk in token_ilks) {
       const ilk_config = token_ilks[ilk];
       const ilk_flipDeploy = ilk_config.flipDeploy || {};
-      const ilk_name =  web3.utils.asciiToHex(token_name + '-' + ilk);
+      const ilk_name = web3.utils.asciiToHex(token_name + '-' + ilk);
 
       if (ilk_config.flipDeploy !== undefined) {
         const dunk = units(ilk_flipDeploy.dunk, 45);
@@ -1073,7 +1029,7 @@ module.exports = async (deployer, network, [account]) => {
     for (const ilk in token_ilks) {
       const ilk_config = token_ilks[ilk];
       const ilk_clipDeploy = ilk_config.clipDeploy || {};
-      const ilk_name =  web3.utils.asciiToHex(token_name + '-' + ilk);
+      const ilk_name = web3.utils.asciiToHex(token_name + '-' + ilk);
 
       if (ilk_config.clipDeploy !== undefined) {
         const hole = units(ilk_clipDeploy.hole, 45);
@@ -1182,7 +1138,7 @@ module.exports = async (deployer, network, [account]) => {
     for (const ilk in token_ilks) {
       const ilk_config = token_ilks[ilk];
       const ilk_clipDeploy = ilk_config.clipDeploy || {};
-      const ilk_name =  web3.utils.asciiToHex(token_name + '-' + ilk);
+      const ilk_name = web3.utils.asciiToHex(token_name + '-' + ilk);
 
       if (ilk_config.clipDeploy !== undefined) {
         const calc_config = ilk_clipDeploy.calc || {};
@@ -1244,19 +1200,21 @@ module.exports = async (deployer, network, [account]) => {
           const median = await Median.at(VAL_[token_name]);
           await median.kiss(PIP_[token_name]);
         }
-        await osm.kiss(MCD_SPOT);
-        await osm.kiss(MCD_END);
+        await osm.methods['kiss(address)'](MCD_SPOT);
+        await osm.methods['kiss(address)'](MCD_END);
         for (const ilk in token_ilks) {
           const ilk_config = token_ilks[ilk];
           const ilk_clipDeploy = ilk_config.clipDeploy || {};
-          const ilk_name =  web3.utils.asciiToHex(token_name + '-' + ilk);
+          const ilk_name = web3.utils.asciiToHex(token_name + '-' + ilk);
 
           if (ilk_config.clipDeploy !== undefined) {
-            await osm.kiss(MCD_CLIP_[token][ilk]);
-            await osm.kiss(CLIPPER_MOM);
+            await osm.methods['kiss(address)'](MCD_CLIP_[token][ilk]);
+            await osm.methods['kiss(address)'](CLIPPER_MOM);
           }
           await filex(MCD_SPOT, ilk_name, 'pip', PIP_[token_name]);
         }
+        await osm.rely(MCD_PAUSE_PROXY);
+        await osm.deny(account);
       }
     }
   }
@@ -1277,7 +1235,7 @@ module.exports = async (deployer, network, [account]) => {
     }
     if (src !== '') {
       for (const ilk in token_ilks) {
-        const ilk_name =  web3.utils.asciiToHex(token_name + '-' + ilk);
+        const ilk_name = web3.utils.asciiToHex(token_name + '-' + ilk);
 
         await osmMom.setOsm(ilk_name, PIP_[token_name]);
         const wards = await osm.wards(account);
