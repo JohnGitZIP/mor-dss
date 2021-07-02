@@ -1192,7 +1192,7 @@ module.exports = async (deployer, network, [account]) => {
           await file(MCD_CLIP_CALC_[token_name][ilk], 'tau', tau);
         }
         if (calc_config.type === 'StairstepExponentialDecrease' || calc_config.type === 'ExponentialDecrease') {
-          const cut = units(Number(calc_config.cut) / 100, 27);
+          const cut = units((Number(calc_config.cut) / 100).toFixed(27), 27);
           await file(MCD_CLIP_CALC_[token_name][ilk], 'cut', cut);
         }
         if (calc_config.type === 'StairstepExponentialDecrease') {
@@ -1224,11 +1224,28 @@ module.exports = async (deployer, network, [account]) => {
     }
   }
 
+  // SET ILKS OSM
+
+  // review
+
   // SET ILKS OSM-MOM
 
+  // review
   console.log('Configuring OSM Mom...');
   await osmMom.setAuthority(MCD_ADM_CHIEF);
   await osmMom.setOwner(MCD_PAUSE_PROXY);
+
+  // SET ILKS FLIPPER-MOM
+
+  // review
+  await flipperMom.setAuthority(MCD_ADM_CHIEF);
+  await flipperMom.setOwner(MCD_PAUSE_PROXY);
+
+  // SET ILKS CLIPPER-MOM
+
+  // review
+  await clipperMom.setAuthority(MCD_ADM_CHIEF);
+  await clipperMom.setOwner(MCD_PAUSE_PROXY);
 
   // SET PAUSE AUTH DELAY
 
@@ -1239,6 +1256,7 @@ module.exports = async (deployer, network, [account]) => {
 
   // PSM
 
+  // review PSM deploy
   console.log('Deploying AuthGemJoin5...');
   await deployer.deploy(AuthGemJoin5, MCD_VAT, web3.utils.asciiToHex('PSM-USDC-A'), vUSDC);
   const authGemJoin5 = await AuthGemJoin5.deployed();
