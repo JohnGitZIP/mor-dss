@@ -620,6 +620,23 @@ module.exports = async (deployer, network, [account]) => {
     return await proxyDeployer.methods['execute(address,bytes)'](PROXY_PAUSE_ACTIONS, calldata);
   }
 
+  async function filex(who, ilk, what, data) {
+    const jsonInterface = {
+      type: 'function',
+      name: 'file',
+      inputs: [
+        { type: 'address', name: 'pause' },
+        { type: 'address', name: 'actions' },
+        { type: 'address', name: 'who' },
+        { type: 'bytes32', name: 'ilk' },
+        { type: 'bytes32', name: 'what' },
+        { type: 'uint256', name: 'data' },
+      ],
+    };
+    const calldata = web3.eth.abi.encodeFunctionCall(jsonInterface, [MCD_PAUSE, MCD_GOV_ACTIONS, who, ilk, web3.utils.asciiToHex(what), data]);
+    return await proxyDeployer.methods['execute(address,bytes)'](PROXY_PAUSE_ACTIONS, calldata);
+  }
+
   async function dripAndFile(who, what, data) {
     const jsonInterface = {
       type: 'function',
@@ -764,6 +781,69 @@ module.exports = async (deployer, network, [account]) => {
   if (Number(config.flash_toll) >= 0) {
     await file(MCD_FLASH, 'toll', units(config.flash_toll, 16));
   }
+
+  // SET ILKS PRICE
+
+  console.log('Configuring ILK Prices...');
+  for (const token_name in config_tokens) {
+    const token_config = config_tokens[token_name];
+    const token_import = token_config.import || {};
+    const token_pipDeploy = token_config.pipDeploy || {};
+
+    if (token_import.pip === undefined) {
+      if (token_pipDeploy.type == 'value') {
+        const dsValue = await DSValue.at(VAL_[token_name]);
+        await dsValue.poke(units(token_pipDeploy.price, 18));
+      }
+    }
+  }
+
+  // SET ILKS PIP WHITELIST
+
+  // review
+
+  // SET ILKS MAT
+
+  console.log('Configuring ILK Mats...');
+  for (const token_name in config_tokens) {
+    const token_config = config_tokens[token_name];
+    const token_ilks = token_config.ilks || {};
+
+    for (const ilk in token_ilks) {
+      const ilk_config = token_ilks[ilk];
+      const ilk_name =  web3.utils.asciiToHex(token_name + '-' + ilk);
+
+      const mat = units(ilk_config.mat, 25);
+      await filex(MCD_SPOT, ilk_name, 'mat', mat);
+    }
+  }
+
+  // SET ILKS LINE
+
+  console.log('Configuring ILK Lines...');
+  for (const token_name in config_tokens) {
+    const token_config = config_tokens[token_name];
+    const token_ilks = token_config.ilks || {};
+
+    for (const ilk in token_ilks) {
+      const ilk_config = token_ilks[ilk];
+      const ilk_name =  web3.utils.asciiToHex(token_name + '-' + ilk);
+
+      const line = units(ilk_config.line, 45);
+      const autoLine = units(ilk_config.autoLine, 45);
+      if (line > 0n && autoLine === 0n) {
+        await filex(MCD_VAT, ilk_name, 'line', line);
+      }
+      if (autoLine > 0n) {
+        const autoLineGap = units(ilk_config.autoLineGap, 45);
+        const autoLineTtl = units(ilk_config.autoLineTtl, 0);
+        await dssAutoLine.setIlk(ilk_name, autoLine, autoLineGap, autoLineTtl);
+        await dssAutoLine.exec(ilk_name);
+      }
+    }
+  }
+  await dssAutoLine.rely(MCD_PAUSE_PROXY);
+  await dssAutoLine.deny(account);
 
   // SET ILKS OSM-MOM
 
