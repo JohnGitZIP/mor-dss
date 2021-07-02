@@ -37,6 +37,7 @@ const GetCdps = artifacts.require('GetCdps');
 const DsrManager = artifacts.require('DsrManager');
 const OsmMom = artifacts.require('OsmMom');
 const FlipperMom = artifacts.require('FlipperMom');
+const Clipper = artifacts.require('Clipper');
 const ClipperMom = artifacts.require('ClipperMom');
 const IlkRegistry = artifacts.require('IlkRegistry');
 const GovActions = artifacts.require('GovActions');
@@ -959,6 +960,32 @@ module.exports = async (deployer, network, [account]) => {
         const ilk_name =  web3.utils.asciiToHex(token_name + '-' + ilk);
 
         await spot.poke(ilk_name);
+      }
+    }
+  }
+
+  // SET ILKS CHOP
+
+  console.log('Configuring ILK Chops...');
+  for (const token_name in config_tokens) {
+    const token_config = config_tokens[token_name];
+    const token_ilks = token_config.ilks || {};
+
+    for (const ilk in token_ilks) {
+      const ilk_config = token_ilks[ilk];
+      const ilk_flipDeploy = ilk_config.flipDeploy || {};
+      const ilk_clipDeploy = ilk_config.clipDeploy || {};
+      const ilk_name =  web3.utils.asciiToHex(token_name + '-' + ilk);
+
+      if (ilk_config.flipDeploy !== undefined) {
+        const chop = units(ilk_flipDeploy.chop, 16) + units('100', 16);
+        await filex(MCD_CAT, ilk_name, 'chop', chop);
+      }
+      if (ilk_config.clipDeploy !== undefined) {
+        const chop = units(ilk_clipDeploy.chop, 16) + units('100', 16);
+        await filex(MCD_DOG, ilk_name, 'chop', chop);
+        const clipper = await Clipper.at(MCD_CLIP_[token_name][ilk]);
+        await clipper.upchost();
       }
     }
   }
