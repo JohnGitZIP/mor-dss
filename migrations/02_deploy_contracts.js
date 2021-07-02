@@ -722,64 +722,84 @@ module.exports = async (deployer, network, [account]) => {
 
   console.log('Configuring Core...');
   if (Number(config.vat_line) > 0) {
-    await file(MCD_VAT, 'Line', units(config.vat_line, 45));
+    const vat_line = units(config.vat_line, 45);
+    await file(MCD_VAT, 'Line', vat_line);
   }
   if (Number(config.vow_wait) >= 0) {
-    await file(MCD_VOW, 'wait', units(config.vow_wait, 0));
+    const vow_wait = units(config.vow_wait, 0);
+    await file(MCD_VOW, 'wait', vow_wait);
   }
   if (Number(config.vow_bump) >= 0) {
-    await file(MCD_VOW, 'bump', units(config.vow_bump, 45));
+    const vow_bump = units(config.vow_bump, 45);
+    await file(MCD_VOW, 'bump', vow_bump);
   }
   if (Number(config.vow_dump) >= 0) {
-    await file(MCD_VOW, 'dump', units(config.vow_dump, 18));
+    const vow_dump = units(config.vow_dump, 18);
+    await file(MCD_VOW, 'dump', vow_dump);
   }
   if (Number(config.vow_sump) >= 0) {
-    await file(MCD_VOW, 'sump', units(config.vow_sump, 45));
+    const vow_sump = units(config.vow_sump, 45);
+    await file(MCD_VOW, 'sump', vow_sump);
   }
   if (Number(config.vow_hump) >= 0) {
-    await file(MCD_VOW, 'hump', units(config.vow_hump, 45));
+    const vow_hump = units(config.vow_hump, 45);
+    await file(MCD_VOW, 'hump', vow_hump);
   }
   if (Number(config.cat_box) > 0) {
-    await file(MCD_CAT, 'box', units(config.cat_box, 45));
+    const cat_box = units(config.cat_box, 45);
+    await file(MCD_CAT, 'box', cat_box);
   }
   if (Number(config.dog_hole) > 0) {
-    await file(MCD_DOG, 'Hole', units(config.dog_hole, 45));
+    const dog_hole = units(config.dog_hole, 45);
+    await file(MCD_DOG, 'Hole', dog_hole);
   }
   if (Number(config.jug_base) >= 0) {
-    await file(MCD_JUG, 'base', units(Math.exp(Math.log(Number(config.jug_base) / 100 + 1) / (60 * 60 * 24 * 365)).toFixed(27), 27) - 10n ** 27n); // review
+    const jug_base = units(Math.exp(Math.log(Number(config.jug_base) / 100 + 1) / (60 * 60 * 24 * 365)).toFixed(27), 27) - 10n ** 27n; // review
+    await file(MCD_JUG, 'base', jug_base);
   }
   if (Number(config.pot_dsr) >= 0) {
-    await dripAndFile(MCD_POT, 'dsr', units(Math.exp(Math.log(Number(config.pot_dsr) / 100 + 1) / (60 * 60 * 24 * 365)).toFixed(27), 27)); // review
+    const pot_dsr = units(Math.exp(Math.log(Number(config.pot_dsr) / 100 + 1) / (60 * 60 * 24 * 365)).toFixed(27), 27); // review
+    await dripAndFile(MCD_POT, 'dsr', pot_dsr);
   }
   if (Number(config.end_wait) >= 0) {
-    await file(MCD_END, 'wait', units(config.end_wait, 0));
+    const end_wait = units(config.end_wait, 0);
+    await file(MCD_END, 'wait', end_wait);
   }
   if (Number(config.flap_beg) >= 0) {
-    await file(MCD_FLAP, 'beg', units(config.flap_beg, 16) + units('100', 16));
+    const flap_beg = units(config.flap_beg, 16) + units('100', 16);
+    await file(MCD_FLAP, 'beg', flap_beg);
   }
   if (Number(config.flap_ttl) >= 0) {
-    await file(MCD_FLAP, 'ttl', units(config.flap_ttl, 0));
+    const flap_ttl = units(config.flap_ttl, 0);
+    await file(MCD_FLAP, 'ttl', flap_ttl);
   }
   if (Number(config.flap_tau) >= 0) {
-    await file(MCD_FLAP, 'tau', units(config.flap_tau, 0));
+    const flap_tau = units(config.flap_tau, 0);
+    await file(MCD_FLAP, 'tau', flap_tau);
   }
   if (Number(config.flop_beg) >= 0) {
-    await file(MCD_FLOP, 'beg', units(config.flop_beg, 16) + units('100', 16));
+    const flop_beg = units(config.flop_beg, 16) + units('100', 16);
+    await file(MCD_FLOP, 'beg', flop_beg);
   }
   if (Number(config.flop_pad) >= 0) {
-    await file(MCD_FLOP, 'pad', units(config.flop_pad, 16) + units('100', 16));
+    const flop_pad = units(config.flop_pad, 16) + units('100', 16);
+    await file(MCD_FLOP, 'pad', flop_pad);
   }
   if (Number(config.flop_ttl) >= 0) {
-    await file(MCD_FLOP, 'ttl', units(config.flop_ttl, 0));
+    const flop_ttl = units(config.flop_ttl, 0);
+    await file(MCD_FLOP, 'ttl', flop_ttl);
   }
   if (Number(config.flop_tau) >= 0) {
-    await file(MCD_FLOP, 'tau', units(config.flop_tau, 0));
+    const flop_tau = units(config.flop_tau, 0);
+    await file(MCD_FLOP, 'tau', flop_tau);
   }
   if (Number(config.flash_max) >= 0) {
-    await file(MCD_FLASH, 'max', units(config.flash_max, 18));
+    const flash_max = units(config.flash_max, 18);
+    await file(MCD_FLASH, 'max', flash_max);
   }
   if (Number(config.flash_toll) >= 0) {
-    await file(MCD_FLASH, 'toll', units(config.flash_toll, 16));
+    const flash_toll = units(config.flash_toll, 16);
+    await file(MCD_FLASH, 'toll', flash_toll);
   }
 
   // SET ILKS PRICE
@@ -792,8 +812,9 @@ module.exports = async (deployer, network, [account]) => {
 
     if (token_import.pip === undefined) {
       if (token_pipDeploy.type == 'value') {
+        const price = units(token_pipDeploy.price, 18);
         const dsValue = await DSValue.at(VAL_[token_name]);
-        await dsValue.poke(units(token_pipDeploy.price, 18));
+        await dsValue.poke(web3.utils.numberToHex(price));
       }
     }
   }
@@ -844,6 +865,38 @@ module.exports = async (deployer, network, [account]) => {
   }
   await dssAutoLine.rely(MCD_PAUSE_PROXY);
   await dssAutoLine.deny(account);
+
+  // SET ILKS DUST
+
+  console.log('Configuring ILK Dusts...');
+  for (const token_name in config_tokens) {
+    const token_config = config_tokens[token_name];
+    const token_ilks = token_config.ilks || {};
+
+    for (const ilk in token_ilks) {
+      const ilk_config = token_ilks[ilk];
+      const ilk_name =  web3.utils.asciiToHex(token_name + '-' + ilk);
+
+      const dust = units(ilk_config.dust, 45);
+      await filex(MCD_VAT, ilk_name, 'dust', dust);
+    }
+  }
+
+  // SET ILKS DUTY
+
+  console.log('Configuring ILK Duties...');
+  for (const token_name in config_tokens) {
+    const token_config = config_tokens[token_name];
+    const token_ilks = token_config.ilks || {};
+
+    for (const ilk in token_ilks) {
+      const ilk_config = token_ilks[ilk];
+      const ilk_name =  web3.utils.asciiToHex(token_name + '-' + ilk);
+
+      const duty = units(Math.exp(Math.log(Number(ilk_config.dust) / 100 + 1) / (60 * 60 * 24 * 365)).toFixed(27), 27); // review
+      await dripAndFilex(MCD_JUG, ilk_name, 'duty', duty);
+    }
+  }
 
   // SET ILKS OSM-MOM
 
