@@ -1022,7 +1022,7 @@ module.exports = async (deployer, network, [account]) => {
 
       if (ilk_config.flipDeploy !== undefined) {
         const beg = units(ilk_flipDeploy.beg, 16) + units('100', 16);
-        await filex(MCD_FLIP_[token_name][ilk], 'beg', beg);
+        await file(MCD_FLIP_[token_name][ilk], 'beg', beg);
       }
     }
   }
