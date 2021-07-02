@@ -92,7 +92,7 @@ module.exports = async (deployer, network, [account]) => {
     VAL_[token_name] = token_import.pip;
     if (token_import.pip === undefined) {
       if (token_pipDeploy.type == 'median') {
-        throw new Error('Unimplemented');
+        throw new Error('Unimplemented'); // review
       }
       if (token_pipDeploy.type == 'value') {
         await deployer.deploy(DSValue);
