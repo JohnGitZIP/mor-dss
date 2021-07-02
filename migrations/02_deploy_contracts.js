@@ -82,10 +82,12 @@ module.exports = async (deployer, network, [account]) => {
   // FEEDS
 
   const VAL_ = {};
+  const PIP_ = {};
   for (const token_name in config_tokens) {
     const token_config = config_tokens[token_name];
     const token_import = token_config.import || {};
     const token_pipDeploy = token_config.pipDeploy || {};
+
     VAL_[token_name] = token_import.pip;
     if (token_import.pip === undefined) {
       if (token_pipDeploy.type == 'median') {
@@ -98,6 +100,7 @@ module.exports = async (deployer, network, [account]) => {
         console.log('VAL_' + token_name + '=' + VAL_[token_name]);
       }
     }
+    PIP_[token_name] = VAL_[token_name];
   }
 
   // FAUCET
@@ -336,6 +339,88 @@ module.exports = async (deployer, network, [account]) => {
 
   // DEPLOY COLLATERALS
 
+  const T_ = {};
+  const MCD_JOIN_ = {};
+  const MCD_FLIP_ = {};
+  const MCD_CLIP_ = {};
+  const MCD_CLIP_CALC_ = {};
+  for (const token_name in config_tokens) {
+    const token_config = config_tokens[token_name];
+    const token_import = token_config.import || {};
+    const token_gemDeploy = token_config.gemDeploy || {};
+    const token_joinDeploy = token_config.joinDeploy || {};
+    const token_ilks = token_config.ilks || {};
+
+    T_[token_name] = token_import.gem;
+    if (token_import.gem === undefined) {
+      const src = token_gemDeploy.src;
+      const params = token_gemDeploy.params;
+      let GemToken;
+      switch (src) {
+      case 'ds-weth/WETH9_': GemToken = artifacts.require('WETH9_'); break;
+      case 'dss-gem-joins/REP': GemToken = artifacts.require('REP'); break;
+      default: throw new Error('Unknown gem: ' + src);
+      }
+      await deployer.deploy(GemToken, ...params);
+      const gemToken = await GemToken.deployed();
+      T_[token_name] = gemToken.address;
+      console.log(token_name + '=' + T_[token_name]);
+    }
+
+    MCD_JOIN_[token_name] = MCD_JOIN_[token_name] || {};
+    MCD_FLIP_[token_name] = MCD_FLIP_[token_name] || {};
+    MCD_CLIP_[token_name] = MCD_CLIP_[token_name] || {};
+    MCD_CLIP_CALC_[token_name] = MCD_CLIP_CALC_[token_name] || {};
+    {
+      const src = token_joinDeploy.src;
+      const extraParams = token_joinDeploy.extraParams;
+      let GemJoin;
+      switch (src) {
+      case 'GemJoin': GemJoin = artifacts.require('GemJoin'); break;
+      default: throw new Error('Unknown join: ' + src);
+      }
+      for (const ilk in token_ilks) {
+        const ilk_config = token_ilks[ilk];
+        const ilk_flipDeploy = ilk_config.flipDeploy || {};
+        const ilk_clipDeploy = ilk_config.clipDeploy || {};
+        const ilk_name =  web3.utils.asciiToHex(token_name + '-' + ilk);
+
+        await deployer.deploy(GemJoin, MCD_VAT, ilk_name, T_[token_name], ...extraParams);
+        const gemJoin = await GemJoin.deployed();
+        MCD_JOIN_[token_name][ilk] = gemJoin.address;
+        console.log('MCD_JOIN_' + token_name + '_' + ilk + '=' + MCD_JOIN_[token_name][ilk]);
+
+        if (ilk_config.flipDeploy !== undefined) {
+          await dssDeploy.deployCollateralFlip(ilk_name, MCD_JOIN_[token_name][ilk], PIP_[token_name]); // review PIP
+          const { flip } = await dssDeploy.ilks(ilk_name);
+          MCD_FLIP_[token_name][ilk] = flip;
+          console.log('MCD_FLIP_' + token_name + '_' + ilk + '=' + MCD_FLIP_[token_name][ilk]);
+        }
+
+        if (ilk_config.clipDeploy !== undefined) {
+          const calc_config = ilk_clipDeploy.calc || {};
+          let Calc;
+          switch (calc_config.type) {
+          case 'LinearDecrease': Calc = artifacts.require('LinearDecrease'); break;
+          case 'StairstepExponentialDecrease': Calc = artifacts.require('StairstepExponentialDecrease'); break;
+          case 'ExponentialDecrease': Calc = artifacts.require('ExponentialDecrease'); break;
+          default: throw new Error('Unknown calc: ' + calc_config.type);
+          }
+          await deployer.deploy(Calc);
+          const calc = await Calc.deployed();
+          MCD_CLIP_CALC_[token_name][ilk] = calc.address;
+          console.log('MCD_CLIP_CALC_' + token_name + '_' + ilk + '=' + MCD_CLIP_CALC_[token_name][ilk]);
+          await calc.rely(MCD_PAUSE_PROXY);
+          await calc.deny(account);
+          await dssDeploy.deployCollateralClip(ilk_name, MCD_JOIN_[token_name][ilk], PIP_[token_name], MCD_CLIP_CALC_[token_name][ilk]); // review PIP
+          const { clip } = await dssDeploy.ilks(ilk_name);
+          MCD_CLIP_[token_name][ilk] = clip;
+          console.log('MCD_CLIP_' + token_name + '_' + ilk + '=' + MCD_CLIP_[token_name][ilk]);
+        }
+      }
+    }
+  }
+
   console.log('Deploying Collateral Flip #1...');
   {
     await deployer.deploy(Median);
@@ -351,11 +436,11 @@ module.exports = async (deployer, network, [account]) => {
     await osm.kiss(MCD_SPOT);
     await osm.rely(MCD_PAUSE_PROXY);
     await osm.deny(account);
-    await deployer.deploy(GemJoin, MCD_VAT, web3.utils.asciiToHex('ETH-A'), ETH);
+    await deployer.deploy(GemJoin, MCD_VAT, web3.utils.asciiToHex('ETH-D'), ETH);
     const gemJoin = await GemJoin.deployed();
     await gemJoin.rely(MCD_PAUSE_PROXY);
     await gemJoin.deny(account);
-    await dssDeploy.deployCollateralFlip(web3.utils.asciiToHex('ETH-A'), gemJoin.address, osm.address);
+    await dssDeploy.deployCollateralFlip(web3.utils.asciiToHex('ETH-D'), gemJoin.address, osm.address);
   }
 
   console.log('Deploying Collateral Flip #2...');
