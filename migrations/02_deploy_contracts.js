@@ -1211,14 +1211,14 @@ module.exports = async (deployer, network, [account]) => {
     const token_import = token_config.import || {};
     const token_gemDeploy = token_config.gemDeploy || {};
 
-    const supply = token_gemDeploy.faucetSupply;
-    if (Number(supply) > 0) {
+    if (Number(token_gemDeploy.faucetSupply) > 0) {
+      const supply = units(token_gemDeploy.faucetSupply, 0);
       const newToken = await DSToken.at(T_[token_name]);
       await newToken.transfer(FAUCET, supply);
     }
     if (config_import.faucet === undefined) {
-      const amount = token_gemDeploy.faucetAmount;
-      if (Number(amount) > 0) {
+      if (Number(token_gemDeploy.faucetAmount) > 0) {
+        const amount = units(token_gemDeploy.faucetAmount, 0);
         await restrictedTokenFaucet.setAmt(T_[token_name], amount);
       }
     }
@@ -1226,7 +1226,40 @@ module.exports = async (deployer, network, [account]) => {
 
   // SET ILKS OSM
 
-  // review
+  console.log('Configuring ILK OSM...');
+  for (const token_name in config_tokens) {
+    const token_config = config_tokens[token_name];
+    const token_import = token_config.import || {};
+    const token_pipDeploy = token_config.pipDeploy || {};
+
+    if (token_import.pip === undefined) {
+      if (Number(token_pipDeploy.osmDelay) > 0) {
+        const osmDelay = units(token_pipDeploy.osmDelay, 0);
+        await deployer.deploy(OSM, VAL_[token_name]);
+        const osm = await OSM.deployed();
+        PIP_[token_name] = osm.address;
+        console.log('PIP_' + token_name + '=' + PIP_[token_name]);
+        await osm.step(osmDelay);
+        if (token_pipDeploy.type == 'median') {
+          const median = await Median.at(VAL_[token_name]);
+          await median.kiss(PIP_[token_name]);
+        }
+        await osm.kiss(MCD_SPOT);
+        await osm.kiss(MCD_END);
+        for (const ilk in token_ilks) {
+          const ilk_config = token_ilks[ilk];
+          const ilk_clipDeploy = ilk_config.clipDeploy || {};
+          const ilk_name =  web3.utils.asciiToHex(token_name + '-' + ilk);
+
+          if (ilk_config.clipDeploy !== undefined) {
+            await osm.kiss(MCD_CLIP_[token][ilk]);
+            await osm.kiss(CLIPPER_MOM);
+          }
+          await filex(MCD_SPOT, ilk_name, 'pip', PIP_[token_name]);
+        }
+      }
+    }
+  }
 
   // SET ILKS OSM-MOM
 
