@@ -1237,6 +1237,7 @@ module.exports = async (deployer, network, [account]) => {
 
   // SET ILKS FLIPPER-MOM
 
+  console.log('Configuring Flipper Mom...');
   for (const token_name in config_tokens) {
     const token_config = config_tokens[token_name];
     const token_ilks = token_config.ilks || {};
@@ -1255,7 +1256,22 @@ module.exports = async (deployer, network, [account]) => {
 
   // SET ILKS CLIPPER-MOM
 
-  // review
+  console.log('Configuring Clipper Mom...');
+  for (const token_name in config_tokens) {
+    const token_config = config_tokens[token_name];
+    const token_ilks = token_config.ilks || {};
+
+    for (const ilk in token_ilks) {
+      const ilk_config = token_ilks[ilk];
+      const ilk_clipDeploy = ilk_config.clipDeploy || {};
+
+      if (ilk_config.clipDeploy !== undefined) {
+        await rely(MCD_CLIP_[token_name][ilk], CLIPPER_MOM);
+        const cm_tolerance = units(ilk_clipDeploy.cm_tolerance, 25);
+        await clipperMom.setPriceTolerance(MCD_CLIP_[token_name][ilk], cm_tolerance);
+      }
+    }
+  }
   await clipperMom.setAuthority(MCD_ADM_CHIEF);
   await clipperMom.setOwner(MCD_PAUSE_PROXY);
 
