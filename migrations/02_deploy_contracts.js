@@ -653,6 +653,23 @@ module.exports = async (deployer, network, [account]) => {
     return await proxyDeployer.methods['execute(address,bytes)'](PROXY_PAUSE_ACTIONS, calldata);
   }
 
+  async function dripAndFilex(who, ilk, what, data) {
+    const jsonInterface = {
+      type: 'function',
+      name: 'dripAndFile',
+      inputs: [
+        { type: 'address', name: 'pause' },
+        { type: 'address', name: 'actions' },
+        { type: 'address', name: 'who' },
+        { type: 'bytes32', name: 'ilk' },
+        { type: 'bytes32', name: 'what' },
+        { type: 'uint256', name: 'data' },
+      ],
+    };
+    const calldata = web3.eth.abi.encodeFunctionCall(jsonInterface, [MCD_PAUSE, MCD_GOV_ACTIONS, who, ilk, web3.utils.asciiToHex(what), data]);
+    return await proxyDeployer.methods['execute(address,bytes)'](PROXY_PAUSE_ACTIONS, calldata);
+  }
+
   async function setAuthorityAndDelay(newAuthority, newDelay) {
     const jsonInterface = {
       type: 'function',
@@ -821,7 +838,32 @@ module.exports = async (deployer, network, [account]) => {
 
   // SET ILKS PIP WHITELIST
 
-  // review
+  console.log('Configuring ILK PIP Whitelists...');
+  for (const token_name in config_tokens) {
+    const token_config = config_tokens[token_name];
+    const token_ilks = token_config.ilks || {};
+
+    const osm = await OSM.at(PIP_[token_name]);
+    let relied;
+    try {
+      relied = Number(await osm.wards(account)) === 1;
+    } catch {
+      relied = false;
+    }
+    if (relied) {
+      osm.methods['kiss(address)'](MCD_SPOT);
+      osm.methods['kiss(address)'](MCD_END);
+      for (const ilk in token_ilks) {
+        const ilk_config = token_ilks[ilk];
+        const ilk_name = web3.utils.asciiToHex(token_name + '-' + ilk);
+
+        if (ilk_config.clipDeploy !== undefined) {
+          osm.methods['kiss(address)'](MCD_CLIP_[token_name][ilk]);
+          osm.methods['kiss(address)'](CLIPPER_MOM);
+        }
+      }
+    }
+  }
 
   // SET ILKS MAT
 
