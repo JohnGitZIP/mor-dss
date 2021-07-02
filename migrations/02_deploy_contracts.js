@@ -1237,7 +1237,19 @@ module.exports = async (deployer, network, [account]) => {
 
   // SET ILKS FLIPPER-MOM
 
-  // review
+  for (const token_name in config_tokens) {
+    const token_config = config_tokens[token_name];
+    const token_ilks = token_config.ilks || {};
+
+    for (const ilk in token_ilks) {
+      const ilk_config = token_ilks[ilk];
+      const ilk_flipDeploy = ilk_config.flipDeploy || {};
+
+      if (ilk_config.flipDeploy !== undefined) {
+        await rely(MCD_FLIP_[token_name][ilk], FLIPPER_MOM);
+      }
+    }
+  }
   await flipperMom.setAuthority(MCD_ADM_CHIEF);
   await flipperMom.setOwner(MCD_PAUSE_PROXY);
 
