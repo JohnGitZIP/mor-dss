@@ -19,6 +19,7 @@ const ESMFab = artifacts.require('ESMFab');
 const PauseFab = artifacts.require('PauseFab');
 const DssDeploy = artifacts.require('DssDeploy');
 const DSRoles = artifacts.require('DSRoles');
+const MkrAuthority = artifacts.require('MkrAuthority');
 const GemJoin = artifacts.require('GemJoin');
 const DSPause = artifacts.require('DSPause');
 const OSM = artifacts.require('OSM');
@@ -278,6 +279,18 @@ module.exports = async (deployer, network, [account]) => {
   await dssDeploy.deployESM(MCD_GOV, ESM_MIN);
   const MCD_ESM = await dssDeploy.esm();
   console.log('MCD_ESM=' + MCD_ESM);
+
+  console.log('Configuring Faucet...');
+  await govToken.mint(FAUCET, units('1000000', 18));
+  await restrictedTokenFaucet.gulp(MCD_GOV);
+
+  console.log('Publishing MKR Authority ...');
+  await deployer.deploy(MkrAuthority);
+  const mkrAuthority = await MkrAuthority.deployed();
+  const GOV_GUARD = mkrAuthority.address;
+  console.log('GOV_GUARD=' + GOV_GUARD);
+  govToken.setAuthority(GOV_GUARD);
+  mkrAuthority.rely(MCD_FLOP);
 
   console.log('Deploying Collateral Flip #1...');
   {
