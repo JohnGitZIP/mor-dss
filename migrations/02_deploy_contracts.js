@@ -1263,8 +1263,30 @@ module.exports = async (deployer, network, [account]) => {
 
   // SET ILKS OSM-MOM
 
-  // review
   console.log('Configuring OSM Mom...');
+  for (const token_name in config_tokens) {
+    const token_config = config_tokens[token_name];
+    const token_ilks = token_config.ilks || {};
+
+    const osm = await Osm.at(PIP_[token_name]);
+    let src;
+    try {
+      src = await osm.src();
+    } catch {
+      src = '';
+    }
+    if (src !== '') {
+      for (const ilk in token_ilks) {
+        const ilk_name =  web3.utils.asciiToHex(token_name + '-' + ilk);
+
+        await osmMom.setOsm(ilk_name, PIP_[token_name]);
+        const wards = await osm.wards(account);
+        if (Number(wards) === 1) {
+          await osm.rely(OSM_MOM);
+        }
+      }
+    }
+  }
   await osmMom.setAuthority(MCD_ADM_CHIEF);
   await osmMom.setOwner(MCD_PAUSE_PROXY);
 
