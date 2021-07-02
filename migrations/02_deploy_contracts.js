@@ -541,11 +541,25 @@ module.exports = async (deployer, network, [account]) => {
   console.log('Releasing Auth...');
   await dssDeploy.releaseAuth();
 
-  console.log('Releasing Auth Flip #1');
-  await dssDeploy.releaseAuthFlip(web3.utils.asciiToHex('ETH-A'));
+  for (const token_name in config_tokens) {
+    const token_config = config_tokens[token_name];
+    const token_ilks = token_config.ilks || {};
 
-  console.log('Releasing Auth Flip #2');
-  await dssDeploy.releaseAuthFlip(web3.utils.asciiToHex('BAT-A'));
+    for (const ilk in token_ilks) {
+      const ilk_config = token_ilks[ilk];
+      const ilk_name =  web3.utils.asciiToHex(token_name + '-' + ilk);
+
+      const gemJoin = await GemJoin.at(MCD_JOIN_[token_name][ilk]);
+      await gemJoin.rely(MCD_PAUSE_PROXY);
+      await gemJoin.deny(account);
+      if (ilk_config.flipDeploy !== undefined) {
+        await dssDeploy.releaseAuthFlip(ilk_name);
+      }
+      if (ilk_config.clipDeploy !== undefined) {
+        await dssDeploy.releaseAuthClip(ilk_name);
+      }
+    }
+  }
 
   // GOV ACTIONS
 
