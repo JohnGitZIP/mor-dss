@@ -814,7 +814,7 @@ module.exports = async (deployer, network, [account]) => {
       if (token_pipDeploy.type == 'value') {
         const price = units(token_pipDeploy.price, 18);
         const dsValue = await DSValue.at(VAL_[token_name]);
-        await dsValue.poke(web3.utils.numberToHex(price));
+        await dsValue.poke(web3.utils.numberToHex(String(price)));
       }
     }
   }
@@ -895,6 +895,29 @@ module.exports = async (deployer, network, [account]) => {
 
       const duty = units(Math.exp(Math.log(Number(ilk_config.dust) / 100 + 1) / (60 * 60 * 24 * 365)).toFixed(27), 27); // review
       await dripAndFilex(MCD_JUG, ilk_name, 'duty', duty);
+    }
+  }
+
+  // SET ILKS SPOTTER POKE
+
+  console.log('Configuring ILK Spotter Pokes...');
+  for (const token_name in config_tokens) {
+    const token_config = config_tokens[token_name];
+    const token_ilks = token_config.ilks || {};
+
+    const osm = await OSM.at(PIP_[token_name]);
+    let whitelisted;
+    try {
+      whitelist = Number(await osm.bud(MCD_SPOT)) === 1;
+    } catch {
+      whitelist = true;
+    }
+    if (whitelisted) {
+      for (const ilk in token_ilks) {
+        const ilk_name =  web3.utils.asciiToHex(token_name + '-' + ilk);
+
+        await spot.poke(ilk_name);
+      }
     }
   }
 
