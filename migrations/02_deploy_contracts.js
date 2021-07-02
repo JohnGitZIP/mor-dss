@@ -1247,7 +1247,7 @@ module.exports = async (deployer, network, [account]) => {
     const token_config = config_tokens[token_name];
     const token_ilks = token_config.ilks || {};
 
-    const osm = await Osm.at(PIP_[token_name]);
+    const osm = await OSM.at(PIP_[token_name]);
     let src;
     try {
       src = await osm.src();
