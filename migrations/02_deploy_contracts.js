@@ -422,6 +422,7 @@ module.exports = async (deployer, network, [account]) => {
     }
   }
 
+  // review compare creation steps
   console.log('Deploying Collateral Flip #1...');
   {
     await deployer.deploy(Median);
@@ -443,7 +444,6 @@ module.exports = async (deployer, network, [account]) => {
     await gemJoin.deny(account);
     await dssDeploy.deployCollateralFlip(web3.utils.asciiToHex('ETH-D'), gemJoin.address, osm.address);
   }
-
   console.log('Deploying Collateral Flip #2...');
   {
     await deployer.deploy(Median);
@@ -1092,7 +1092,6 @@ module.exports = async (deployer, network, [account]) => {
     for (const ilk in token_ilks) {
       const ilk_config = token_ilks[ilk];
       const ilk_clipDeploy = ilk_config.clipDeploy || {};
-      const ilk_name =  web3.utils.asciiToHex(token_name + '-' + ilk);
 
       if (ilk_config.clipDeploy !== undefined) {
         const chip = units(ilk_clipDeploy.chip, 16);
@@ -1111,7 +1110,6 @@ module.exports = async (deployer, network, [account]) => {
     for (const ilk in token_ilks) {
       const ilk_config = token_ilks[ilk];
       const ilk_clipDeploy = ilk_config.clipDeploy || {};
-      const ilk_name =  web3.utils.asciiToHex(token_name + '-' + ilk);
 
       if (ilk_config.clipDeploy !== undefined) {
         const tip = units(ilk_clipDeploy.tip, 45);
@@ -1130,7 +1128,6 @@ module.exports = async (deployer, network, [account]) => {
     for (const ilk in token_ilks) {
       const ilk_config = token_ilks[ilk];
       const ilk_clipDeploy = ilk_config.clipDeploy || {};
-      const ilk_name =  web3.utils.asciiToHex(token_name + '-' + ilk);
 
       if (ilk_config.clipDeploy !== undefined) {
         const buf = units(ilk_clipDeploy.buf, 25);
@@ -1149,7 +1146,6 @@ module.exports = async (deployer, network, [account]) => {
     for (const ilk in token_ilks) {
       const ilk_config = token_ilks[ilk];
       const ilk_clipDeploy = ilk_config.clipDeploy || {};
-      const ilk_name =  web3.utils.asciiToHex(token_name + '-' + ilk);
 
       if (ilk_config.clipDeploy !== undefined) {
         const tail = units(ilk_clipDeploy.tail, 0);
@@ -1168,11 +1164,62 @@ module.exports = async (deployer, network, [account]) => {
     for (const ilk in token_ilks) {
       const ilk_config = token_ilks[ilk];
       const ilk_clipDeploy = ilk_config.clipDeploy || {};
-      const ilk_name =  web3.utils.asciiToHex(token_name + '-' + ilk);
 
       if (ilk_config.clipDeploy !== undefined) {
         const cusp = units(ilk_clipDeploy.cusp, 25);
         await file(MCD_CLIP_[token_name][ilk], 'cusp', cusp);
+      }
+    }
+  }
+
+  // SET ILKS CALC PARAMS
+
+  console.log('Configuring ILK Calc Params...');
+  for (const token_name in config_tokens) {
+    const token_config = config_tokens[token_name];
+    const token_ilks = token_config.ilks || {};
+
+    for (const ilk in token_ilks) {
+      const ilk_config = token_ilks[ilk];
+      const ilk_clipDeploy = ilk_config.clipDeploy || {};
+      const ilk_name =  web3.utils.asciiToHex(token_name + '-' + ilk);
+
+      if (ilk_config.clipDeploy !== undefined) {
+        const calc_config = ilk_clipDeploy.calc || {};
+
+        if (calc_config.type === 'LinearDecrease') {
+          const tau = units(calc_config.tau, 0);
+          await file(MCD_CLIP_CALC_[token_name][ilk], 'tau', tau);
+        }
+        if (calc_config.type === 'StairstepExponentialDecrease' || calc_config.type === 'ExponentialDecrease') {
+          const cut = units(Number(calc_config.cut) / 100, 27);
+          await file(MCD_CLIP_CALC_[token_name][ilk], 'cut', cut);
+        }
+        if (calc_config.type === 'StairstepExponentialDecrease') {
+          const step = units(calc_config.step, 0);
+          await file(MCD_CLIP_CALC_[token_name][ilk], 'step', step);
+        }
+      }
+    }
+  }
+
+  // SET ILKS FAUCET
+
+  console.log('Configuring ILK Faucets...');
+  for (const token_name in config_tokens) {
+    const token_config = config_tokens[token_name];
+    const token_import = token_config.import || {};
+    const token_gemDeploy = token_config.gemDeploy || {};
+
+    const supply = token_gemDeploy.faucetSupply;
+    if (Number(supply) > 0) {
+      const newToken = await DSToken.at(T_[token_name]);
+      await newToken.transfer(FAUCET, supply);
+    }
+    if (config_import.faucet === undefined) {
+      const amount = token_gemDeploy.faucetAmount;
+      if (Number(amount) > 0) {
+        await restrictedTokenFaucet.setAmt(T_[token_name], amount);
       }
     }
   }
