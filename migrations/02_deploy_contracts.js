@@ -359,7 +359,28 @@ module.exports = async (deployer, network, [account]) => {
       let GemToken;
       switch (src) {
       case 'ds-weth/WETH9_': GemToken = artifacts.require('WETH9_'); break;
+      case 'dss-gem-joins/AAVE': GemToken = artifacts.require('AAVE'); break;
+      case 'dss-gem-joins/BAL': GemToken = artifacts.require('BAL'); break;
+      case 'dss-gem-joins/BAT': GemToken = artifacts.require('BAT'); break;
+      case 'dss-gem-joins/COMP': GemToken = artifacts.require('COMP'); break;
+      case 'dss-gem-joins/DGD': GemToken = artifacts.require('DGD'); break;
+      case 'dss-gem-joins/GNT': GemToken = artifacts.require('GNT'); break;
+      case 'dss-gem-joins/GUSD': GemToken = artifacts.require('GUSD'); break;
+      case 'dss-gem-joins/KNC': GemToken = artifacts.require('KNC'); break;
+      case 'dss-gem-joins/LINK': GemToken = artifacts.require('LINK'); break;
+      case 'dss-gem-joins/LRC': GemToken = artifacts.require('LRC'); break;
+      case 'dss-gem-joins/MANA': GemToken = artifacts.require('MANA'); break;
+      case 'dss-gem-joins/OMG': GemToken = artifacts.require('OMG'); break;
+      case 'dss-gem-joins/PAXUSD': GemToken = artifacts.require('PAXUSD'); break;
+      case 'dss-gem-joins/RENBTC': GemToken = artifacts.require('RENBTC'); break;
       case 'dss-gem-joins/REP': GemToken = artifacts.require('REP'); break;
+      case 'dss-gem-joins/TUSD': GemToken = artifacts.require('TUSD'); break;
+      case 'dss-gem-joins/UNI': GemToken = artifacts.require('UNI'); break;
+      case 'dss-gem-joins/USDC': GemToken = artifacts.require('USDC'); break;
+      case 'dss-gem-joins/USDT': GemToken = artifacts.require('USDT'); break;
+      case 'dss-gem-joins/WBTC': GemToken = artifacts.require('WBTC'); break;
+      case 'dss-gem-joins/YFI': GemToken = artifacts.require('YFI'); break;
+      case 'dss-gem-joins/ZRX': GemToken = artifacts.require('ZRX'); break;
       default: throw new Error('Unknown gem: ' + src);
       }
       await deployer.deploy(GemToken, ...params);
