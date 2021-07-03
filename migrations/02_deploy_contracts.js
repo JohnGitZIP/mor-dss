@@ -48,15 +48,24 @@ const VoteProxyFactory = artifacts.require('VoteProxyFactory');
 const DssAutoLine = artifacts.require('DssAutoLine');
 const DssFlash = artifacts.require('DssFlash');
 
+const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
+
 const NOW = Math.floor(Date.now() / 1000);
 
-const vUSDC = '0xecA88125a5ADbe82614ffC12D0DB554E2e2867C8'; // bscmain (< 18 decimals)
+const USDC = { // < 18 decimals
+  '1': '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',   // mainnet
+  '3': '0xB37a76e727AD2c2DD09549Cf30ef4433E2ee87a1',   // ropsten
+  '4': '0x6830707Ba5C9632c44Cf78dCbc172c09788b047b',   // rinkeby
+  '42': '0x7079f3762805CFf9C979a5bDC6f5648bCFEE76C8',  // kovan
+  '5': '0x78670902A9fb64d9F82BC9672c5FbF29c08ec29D',   // goerli
+  '56': '0xecA88125a5ADbe82614ffC12D0DB554E2e2867C8',  // bscmain (vUSDC)
+  '97': '0x9780881Bf45B83Ee028c4c1De7e0C168dF8e9eEF',  // bsctest
+};
+
 const LERP_START_TIME = NOW + 10 * 24 * 60 * 60;
 const LERP_START = 10000000000000000n;
 const LERP_END = 1000000000000000n;
 const LERP_DURATION = 7 * 24 * 60 * 60;
-
-const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
 
 function units(coins, decimals) {
   if (typeof coins !== 'string') throw new Error('Invalid amount');
@@ -1339,7 +1348,7 @@ module.exports = async (deployer, network, [account]) => {
 
   // review PSM deploy
   console.log('Deploying AuthGemJoin5...');
-  await deployer.deploy(AuthGemJoin5, MCD_VAT, web3.utils.asciiToHex('PSM-USDC-A'), vUSDC);
+  await deployer.deploy(AuthGemJoin5, MCD_VAT, web3.utils.asciiToHex('PSM-USDC-A'), USDC[chainId]);
   const authGemJoin5 = await AuthGemJoin5.deployed();
 
   console.log('Deploying DssPsm...');
