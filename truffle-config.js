@@ -64,6 +64,19 @@ module.exports = {
       // provider: () => new HDWalletProvider(privateKey, 'https://apis.ankr.com/' + ankrApikeyBsctest + '/' + ankrProjectId + '/binance/full/test'),
       skipDryRun: true,
     },
+    maticmain: {
+      network_id: 137,
+      gasPrice,
+      networkCheckTimeout: 10000, // fixes truffle bug
+      provider: () => new HDWalletProvider(privateKey, 'https://rpc-mainnet.maticvigil.com/'),
+      skipDryRun: false,
+    },
+    matictest: {
+      network_id: 80001,
+      networkCheckTimeout: 10000, // fixes truffle bug
+      provider: () => new HDWalletProvider(privateKey, 'https://rpc-mumbai.maticvigil.com/'),
+      skipDryRun: true,
+    },
     development: {
       network_id: '*',
       gas: gasLimit,

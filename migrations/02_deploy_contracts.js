@@ -53,13 +53,15 @@ const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
 const NOW = Math.floor(Date.now() / 1000);
 
 const USDC = { // < 18 decimals
-  '1': '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',   // mainnet
-  '3': '0xB37a76e727AD2c2DD09549Cf30ef4433E2ee87a1',   // ropsten
-  '4': '0x6830707Ba5C9632c44Cf78dCbc172c09788b047b',   // rinkeby
-  '42': '0x7079f3762805CFf9C979a5bDC6f5648bCFEE76C8',  // kovan
-  '5': '0x78670902A9fb64d9F82BC9672c5FbF29c08ec29D',   // goerli
-  '56': '0xecA88125a5ADbe82614ffC12D0DB554E2e2867C8',  // bscmain (vUSDC)
-  '97': '0x9780881Bf45B83Ee028c4c1De7e0C168dF8e9eEF',  // bsctest
+  '1': '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',      // mainnet
+  '3': '0xB37a76e727AD2c2DD09549Cf30ef4433E2ee87a1',      // ropsten
+  '4': '0x6830707Ba5C9632c44Cf78dCbc172c09788b047b',      // rinkeby
+  '42': '0x7079f3762805CFf9C979a5bDC6f5648bCFEE76C8',     // kovan
+  '5': '0x78670902A9fb64d9F82BC9672c5FbF29c08ec29D',      // goerli
+  '56': '0xecA88125a5ADbe82614ffC12D0DB554E2e2867C8',     // bscmain (vUSDC)
+  '97': '0x9780881Bf45B83Ee028c4c1De7e0C168dF8e9eEF',     // bsctest
+  '137': '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174',    // maticmain
+  '80001': '0x6D4dd09982853F08d9966aC3cA4Eb5885F16f2b2',  // matictest
 };
 
 const LERP_START_TIME = NOW + 10 * 24 * 60 * 60;
