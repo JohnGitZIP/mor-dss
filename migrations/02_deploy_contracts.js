@@ -399,6 +399,13 @@ module.exports = async (deployer, network, [account]) => {
       let GemJoin;
       switch (src) {
       case 'GemJoin': GemJoin = artifacts.require('GemJoin'); break;
+      case 'GemJoin2': GemJoin = artifacts.require('GemJoin2'); break;
+      case 'GemJoin3': GemJoin = artifacts.require('GemJoin3'); break;
+      case 'GemJoin4': GemJoin = artifacts.require('GemJoin4'); break;
+      case 'GemJoin5': GemJoin = artifacts.require('GemJoin5'); break;
+      case 'GemJoin6': GemJoin = artifacts.require('GemJoin6'); break;
+      case 'GemJoin7': GemJoin = artifacts.require('GemJoin7'); break;
+      case 'GemJoin8': GemJoin = artifacts.require('GemJoin8'); break;
       default: throw new Error('Unknown join: ' + src);
       }
       for (const ilk in token_ilks) {
