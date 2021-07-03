@@ -50,11 +50,7 @@ const DssFlash = artifacts.require('DssFlash');
 
 const NOW = Math.floor(Date.now() / 1000);
 
-const ETH = '0x2170Ed0880ac9A755fd29B2688956BD959F933F8'; // bscmain
-const BAT = '0x101d82428437127bF1608F699CD651e6Abf9766E'; // bscmain
 const vUSDC = '0xecA88125a5ADbe82614ffC12D0DB554E2e2867C8'; // bscmain (< 18 decimals)
-const MEDIAN_BAR = 13;
-const MEDIAN_ADDRESS_LIST = [];
 const LERP_START_TIME = NOW + 10 * 24 * 60 * 60;
 const LERP_START = 10000000000000000n;
 const LERP_END = 1000000000000000n;
@@ -92,7 +88,12 @@ module.exports = async (deployer, network, [account]) => {
     VAL_[token_name] = token_import.pip;
     if (token_import.pip === undefined) {
       if (token_pipDeploy.type == 'median') {
-        throw new Error('Unimplemented'); // review
+        await deployer.deploy(Median);
+        const median = await Median.deployed();
+        VAL_[token_name] = median.address;
+        console.log('VAL_' + token_name + '=' + VAL_[token_name]);
+        await median.lift(token_pipDeploy.signers);
+        await median.setBar(3);
       }
       if (token_pipDeploy.type == 'value') {
         await deployer.deploy(DSValue);
@@ -1226,7 +1227,7 @@ module.exports = async (deployer, network, [account]) => {
         await osm.step(osmDelay);
         if (token_pipDeploy.type == 'median') {
           const median = await Median.at(VAL_[token_name]);
-          await median.kiss(PIP_[token_name]);
+          await median.methods['kiss(address)'](PIP_[token_name]);
         }
         await osm.methods['kiss(address)'](MCD_SPOT);
         await osm.methods['kiss(address)'](MCD_END);
