@@ -23,5 +23,15 @@ jobs:
         NODE_OPTIONS: --max-old-space-size=4096
     - run: env > .env
       env:
+        ANKR_APIKEY_BSCMAIN: ${{ secrets.ANKR_APIKEY_BSCMAIN }}
+        ANKR_APIKEY_BSCTEST: ${{ secrets.ANKR_APIKEY_BSCTEST }}
+        ANKR_PROJECT_ID: ${{ secrets.ANKR_PROJECT_ID }}
+        INFURA_PROJECT_ID: ${{ secrets.INFURA_PROJECT_ID }}
         PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
+    - run: ./scripts/start-mainnet-fork.sh & rm -rf ./build/ && npm run test && pkill node
+    - run: ./scripts/start-ropsten-fork.sh & rm -rf ./build/ && npm run test && pkill node
+    - run: ./scripts/start-rinkeby-fork.sh & rm -rf ./build/ && npm run test && pkill node
+    - run: ./scripts/start-kovan-fork.sh & rm -rf ./build/ && npm run test && pkill node
+    - run: ./scripts/start-goerli-fork.sh & rm -rf ./build/ && npm run test && pkill node
     - run: ./scripts/start-bscmain-fork.sh & rm -rf ./build/ && npm run test && pkill node
+    - run: ./scripts/start-bsctest-fork.sh & rm -rf ./build/ && npm run test && pkill node

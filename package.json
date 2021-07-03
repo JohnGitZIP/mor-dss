@@ -17,7 +17,13 @@
   "scripts": {
     "build": "truffle compile",
     "deploy": "truffle migrate",
+    "deploy:mainnet": "truffle migrate --network mainnet",
+    "deploy:ropsten": "truffle migrate --network ropsten",
+    "deploy:rinkeby": "truffle migrate --network rinkeby",
+    "deploy:kovan": "truffle migrate --network kovan",
+    "deploy:goerli": "truffle migrate --network goerli",
     "deploy:bscmain": "truffle migrate --network bscmain",
+    "deploy:bsctest": "truffle migrate --network bsctest",
     "source": "truffle-flattener contracts/*.sol | sed '/^.*SPDX-License-Identifier:.*$/d' | sed '1s/^/\\/\\/ SPDX-License-Identifier: GPL-3.0-only\\n\\n/' > Contracts.sol",
     "test": "GAS_LIMIT=30000000 truffle test"
   },

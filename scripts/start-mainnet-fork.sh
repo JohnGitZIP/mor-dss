@@ -2,10 +2,9 @@
 
 source .env
 
-CHAIN_ID=56
-GAS_LIMIT=30000000
-FORK_URL='https://bsc-dataseed.binance.org/'
-#FORK_URL='wss://apis.ankr.com/wss/'$ANKR_APIKEY_BSCMAIN'/'$ANKR_PROJECT_ID'/binance/full/main'
+CHAIN_ID=1
+GAS_LIMIT=10000000
+FORK_URL='wss://mainnet.infura.io/ws/v3/'$INFURA_PROJECT_ID
 
 BALANCE=100000000000000000000000
 
