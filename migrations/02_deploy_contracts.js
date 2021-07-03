@@ -88,6 +88,7 @@ module.exports = async (deployer, network, [account]) => {
     VAL_[token_name] = token_import.pip;
     if (token_import.pip === undefined) {
       if (token_pipDeploy.type == 'median') {
+        console.log('Publishing Median...');
         await deployer.deploy(Median);
         const median = await Median.deployed();
         VAL_[token_name] = median.address;
@@ -96,6 +97,7 @@ module.exports = async (deployer, network, [account]) => {
         await median.setBar(3);
       }
       if (token_pipDeploy.type == 'value') {
+        console.log('Publishing DsValue...');
         await deployer.deploy(DSValue);
         const dsValue = await DSValue.deployed();
         VAL_[token_name] = dsValue.address;
@@ -251,6 +253,8 @@ module.exports = async (deployer, network, [account]) => {
   console.log('Publishing DssDeploy...');
   await deployer.deploy(DssDeploy);
   const dssDeploy = await DssDeploy.deployed();
+  const MCD_DEPLOY = dssDeploy.address;
+  console.log('MCD_DEPLOY=' + MCD_DEPLOY);
   await dssDeploy.addFabs1(VAT_FAB, JUG_FAB, VOW_FAB, CAT_FAB, DOG_FAB, DAI_FAB, MCD_JOIN_FAB);
   await dssDeploy.addFabs2(FLAP_FAB, FLOP_FAB, FLIP_FAB, CLIP_FAB, SPOT_FAB, POT_FAB, END_FAB, ESM_FAB, PAUSE_FAB);
 
@@ -384,6 +388,7 @@ module.exports = async (deployer, network, [account]) => {
       case 'dss-gem-joins/ZRX': GemToken = artifacts.require('ZRX'); break;
       default: throw new Error('Unknown gem: ' + src);
       }
+      console.log('Publishing Gem Token...');
       await deployer.deploy(GemToken, ...params);
       const gemToken = await GemToken.deployed();
       T_[token_name] = gemToken.address;
@@ -415,6 +420,7 @@ module.exports = async (deployer, network, [account]) => {
         const ilk_clipDeploy = ilk_config.clipDeploy || {};
         const ilk_name = web3.utils.asciiToHex(token_name + '-' + ilk);
 
+        console.log('Publishing Gem Join...');
         await deployer.deploy(GemJoin, MCD_VAT, ilk_name, T_[token_name], ...extraParams);
         const gemJoin = await GemJoin.deployed();
         MCD_JOIN_[token_name][ilk] = gemJoin.address;
@@ -436,6 +442,7 @@ module.exports = async (deployer, network, [account]) => {
           case 'ExponentialDecrease': Calc = artifacts.require('ExponentialDecrease'); break;
           default: throw new Error('Unknown calc: ' + calc_config.type);
           }
+          console.log('Publishing Calc...');
           await deployer.deploy(Calc);
           const calc = await Calc.deployed();
           MCD_CLIP_CALC_[token_name][ilk] = calc.address;
@@ -459,11 +466,13 @@ module.exports = async (deployer, network, [account]) => {
   const PROXY_ACTIONS = dssProxyActions.address;
   console.log('PROXY_ACTIONS=' + PROXY_ACTIONS);
 
+  console.log('Deploying Proxy Actions End...');
   await deployer.deploy(DssProxyActionsEnd);
   const dssProxyActionsEnd = await DssProxyActionsEnd.deployed();
   const PROXY_ACTIONS_END = dssProxyActionsEnd.address;
   console.log('PROXY_ACTIONS_END=' + PROXY_ACTIONS_END);
 
+  console.log('Deploying Proxy Actions Dsr...');
   await deployer.deploy(DssProxyActionsDsr);
   const dssProxyActionsDsr = await DssProxyActionsDsr.deployed();
   const PROXY_ACTIONS_DSR = dssProxyActionsDsr.address;
@@ -477,6 +486,7 @@ module.exports = async (deployer, network, [account]) => {
   const CDP_MANAGER = dssCdpManager.address;
   console.log('CDP_MANAGER=' + CDP_MANAGER);
 
+  console.log('Deploying Get CDPs...');
   await deployer.deploy(GetCdps);
   const getCdps = await GetCdps.deployed();
   const GET_CDPS = getCdps.address;
@@ -1220,6 +1230,7 @@ module.exports = async (deployer, network, [account]) => {
     if (token_import.pip === undefined) {
       if (Number(token_pipDeploy.osmDelay) > 0) {
         const osmDelay = units(token_pipDeploy.osmDelay, 0);
+        console.log('Deploying OSM...');
         await deployer.deploy(OSM, VAL_[token_name]);
         const osm = await OSM.deployed();
         PIP_[token_name] = osm.address;
