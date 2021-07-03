@@ -25,7 +25,14 @@
     "deploy:bscmain": "truffle migrate --network bscmain",
     "deploy:bsctest": "truffle migrate --network bsctest",
     "source": "truffle-flattener contracts/*.sol | sed '/^.*SPDX-License-Identifier:.*$/d' | sed '1s/^/\\/\\/ SPDX-License-Identifier: GPL-3.0-only\\n\\n/' > Contracts.sol",
-    "test": "GAS_LIMIT=30000000 truffle test"
+    "test": "truffle test",
+    "test:mainnet": "truffle test",
+    "test:ropsten": "truffle test",
+    "test:rinkeby": "truffle test",
+    "test:kovan": "truffle test",
+    "test:goerli": "truffle test",
+    "test:bscmain": "GAS_LIMIT=30000000 truffle test",
+    "test:bsctest": "GAS_LIMIT=30000000 truffle test"
   },
   "repository": {
     "type": "git",

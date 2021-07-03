@@ -28,10 +28,10 @@ jobs:
         ANKR_PROJECT_ID: ${{ secrets.ANKR_PROJECT_ID }}
         INFURA_PROJECT_ID: ${{ secrets.INFURA_PROJECT_ID }}
         PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
-    - run: ./scripts/start-mainnet-fork.sh & rm -rf ./build/ && npm run test && pkill node
-    - run: ./scripts/start-ropsten-fork.sh & rm -rf ./build/ && npm run test && pkill node
-    - run: ./scripts/start-rinkeby-fork.sh & rm -rf ./build/ && npm run test && pkill node
-    - run: ./scripts/start-kovan-fork.sh & rm -rf ./build/ && npm run test && pkill node
-    - run: ./scripts/start-goerli-fork.sh & rm -rf ./build/ && npm run test && pkill node
-    - run: ./scripts/start-bscmain-fork.sh & rm -rf ./build/ && npm run test && pkill node
-    - run: ./scripts/start-bsctest-fork.sh & rm -rf ./build/ && npm run test && pkill node
+    - run: ./scripts/start-mainnet-fork.sh & rm -rf ./build/ && npm run test:mainnet && pkill node
+    - run: ./scripts/start-ropsten-fork.sh & rm -rf ./build/ && npm run test:ropsten && pkill node
+    - run: ./scripts/start-rinkeby-fork.sh & rm -rf ./build/ && npm run test:rinkeby && pkill node
+    - run: ./scripts/start-kovan-fork.sh & rm -rf ./build/ && npm run test:kovan && pkill node
+    - run: ./scripts/start-goerli-fork.sh & rm -rf ./build/ && npm run test:goerli && pkill node
+    - run: ./scripts/start-bscmain-fork.sh & rm -rf ./build/ && npm run test:bscmain && pkill node
+    - run: ./scripts/start-bsctest-fork.sh & rm -rf ./build/ && npm run test:bsctest && pkill node
