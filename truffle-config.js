@@ -6,6 +6,8 @@ const privateKey = process.env['PRIVATE_KEY'];
 const ankrProjectId = process.env['ANKR_PROJECT_ID'];
 const ankrApikeyBscmain = process.env['ANKR_APIKEY_BSCMAIN'];
 const ankrApikeyBsctest = process.env['ANKR_APIKEY_BSCTEST'];
+const ankrApikeyMaticmain = process.env['ANKR_APIKEY_MATICMAIN'];
+const ankrApikeyMatictest = process.env['ANKR_APIKEY_MATICTEST'];
 const infuraProjectId = process.env['INFURA_PROJECT_ID'];
 
 module.exports = {
@@ -68,13 +70,17 @@ module.exports = {
       network_id: 137,
       gasPrice,
       networkCheckTimeout: 10000, // fixes truffle bug
-      provider: () => new HDWalletProvider(privateKey, 'https://rpc-mainnet.maticvigil.com/'),
+      // provider: () => new HDWalletProvider(privateKey, 'https://rpc-mainnet.maticvigil.com/'),
+      // provider: () => new HDWalletProvider(privateKey, 'https://polygon-mainnet.infura.io/v3/' + infuraProjectId),
+      provider: () => new HDWalletProvider(privateKey, 'https://apis.ankr.com/' + ankrApikeyMaticmain + '/' + ankrProjectId + '/polygon/full/main'),
       skipDryRun: false,
     },
     matictest: {
       network_id: 80001,
       networkCheckTimeout: 10000, // fixes truffle bug
-      provider: () => new HDWalletProvider(privateKey, 'https://rpc-mumbai.maticvigil.com/'),
+      // provider: () => new HDWalletProvider(privateKey, 'https://rpc-mumbai.maticvigil.com/'),
+      // provider: () => new HDWalletProvider(privateKey, 'https://polygon-mumbai.infura.io/v3/' + infuraProjectId),
+      provider: () => new HDWalletProvider(privateKey, 'https://apis.ankr.com/' + ankrApikeyMatictest + '/' + ankrProjectId + '/polygon/full/test'),
       skipDryRun: true,
     },
     development: {
