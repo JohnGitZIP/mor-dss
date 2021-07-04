@@ -35,5 +35,5 @@ jobs:
     - run: ./scripts/start-goerli-fork.sh & rm -rf ./build/ && npm run test:goerli && pkill node
     - run: ./scripts/start-bscmain-fork.sh & rm -rf ./build/ && npm run test:bscmain && pkill node
     - run: ./scripts/start-bsctest-fork.sh & rm -rf ./build/ && npm run test:bsctest && pkill node
-    - run: ./scripts/start-maticmain-fork.sh & rm -rf ./build/ && npm run test:bscmain && pkill node
-    - run: ./scripts/start-matictest-fork.sh & rm -rf ./build/ && npm run test:bsctest && pkill node
+    - run: ./scripts/start-maticmain-fork.sh & rm -rf ./build/ && npm run test:maticmain && pkill node
+    - run: ./scripts/start-matictest-fork.sh & rm -rf ./build/ && npm run test:matictest && pkill node
