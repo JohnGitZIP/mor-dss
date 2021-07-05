@@ -225,7 +225,7 @@ contract DssProxyActions is Common {
 
     function ethJoin_join(address apt, address urn) public payable {
         // Wraps ETH in WETH
-        GemJoinLike(apt).gem().deposit.value(msg.value)();
+        GemJoinLike(apt).gem().deposit{value: msg.value}();
         // Approves adapter to take the WETH amount
         GemJoinLike(apt).gem().approve(address(apt), msg.value);
         // Joins WETH collateral into the vat
