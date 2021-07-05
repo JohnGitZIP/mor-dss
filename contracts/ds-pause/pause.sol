@@ -41,7 +41,7 @@ contract DSPause is DSAuth, DSNote {
 
     // --- math ---
 
-    function add(uint x, uint y) internal pure returns (uint z) {
+    function _add(uint x, uint y) internal pure returns (uint z) {
         z = x + y;
         require(z >= x, "ds-pause-addition-overflow");
     }
@@ -82,7 +82,7 @@ contract DSPause is DSAuth, DSNote {
     function plot(address usr, bytes32 tag, bytes memory fax, uint eta)
         public note auth
     {
-        require(eta >= add(now, delay), "ds-pause-delay-not-respected");
+        require(eta >= _add(now, delay), "ds-pause-delay-not-respected");
         plans[hash(usr, tag, fax, eta)] = true;
     }
 

@@ -117,7 +117,7 @@ contract Common {
 
     // Internal functions
 
-    function mul(uint x, uint y) internal pure returns (uint z) {
+    function _mul(uint x, uint y) internal pure returns (uint z) {
         require(y == 0 || (z = x * y) / y == x, "mul-overflow");
     }
 
@@ -136,7 +136,7 @@ contract Common {
 contract DssProxyActions is Common {
     // Internal functions
 
-    function sub(uint x, uint y) internal pure returns (uint z) {
+    function _sub(uint x, uint y) internal pure returns (uint z) {
         require((z = x - y) <= x, "sub-overflow");
     }
 
@@ -146,13 +146,13 @@ contract DssProxyActions is Common {
     }
 
     function toRad(uint wad) internal pure returns (uint rad) {
-        rad = mul(wad, 10 ** 27);
+        rad = _mul(wad, 10 ** 27);
     }
 
     function convertTo18(address gemJoin, uint256 amt) internal returns (uint256 wad) {
         // For those collaterals that have less than 18 decimals precision we need to do the conversion before passing to frob function
         // Adapters will automatically handle the difference of precision
-        wad = mul(
+        wad = _mul(
             amt,
             10 ** (18 - GemJoinLike(gemJoin).dec())
         );
@@ -172,11 +172,11 @@ contract DssProxyActions is Common {
         uint dai = VatLike(vat).dai(urn);
 
         // If there was already enough DAI in the vat balance, just exits it without adding more debt
-        if (dai < mul(wad, RAY)) {
+        if (dai < _mul(wad, RAY)) {
             // Calculates the needed dart so together with the existing dai in the vat is enough to exit wad amount of DAI tokens
-            dart = toInt(sub(mul(wad, RAY), dai) / rate);
+            dart = toInt(_sub(_mul(wad, RAY), dai) / rate);
             // This is neeeded due lack of precision. It might need to sum an extra dart wei (for the given DAI wad amount)
-            dart = mul(uint(dart), rate) < mul(wad, RAY) ? dart + 1 : dart;
+            dart = _mul(uint(dart), rate) < _mul(wad, RAY) ? dart + 1 : dart;
         }
     }
 
@@ -210,11 +210,11 @@ contract DssProxyActions is Common {
         // Gets actual dai amount in the urn
         uint dai = VatLike(vat).dai(usr);
 
-        uint rad = sub(mul(art, rate), dai);
+        uint rad = _sub(_mul(art, rate), dai);
         wad = rad / RAY;
 
         // If the rad precision has some dust, it will need to request for 1 extra wad wei
-        wad = mul(wad, RAY) < rad ? wad + 1 : wad;
+        wad = _mul(wad, RAY) < rad ? wad + 1 : wad;
     }
 
     // Public functions
@@ -886,7 +886,7 @@ contract DssProxyActionsEnd is Common {
         uint wad
     ) public {
         EndLike(end).cash(ilk, wad);
-        uint wadC = mul(wad, EndLike(end).fix(ilk)) / RAY;
+        uint wadC = _mul(wad, EndLike(end).fix(ilk)) / RAY;
         // Exits WETH amount to proxy address as a token
         GemJoinLike(ethJoin).exit(address(this), wadC);
         // Converts WETH to ETH
@@ -903,7 +903,7 @@ contract DssProxyActionsEnd is Common {
     ) public {
         EndLike(end).cash(ilk, wad);
         // Exits token amount to the user's wallet as a token
-        uint amt = mul(wad, EndLike(end).fix(ilk)) / RAY / 10 ** (18 - GemJoinLike(gemJoin).dec());
+        uint amt = _mul(wad, EndLike(end).fix(ilk)) / RAY / 10 ** (18 - GemJoinLike(gemJoin).dec());
         GemJoinLike(gemJoin).exit(msg.sender, amt);
     }
 }
@@ -924,7 +924,7 @@ contract DssProxyActionsDsr is Common {
             vat.hope(pot);
         }
         // Joins the pie value (equivalent to the DAI wad amount) in the pot
-        PotLike(pot).join(mul(wad, RAY) / chi);
+        PotLike(pot).join(_mul(wad, RAY) / chi);
     }
 
     function exit(
@@ -936,7 +936,7 @@ contract DssProxyActionsDsr is Common {
         // Executes drip to count the savings accumulated until this moment
         uint chi = PotLike(pot).drip();
         // Calculates the pie value in the pot equivalent to the DAI wad amount
-        uint pie = mul(wad, RAY) / chi;
+        uint pie = _mul(wad, RAY) / chi;
         // Exits DAI from the pot
         PotLike(pot).exit(pie);
         // Checks the actual balance of DAI in the vat after the pot exit
@@ -949,7 +949,7 @@ contract DssProxyActionsDsr is Common {
         // Otherwise it will do the maximum DAI balance in the vat
         DaiJoinLike(daiJoin).exit(
             msg.sender,
-            bal >= mul(wad, RAY) ? wad : bal / RAY
+            bal >= _mul(wad, RAY) ? wad : bal / RAY
         );
     }
 
@@ -969,6 +969,6 @@ contract DssProxyActionsDsr is Common {
             vat.hope(daiJoin);
         }
         // Exits the DAI amount corresponding to the value of pie
-        DaiJoinLike(daiJoin).exit(msg.sender, mul(chi, pie) / RAY);
+        DaiJoinLike(daiJoin).exit(msg.sender, _mul(chi, pie) / RAY);
     }
 }
