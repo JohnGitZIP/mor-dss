@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: AGPL-3.0-or-later
+
 /// value.sol - a value is a simple thing, it can be get and set
 
 // Copyright (C) 2017  DappHub, LLC

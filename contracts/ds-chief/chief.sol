@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 // chief.sol - select an authority by consensus
 
 // Copyright (C) 2017  DappHub, LLC

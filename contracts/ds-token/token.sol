@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: AGPL-3.0-or-later
+
 /// token.sol -- ERC20 implementation with minting and burning
 
 // Copyright (C) 2015, 2016, 2017  DappHub, LLC

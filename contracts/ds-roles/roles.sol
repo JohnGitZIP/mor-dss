@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 // roles.sol - roled based authentication
 
 // Copyright (C) 2017  DappHub, LLC

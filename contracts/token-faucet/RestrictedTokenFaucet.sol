@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: AGPL-3.0-or-later
+
 /// RestrictedTokenFaucet.sol
 
 // Copyright (C) 2019-2020 Maker Ecosystem Growth Holdings, INC.

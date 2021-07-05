@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: AGPL-3.0-or-later
+
 /// median.sol
 
 // Copyright (C) 2017-2020 Maker Ecosystem Growth Holdings, INC.

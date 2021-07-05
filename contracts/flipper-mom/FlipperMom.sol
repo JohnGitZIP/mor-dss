@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: AGPL-3.0-or-later
+
 /// FlipperMom -- governance interface for the Flipper
 
 // Copyright (C) 2019 Maker Ecosystem Growth Holdings, INC.

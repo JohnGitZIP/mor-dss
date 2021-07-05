@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: AGPL-3.0-or-later
+
 // DsrManager.sol
 // Copyright (C) 2020 Maker Ecosystem Growth Holdings, INC.
 
