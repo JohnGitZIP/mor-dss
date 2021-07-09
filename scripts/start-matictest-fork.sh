@@ -5,8 +5,8 @@ source .env
 CHAIN_ID=80001
 GAS_LIMIT=20000000
 #FORK_URL='https://rpc-mumbai.maticvigil.com/'
-#FORK_URL='https://polygon-mumbai.infura.io/v3/'$INFURA_PROJECT_ID
-FORK_URL='https://apis.ankr.com/'$ANKR_APIKEY_MATICTEST'/'$ANKR_PROJECT_ID'/polygon/full/test'
+FORK_URL='https://polygon-mumbai.infura.io/v3/'$INFURA_PROJECT_ID
+#FORK_URL='https://apis.ankr.com/'$ANKR_APIKEY_MATICTEST'/'$ANKR_PROJECT_ID'/polygon/full/test'
 
 BALANCE=100000000000000000000000
 
