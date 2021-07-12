@@ -262,12 +262,10 @@ module.exports = async (deployer, network, [account]) => {
   // CORE DEPLOYER
 
   console.log('Publishing DssDeploy...');
-  await deployer.deploy(DssDeploy);
+  await deployer.deploy(DssDeploy, VAT_FAB, JUG_FAB, VOW_FAB, CAT_FAB, DOG_FAB, DAI_FAB, MCD_JOIN_FAB, FLAP_FAB, FLOP_FAB, FLIP_FAB, CLIP_FAB, SPOT_FAB, POT_FAB, END_FAB, ESM_FAB, PAUSE_FAB);
   const dssDeploy = await DssDeploy.deployed();
   const MCD_DEPLOY = dssDeploy.address;
   console.log('MCD_DEPLOY=' + MCD_DEPLOY);
-  await dssDeploy.addFabs1(VAT_FAB, JUG_FAB, VOW_FAB, CAT_FAB, DOG_FAB, DAI_FAB, MCD_JOIN_FAB);
-  await dssDeploy.addFabs2(FLAP_FAB, FLOP_FAB, FLIP_FAB, CLIP_FAB, SPOT_FAB, POT_FAB, END_FAB, ESM_FAB, PAUSE_FAB);
 
   // AUTHORITY
 
@@ -282,60 +280,42 @@ module.exports = async (deployer, network, [account]) => {
 
   // CORE
 
-  console.log('Deploying Vat...');
-  await dssDeploy.deployVat();
-  const MCD_VAT = await dssDeploy.vat();
+  console.log('Deploying Core...');
+  await dssDeploy.deploy1(chainId, MCD_GOV);
+  await dssDeploy.deploy2(MCD_GOV, 0, MCD_ADM, units(config.esm_min, 18));
+  const mods = await dssDeploy.mods();
+  const MCD_VAT = mods.vat;
+  const MCD_SPOT = mods.spotter;
+  const MCD_DAI = mods.dai;
+  const MCD_JOIN_DAI = mods.daiJoin;
+  const MCD_JUG = mods.jug;
+  const MCD_POT = mods.pot;
+  const MCD_FLAP = mods.flap;
+  const MCD_FLOP = mods.flop;
+  const MCD_VOW = mods.vow;
+  const MCD_CAT = mods.cat;
+  const MCD_DOG = mods.dog;
+  const MCD_END = mods.end;
+  const MCD_PAUSE = mods.pause;
+  const MCD_ESM = mods.esm;
   console.log('MCD_VAT=' + MCD_VAT);
-  const MCD_SPOT = await dssDeploy.spotter();
   console.log('MCD_SPOT=' + MCD_SPOT);
-
-  console.log('Deploying Dai...');
-  await dssDeploy.deployDai(chainId);
-  const MCD_DAI = await dssDeploy.dai();
   console.log('MCD_DAI=' + MCD_DAI);
-  const MCD_JOIN_DAI = await dssDeploy.daiJoin();
   console.log('MCD_JOIN_DAI=' + MCD_JOIN_DAI);
-
-  console.log('Deploying Taxation...');
-  await dssDeploy.deployTaxation();
-  const MCD_JUG = await dssDeploy.jug();
   console.log('MCD_JUG=' + MCD_JUG);
-  const MCD_POT = await dssDeploy.pot();
   console.log('MCD_POT=' + MCD_POT);
-
-  console.log('Deploying Auctions...');
-  await dssDeploy.deployAuctions(MCD_GOV);
-  const MCD_FLAP = await dssDeploy.flap();
   console.log('MCD_FLAP=' + MCD_FLAP);
-  const MCD_FLOP = await dssDeploy.flop();
   console.log('MCD_FLOP=' + MCD_FLOP);
-  const MCD_VOW = await dssDeploy.vow();
   console.log('MCD_VOW=' + MCD_VOW);
-
-  console.log('Deploying Liquidator...');
-  await dssDeploy.deployLiquidator();
-  const MCD_CAT = await dssDeploy.cat();
   console.log('MCD_CAT=' + MCD_CAT);
-  const MCD_DOG = await dssDeploy.dog();
   console.log('MCD_DOG=' + MCD_DOG);
-
-  console.log('Deploying End...');
-  await dssDeploy.deployEnd();
-  const MCD_END = await dssDeploy.end();
   console.log('MCD_END=' + MCD_END);
-
-  console.log('Deploying Pause...');
-  await dssDeploy.deployPause(0, MCD_ADM);
-  const MCD_PAUSE = await dssDeploy.pause();
   console.log('MCD_PAUSE=' + MCD_PAUSE);
+  console.log('MCD_ESM=' + MCD_ESM);
+
   const pause = await DSPause.at(MCD_PAUSE);
   const MCD_PAUSE_PROXY = await pause.proxy();
   console.log('MCD_PAUSE_PROXY=' + MCD_PAUSE_PROXY);
-
-  console.log('Deploying ESM...');
-  await dssDeploy.deployESM(MCD_GOV, units(config.esm_min, 18));
-  const MCD_ESM = await dssDeploy.esm();
-  console.log('MCD_ESM=' + MCD_ESM);
 
   // FAUCET CONFIG
 
