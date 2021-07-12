@@ -11,7 +11,6 @@ FORK_URL='https://polygon-mumbai.infura.io/v3/'$INFURA_PROJECT_ID
 BALANCE=100000000000000000000000
 
 npx ganache-cli \
-	--allowUnlimitedContractSize \
 	-q \
 	-h 0.0.0.0 \
 	-i $CHAIN_ID \

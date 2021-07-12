@@ -10,7 +10,6 @@ FORK_URL='https://data-seed-prebsc-1-s1.binance.org:8545/'
 BALANCE=100000000000000000000000
 
 npx ganache-cli \
-	--allowUnlimitedContractSize \
 	-q \
 	-h 0.0.0.0 \
 	-i $CHAIN_ID \
