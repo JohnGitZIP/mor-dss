@@ -252,10 +252,11 @@ module.exports = async (deployer, network, [account]) => {
   let MCD_GOV = config_import.gov;
   if (config_import.gov === undefined) {
     console.log('Publishing Gov Token...');
-    await deployer.deploy(DSToken, "MKR");
+    await deployer.deploy(DSToken, 'MKR');
     const govToken = await DSToken.deployed();
     MCD_GOV = govToken.address;
     console.log('MCD_GOV=' + MCD_GOV);
+    await govToken.setName('Maker');
   }
   const govToken = await DSToken.at(MCD_GOV);
 
@@ -677,7 +678,7 @@ module.exports = async (deployer, network, [account]) => {
   let MCD_ADM_CHIEF = config_import.authority;
   if (MCD_ADM_CHIEF === undefined) {
     console.log('Publishing IOU Token...');
-    await deployer.deploy(DSToken, "IOU");
+    await deployer.deploy(DSToken, 'IOU');
     const iouToken = await DSToken.deployed();
     const MCD_IOU = iouToken.address;
     console.log('MCD_IOU=' + MCD_IOU);
