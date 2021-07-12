@@ -124,10 +124,11 @@ contract Common {
     // Public functions
 
     function daiJoin_join(address apt, address urn, uint wad) public {
+        GemLike dai = DaiJoinLike(apt).dai();
         // Gets DAI from the user's wallet
-        DaiJoinLike(apt).dai().transferFrom(msg.sender, address(this), wad);
+        dai.transferFrom(msg.sender, address(this), wad);
         // Approves adapter to take the DAI amount
-        DaiJoinLike(apt).dai().approve(apt, wad);
+        dai.approve(apt, wad);
         // Joins DAI into the vat
         DaiJoinLike(apt).join(urn, wad);
     }
@@ -224,10 +225,11 @@ contract DssProxyActions is Common {
     }
 
     function ethJoin_join(address apt, address urn) public payable {
+        GemLike gem = GemJoinLike(apt).gem();
         // Wraps ETH in WETH
-        GemJoinLike(apt).gem().deposit{value: msg.value}();
+        gem.deposit{value: msg.value}();
         // Approves adapter to take the WETH amount
-        GemJoinLike(apt).gem().approve(address(apt), msg.value);
+        gem.approve(address(apt), msg.value);
         // Joins WETH collateral into the vat
         GemJoinLike(apt).join(urn, msg.value);
     }
@@ -235,10 +237,11 @@ contract DssProxyActions is Common {
     function gemJoin_join(address apt, address urn, uint amt, bool transferFrom) public {
         // Only executes for tokens that have approval/transferFrom implementation
         if (transferFrom) {
+            GemLike gem = GemJoinLike(apt).gem();
             // Gets token from the user's wallet
-            GemJoinLike(apt).gem().transferFrom(msg.sender, address(this), amt);
+            gem.transferFrom(msg.sender, address(this), amt);
             // Approves adapter to take the token amount
-            GemJoinLike(apt).gem().approve(apt, amt);
+            gem.approve(apt, amt);
         }
         // Joins token collateral into the vat
         GemJoinLike(apt).join(urn, amt);
@@ -695,7 +698,7 @@ contract DssProxyActions is Common {
         GemLike(GemJoinLike(gntJoin).gem()).transfer(bag, amtC);
         cdp = openLockGemAndDraw(manager, jug, gntJoin, daiJoin, ilk, amtC, wadD, false);
     }
-
+/*
     function wipeAndFreeETH(
         address manager,
         address ethJoin,
@@ -754,7 +757,7 @@ contract DssProxyActions is Common {
         // Sends ETH back to the user's wallet
         msg.sender.transfer(wadC);
     }
-
+*/
     function wipeAndFreeGem(
         address manager,
         address gemJoin,
