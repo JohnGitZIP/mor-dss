@@ -1,53 +1,3 @@
-const DSValue = artifacts.require('DSValue');
-const RestrictedTokenFaucet = artifacts.require('RestrictedTokenFaucet');
-const DSProxyFactory = artifacts.require('DSProxyFactory');
-const ProxyRegistry = artifacts.require('ProxyRegistry');
-const VatFab = artifacts.require('VatFab');
-const JugFab = artifacts.require('JugFab');
-const VowFab = artifacts.require('VowFab');
-const CatFab = artifacts.require('CatFab');
-const DogFab = artifacts.require('DogFab');
-const DaiFab = artifacts.require('DaiFab');
-const DaiJoinFab = artifacts.require('DaiJoinFab');
-const FlapFab = artifacts.require('FlapFab');
-const FlopFab = artifacts.require('FlopFab');
-const FlipFab = artifacts.require('FlipFab');
-const ClipFab = artifacts.require('ClipFab');
-const SpotFab = artifacts.require('SpotFab');
-const PotFab = artifacts.require('PotFab');
-const EndFab = artifacts.require('EndFab');
-const ESMFab = artifacts.require('ESMFab');
-const PauseFab = artifacts.require('PauseFab');
-const DssDeploy = artifacts.require('DssDeploy');
-const DSRoles = artifacts.require('DSRoles');
-const MkrAuthority = artifacts.require('MkrAuthority');
-const GemJoin = artifacts.require('GemJoin');
-const DSPause = artifacts.require('DSPause');
-const OSM = artifacts.require('OSM');
-const Median = artifacts.require('Median');
-const AuthGemJoin5 = artifacts.require('AuthGemJoin5');
-const DssPsm = artifacts.require('DssPsm');
-const Lerp = artifacts.require('Lerp');
-const DSToken = artifacts.require('DSToken');
-const DssProxyActions = artifacts.require('DssProxyActions');
-const DssProxyActionsEnd = artifacts.require('DssProxyActionsEnd');
-const DssProxyActionsDsr = artifacts.require('DssProxyActionsDsr');
-const DssCdpManager = artifacts.require('DssCdpManager');
-const GetCdps = artifacts.require('GetCdps');
-const DsrManager = artifacts.require('DsrManager');
-const OsmMom = artifacts.require('OsmMom');
-const FlipperMom = artifacts.require('FlipperMom');
-const Clipper = artifacts.require('Clipper');
-const ClipperMom = artifacts.require('ClipperMom');
-const IlkRegistry = artifacts.require('IlkRegistry');
-const GovActions = artifacts.require('GovActions');
-const DssDeployPauseProxyActions = artifacts.require('DssDeployPauseProxyActions');
-const DSProxy = artifacts.require('DSProxy');
-const DSChief = artifacts.require('DSChief');
-const VoteProxyFactory = artifacts.require('VoteProxyFactory');
-const DssAutoLine = artifacts.require('DssAutoLine');
-const DssFlash = artifacts.require('DssFlash');
-
 const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
 
 const NOW = Math.floor(Date.now() / 1000);
@@ -79,6 +29,8 @@ function units(coins, decimals) {
 }
 
 module.exports = async (deployer, network, [account]) => {
+  const DssDeploy = artifacts.require('DssDeploy');
+
   const web3 = DssDeploy.interfaceAdapter.web3;
 
   const chainId = await web3.eth.net.getId();
@@ -91,6 +43,8 @@ module.exports = async (deployer, network, [account]) => {
 
   const VAL_ = {};
   const PIP_ = {};
+  const DSValue = artifacts.require('DSValue');
+  const Median = artifacts.require('Median');
   for (const token_name in config_tokens) {
     const token_config = config_tokens[token_name];
     const token_import = token_config.import || {};
@@ -121,6 +75,7 @@ module.exports = async (deployer, network, [account]) => {
   // FAUCET
 
   let FAUCET = config_import.faucet;
+  const RestrictedTokenFaucet = artifacts.require('RestrictedTokenFaucet');
   if (config_import.faucet === undefined) {
     console.log('Publishing Token Faucet...');
     await deployer.deploy(RestrictedTokenFaucet);
@@ -134,8 +89,10 @@ module.exports = async (deployer, network, [account]) => {
   // PROXY REGISTRY
 
   let PROXY_REGISTRY = config_import.proxyRegistry;
+  const ProxyRegistry = artifacts.require('ProxyRegistry');
   if (config_import.proxyRegistry === undefined) {
     console.log('Publishing Proxy Factory...');
+    const DSProxyFactory = artifacts.require('DSProxyFactory');
     await deployer.deploy(DSProxyFactory);
     const dsProxyFactory = await DSProxyFactory.deployed();
     const PROXY_FACTORY = dsProxyFactory.address;
@@ -152,96 +109,112 @@ module.exports = async (deployer, network, [account]) => {
   // FABS
 
   console.log('Publishing VatFab...');
+  const VatFab = artifacts.require('VatFab');
   await deployer.deploy(VatFab);
   const vatFab = await VatFab.deployed();
   const VAT_FAB = vatFab.address;
   console.log('VAT_FAB=' + VAT_FAB);
 
   console.log('Publishing JugFab...');
+  const JugFab = artifacts.require('JugFab');
   await deployer.deploy(JugFab);
   const jugFab = await JugFab.deployed();
   const JUG_FAB = jugFab.address;
   console.log('JUG_FAB=' + JUG_FAB);
 
   console.log('Publishing VowFab...');
+  const VowFab = artifacts.require('VowFab');
   await deployer.deploy(VowFab);
   const vowFab = await VowFab.deployed();
   const VOW_FAB = vowFab.address;
   console.log('VOW_FAB=' + VOW_FAB);
 
   console.log('Publishing CatFab...');
+  const CatFab = artifacts.require('CatFab');
   await deployer.deploy(CatFab);
   const catFab = await CatFab.deployed();
   const CAT_FAB = catFab.address;
   console.log('CAT_FAB=' + CAT_FAB);
 
   console.log('Publishing DogFab...');
+  const DogFab = artifacts.require('DogFab');
   await deployer.deploy(DogFab);
   const dogFab = await DogFab.deployed();
   const DOG_FAB = dogFab.address;
   console.log('DOG_FAB=' + DOG_FAB);
 
   console.log('Publishing DaiFab...');
+  const DaiFab = artifacts.require('DaiFab');
   await deployer.deploy(DaiFab);
   const daiFab = await DaiFab.deployed();
   const DAI_FAB = daiFab.address;
   console.log('DAI_FAB=' + DAI_FAB);
 
   console.log('Publishing DaiJoinFab...');
+  const DaiJoinFab = artifacts.require('DaiJoinFab');
   await deployer.deploy(DaiJoinFab);
   const daiJoinFab = await DaiJoinFab.deployed();
   const MCD_JOIN_FAB = daiJoinFab.address;
   console.log('MCD_JOIN_FAB=' + MCD_JOIN_FAB);
 
   console.log('Publishing FlapFab...');
+  const FlapFab = artifacts.require('FlapFab');
   await deployer.deploy(FlapFab);
   const flapFab = await FlapFab.deployed();
   const FLAP_FAB = flapFab.address;
   console.log('FLAP_FAB=' + FLAP_FAB);
 
   console.log('Publishing FlopFab...');
+  const FlopFab = artifacts.require('FlopFab');
   await deployer.deploy(FlopFab);
   const flopFab = await FlopFab.deployed();
   const FLOP_FAB = flopFab.address;
   console.log('FLOP_FAB=' + FLOP_FAB);
 
   console.log('Publishing FlipFab...');
+  const FlipFab = artifacts.require('FlipFab');
   await deployer.deploy(FlipFab);
   const flipFab = await FlipFab.deployed();
   const FLIP_FAB = flipFab.address;
   console.log('FLIP_FAB=' + FLIP_FAB);
 
   console.log('Publishing ClipFab...');
+  const ClipFab = artifacts.require('ClipFab');
   await deployer.deploy(ClipFab);
   const clipFab = await ClipFab.deployed();
   const CLIP_FAB = clipFab.address;
   console.log('CLIP_FAB=' + CLIP_FAB);
 
   console.log('Publishing SpotFab...');
+  const SpotFab = artifacts.require('SpotFab');
   await deployer.deploy(SpotFab);
   const spotFab = await SpotFab.deployed();
   const SPOT_FAB = spotFab.address;
   console.log('SPOT_FAB=' + SPOT_FAB);
 
   console.log('Publishing PotFab...');
+  const PotFab = artifacts.require('PotFab');
   await deployer.deploy(PotFab);
   const potFab = await PotFab.deployed();
   const POT_FAB = potFab.address;
   console.log('POT_FAB=' + POT_FAB);
 
   console.log('Publishing EndFab...');
+  const EndFab = artifacts.require('EndFab');
   await deployer.deploy(EndFab);
   const endFab = await EndFab.deployed();
   const END_FAB = endFab.address;
   console.log('END_FAB=' + END_FAB);
 
   console.log('Publishing ESMFab...');
+  const ESMFab = artifacts.require('ESMFab');
   await deployer.deploy(ESMFab);
   const esmFab = await ESMFab.deployed();
   const ESM_FAB = esmFab.address;
   console.log('ESM_FAB=' + ESM_FAB);
 
   console.log('Publishing PauseFab...');
+  const PauseFab = artifacts.require('PauseFab');
   await deployer.deploy(PauseFab);
   const pauseFab = await PauseFab.deployed();
   const PAUSE_FAB = pauseFab.address;
@@ -250,6 +223,7 @@ module.exports = async (deployer, network, [account]) => {
   // GOV TOKEN
 
   let MCD_GOV = config_import.gov;
+  const DSToken = artifacts.require('DSToken');
   if (config_import.gov === undefined) {
     console.log('Publishing Gov Token...');
     await deployer.deploy(DSToken, 'MKR');
@@ -272,6 +246,7 @@ module.exports = async (deployer, network, [account]) => {
 
   // if (true) {
     console.log('Deploying DSRoles...');
+    const DSRoles = artifacts.require('DSRoles');
     await deployer.deploy(DSRoles);
     const dsRoles = await DSRoles.deployed();
     const MCD_ADM = dsRoles.address;
@@ -314,6 +289,7 @@ module.exports = async (deployer, network, [account]) => {
   console.log('MCD_PAUSE=' + MCD_PAUSE);
   console.log('MCD_ESM=' + MCD_ESM);
 
+  const DSPause = artifacts.require('DSPause');
   const pause = await DSPause.at(MCD_PAUSE);
   const MCD_PAUSE_PROXY = await pause.proxy();
   console.log('MCD_PAUSE_PROXY=' + MCD_PAUSE_PROXY);
@@ -327,6 +303,7 @@ module.exports = async (deployer, network, [account]) => {
     await restrictedTokenFaucet.gulp(MCD_GOV);
 
     console.log('Publishing MKR Authority ...');
+    const MkrAuthority = artifacts.require('MkrAuthority');
     await deployer.deploy(MkrAuthority);
     mkrAuthority = await MkrAuthority.deployed();
     const GOV_GUARD = mkrAuthority.address;
@@ -453,18 +430,21 @@ module.exports = async (deployer, network, [account]) => {
   // PROXY ACTIONS
 
   console.log('Deploying Proxy Actions...');
+  const DssProxyActions = artifacts.require('DssProxyActions');
   await deployer.deploy(DssProxyActions);
   const dssProxyActions = await DssProxyActions.deployed();
   const PROXY_ACTIONS = dssProxyActions.address;
   console.log('PROXY_ACTIONS=' + PROXY_ACTIONS);
 
   console.log('Deploying Proxy Actions End...');
+  const DssProxyActionsEnd = artifacts.require('DssProxyActionsEnd');
   await deployer.deploy(DssProxyActionsEnd);
   const dssProxyActionsEnd = await DssProxyActionsEnd.deployed();
   const PROXY_ACTIONS_END = dssProxyActionsEnd.address;
   console.log('PROXY_ACTIONS_END=' + PROXY_ACTIONS_END);
 
   console.log('Deploying Proxy Actions Dsr...');
+  const DssProxyActionsDsr = artifacts.require('DssProxyActionsDsr');
   await deployer.deploy(DssProxyActionsDsr);
   const dssProxyActionsDsr = await DssProxyActionsDsr.deployed();
   const PROXY_ACTIONS_DSR = dssProxyActionsDsr.address;
@@ -473,12 +453,14 @@ module.exports = async (deployer, network, [account]) => {
   // CDP MANAGER
 
   console.log('Deploying CDP Manager...');
+  const DssCdpManager = artifacts.require('DssCdpManager');
   await deployer.deploy(DssCdpManager, MCD_VAT);
   const dssCdpManager = await DssCdpManager.deployed();
   const CDP_MANAGER = dssCdpManager.address;
   console.log('CDP_MANAGER=' + CDP_MANAGER);
 
   console.log('Deploying Get CDPs...');
+  const GetCdps = artifacts.require('GetCdps');
   await deployer.deploy(GetCdps);
   const getCdps = await GetCdps.deployed();
   const GET_CDPS = getCdps.address;
@@ -487,6 +469,7 @@ module.exports = async (deployer, network, [account]) => {
   // DSR MANAGER
 
   console.log('Deploying DSR Manager...');
+  const DsrManager = artifacts.require('DsrManager');
   await deployer.deploy(DsrManager, MCD_POT, MCD_JOIN_DAI);
   const dsrManager = await DsrManager.deployed();
   const DSR_MANAGER = dsrManager.address;
@@ -495,6 +478,8 @@ module.exports = async (deployer, network, [account]) => {
   // OSM MOM
 
   console.log('Deploying OSM Mom...');
+  const OSM = artifacts.require('OSM');
+  const OsmMom = artifacts.require('OsmMom');
   await deployer.deploy(OsmMom);
   const osmMom = await OsmMom.deployed();
   const OSM_MOM = osmMom.address;
@@ -503,6 +488,7 @@ module.exports = async (deployer, network, [account]) => {
   // FLIPPER MOM
 
   console.log('Deploying Flipper Mom...');
+  const FlipperMom = artifacts.require('FlipperMom');
   await deployer.deploy(FlipperMom, MCD_CAT);
   const flipperMom = await FlipperMom.deployed();
   const FLIPPER_MOM = flipperMom.address;
@@ -511,6 +497,7 @@ module.exports = async (deployer, network, [account]) => {
   // CLIPPER MOM
 
   console.log('Deploying Clipper Mom...');
+  const ClipperMom = artifacts.require('ClipperMom');
   await deployer.deploy(ClipperMom, MCD_SPOT);
   const clipperMom = await ClipperMom.deployed();
   const CLIPPER_MOM = clipperMom.address;
@@ -519,6 +506,7 @@ module.exports = async (deployer, network, [account]) => {
   // ILK REGISTRY
 
   console.log('Deploying ILK Registry...');
+  const IlkRegistry = artifacts.require('IlkRegistry');
   await deployer.deploy(IlkRegistry, MCD_VAT, MCD_DOG, MCD_CAT, MCD_SPOT);
   const ilkRegistry = await IlkRegistry.deployed();
   const ILK_REGISTRY = ilkRegistry.address;
@@ -537,6 +525,7 @@ module.exports = async (deployer, network, [account]) => {
       const ilk_config = token_ilks[ilk];
       const ilk_name = web3.utils.asciiToHex(token_name + '-' + ilk);
 
+      const GemJoin = artifacts.require('GemJoin');
       const gemJoin = await GemJoin.at(MCD_JOIN_[token_name][ilk]);
       await gemJoin.rely(MCD_PAUSE_PROXY);
       await gemJoin.deny(account);
@@ -552,6 +541,7 @@ module.exports = async (deployer, network, [account]) => {
   // GOV ACTIONS
 
   console.log('Deploying Gov Actions...');
+  const GovActions = artifacts.require('GovActions');
   await deployer.deploy(GovActions);
   const govActions = await GovActions.deployed();
   const MCD_GOV_ACTIONS = govActions.address;
@@ -560,6 +550,7 @@ module.exports = async (deployer, network, [account]) => {
   // PAUSE PROXY ACTIONS
 
   console.log('Deploying Pause Proxy Actions...');
+  const DssDeployPauseProxyActions = artifacts.require('DssDeployPauseProxyActions');
   await deployer.deploy(DssDeployPauseProxyActions);
   const dssDeployPauseProxyActions = await DssDeployPauseProxyActions.deployed();
   const PROXY_PAUSE_ACTIONS = dssDeployPauseProxyActions.address;
@@ -574,6 +565,7 @@ module.exports = async (deployer, network, [account]) => {
     PROXY_DEPLOYER = await proxyRegistry.proxies(account);
   }
   console.log('PROXY_DEPLOYER=' + PROXY_DEPLOYER);
+  const DSProxy = artifacts.require('DSProxy');
   const proxyDeployer = await DSProxy.at(PROXY_DEPLOYER);
   await dsRoles.setRootUser(PROXY_DEPLOYER, true);
 
@@ -684,6 +676,7 @@ module.exports = async (deployer, network, [account]) => {
     console.log('MCD_IOU=' + MCD_IOU);
 
     console.log('Publishing DS Chief...');
+    const DSChief = artifacts.require('DSChief');
     await deployer.deploy(DSChief, MCD_GOV, MCD_IOU, 5);
     const dsChief = await DSChief.deployed();
     MCD_ADM_CHIEF = dsChief.address;
@@ -691,6 +684,7 @@ module.exports = async (deployer, network, [account]) => {
     iouToken.setOwner(MCD_ADM_CHIEF);
 
     console.log('Publishing Vote Proxy Factory...');
+    const VoteProxyFactory = artifacts.require('VoteProxyFactory');
     await deployer.deploy(VoteProxyFactory, dsChief.address);
     const voteProxyFactory = await VoteProxyFactory.deployed();
     const VOTE_PROXY_FACTORY = voteProxyFactory.address;
@@ -706,6 +700,7 @@ module.exports = async (deployer, network, [account]) => {
   // AUTO LINE
 
   console.log('Publishing Auto Line...');
+  const DssAutoLine = artifacts.require('DssAutoLine');
   await deployer.deploy(DssAutoLine, MCD_VAT);
   const dssAutoLine = await DssAutoLine.deployed();
   const MCD_IAM_AUTO_LINE = dssAutoLine.address;
@@ -715,6 +710,7 @@ module.exports = async (deployer, network, [account]) => {
   // FLASH
 
   console.log('Publishing Flash...');
+  const DssFlash = artifacts.require('DssFlash');
   await deployer.deploy(DssFlash, MCD_JOIN_DAI, MCD_VOW);
   const dssFlash = await DssFlash.deployed();
   const MCD_FLASH = dssFlash.address;
@@ -971,6 +967,7 @@ module.exports = async (deployer, network, [account]) => {
       if (ilk_config.clipDeploy !== undefined) {
         const chop = units(ilk_clipDeploy.chop, 16) + units('100', 16);
         await filex(MCD_DOG, ilk_name, 'chop', chop);
+        const Clipper = artifacts.require('Clipper');
         const clipper = await Clipper.at(MCD_CLIP_[token_name][ilk]);
         await clipper.upchost();
       }
@@ -1331,16 +1328,19 @@ module.exports = async (deployer, network, [account]) => {
 
   // review PSM deploy
   console.log('Deploying AuthGemJoin5...');
+  const AuthGemJoin5 = artifacts.require('AuthGemJoin5');
   await deployer.deploy(AuthGemJoin5, MCD_VAT, web3.utils.asciiToHex('PSM-USDC-A'), USDC[chainId]);
   const authGemJoin5 = await AuthGemJoin5.deployed();
 
   console.log('Deploying DssPsm...');
+  const DssPsm = artifacts.require('DssPsm');
   await deployer.deploy(DssPsm, authGemJoin5.address, MCD_JOIN_DAI, MCD_VOW);
   const dssPsm = await DssPsm.deployed();
   const DSS_PSM = dssPsm.address;
   console.log('DSS_PSM=' + DSS_PSM);
 
   console.log('Deploying Lerp...');
+  const Lerp = artifacts.require('Lerp');
   await deployer.deploy(Lerp, DSS_PSM, web3.utils.asciiToHex('tin'), LERP_START_TIME, LERP_START, LERP_END, LERP_DURATION);
   const lerp = await Lerp.deployed();
   const LERP = lerp.address;
