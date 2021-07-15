@@ -61,7 +61,7 @@ contract Median is LibNote {
 
     uint128        val;
     uint32  public age;
-    bytes32 public constant wat = "ethusd"; // You want to change this every deploy
+    bytes32 public immutable wat;
     uint256 public bar = 1;
 
     // Authorized oracles, set by an auth
@@ -78,7 +78,8 @@ contract Median is LibNote {
     event LogMedianPrice(uint256 val, uint256 age);
 
     //Set type of Oracle
-    constructor() public {
+    constructor(bytes32 _wat) public {
+        wat = _wat;
         wards[msg.sender] = 1;
     }
 
@@ -91,7 +92,7 @@ contract Median is LibNote {
         return (val, val > 0);
     }
 
-    function recover(uint256 val_, uint256 age_, uint8 v, bytes32 r, bytes32 s) internal pure returns (address) {
+    function recover(uint256 val_, uint256 age_, uint8 v, bytes32 r, bytes32 s) internal view returns (address) {
         return ecrecover(
             keccak256(abi.encodePacked("\x19Ethereum Signed Message:\n32", keccak256(abi.encodePacked(val_, age_, wat)))),
             v, r, s

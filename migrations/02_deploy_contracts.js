@@ -54,7 +54,8 @@ module.exports = async (deployer, network, [account]) => {
     if (token_import.pip === undefined) {
       if (token_pipDeploy.type == 'median') {
         console.log('Publishing Median...');
-        await deployer.deploy(Median);
+        const wat = web3.utils.asciiToHex(token_name + 'USD');
+        await deployer.deploy(Median, wat);
         const median = await Median.deployed();
         VAL_[token_name] = median.address;
         console.log('VAL_' + token_name + '=' + VAL_[token_name]);
@@ -226,11 +227,11 @@ module.exports = async (deployer, network, [account]) => {
   const DSToken = artifacts.require('DSToken');
   if (config_import.gov === undefined) {
     console.log('Publishing Gov Token...');
-    await deployer.deploy(DSToken, 'MKR');
+    await deployer.deploy(DSToken, 'GOV');
     const govToken = await DSToken.deployed();
     MCD_GOV = govToken.address;
     console.log('MCD_GOV=' + MCD_GOV);
-    await govToken.setName('Maker');
+    await govToken.setName('Governance');
   }
   const govToken = await DSToken.at(MCD_GOV);
 
