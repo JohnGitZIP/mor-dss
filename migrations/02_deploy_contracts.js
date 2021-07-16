@@ -30,32 +30,58 @@ function units(coins, decimals) {
 
 module.exports = async (deployer, network, [account]) => {
 
+  function lift(object) {
+    return new Proxy(object, {
+      'get': (target, property, proxy) => {
+        const func = target[property];
+        if (typeof func !== 'function') return func;
+        let i = 0;
+        const liftedFunc = (...args) => {
+          const result = func(...args);
+          if (Object.prototype.toString.call(result) !== '[object Promise]') return result;
+          return new Promise((resolve, reject) => {
+            result.then(resolve, (e) => {
+              if (i >= 5) return reject(e);
+              console.log('! lift.func #' + i + ':' + e.message);
+              i++;
+              liftedFunc(...args).then(resolve, reject);
+            });
+          });
+        };
+        return liftedFunc;
+      },
+    });
+  }
+
   async function artifact_deploy(artifact, ...params) {
-    for (;;) {
+    for (let i = 0; ; i++) {
       try {
         await deployer.deploy(artifact, ...params);
         break;
       } catch (e) {
-        console.log('! deployer.deploy: ' + e.message);
+        if (i >= 5) throw e;
+        console.log('! deployer.deploy #' + i + ':' + e.message);
         continue;
       }
     }
-    for (;;) {
+    for (let i = 0; ; i++) {
       try {
-        return await artifact.deployed();
+        return lift(await artifact.deployed());
       } catch (e) {
-        console.log('! artifact.deployed: ' + e.message);
+        if (i >= 5) throw e;
+        console.log('! artifact.deployed #' + i + ':' + e.message);
         continue;
       }
     }
   }
 
   async function artifact_at(artifact, address) {
-    for (;;) {
+    for (let i = 0; ; i++) {
       try {
-        return await artifact.at(address);
+        return lift(await artifact.at(address));
       } catch (e) {
-        console.log('! artifact.at:' + e.message);
+        if (i >= 5) throw e;
+        console.log('! artifact.at #' + i + ':' + e.message);
         continue;
       }
     }
