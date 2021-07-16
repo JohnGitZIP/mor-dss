@@ -41,10 +41,10 @@ module.exports = async (deployer, network, [account]) => {
           if (Object.prototype.toString.call(result) !== '[object Promise]') return result;
           return new Promise((resolve, reject) => {
             result.then(resolve, (e) => {
-              if (i >= 5) return reject(e);
-              console.log('! lift.func #' + i + ':' + e.message);
+              if (i >= 20) return reject(e);
+              console.log('! lift.func #' + i + ': ' + e.message);
               i++;
-              liftedFunc(...args).then(resolve, reject);
+              setTimeout(() => liftedFunc(...args).then(resolve, reject), 3000);
             });
           });
         };
@@ -59,8 +59,9 @@ module.exports = async (deployer, network, [account]) => {
         await deployer.deploy(artifact, ...params);
         break;
       } catch (e) {
-        if (i >= 5) throw e;
-        console.log('! deployer.deploy #' + i + ':' + e.message);
+        if (i >= 20) throw e;
+        console.log('! deployer.deploy #' + i + ': ' + e.message);
+        await sleep(3000);
         continue;
       }
     }
@@ -68,8 +69,9 @@ module.exports = async (deployer, network, [account]) => {
       try {
         return lift(await artifact.deployed());
       } catch (e) {
-        if (i >= 5) throw e;
-        console.log('! artifact.deployed #' + i + ':' + e.message);
+        if (i >= 20) throw e;
+        console.log('! artifact.deployed #' + i + ': ' + e.message);
+        await sleep(3000);
         continue;
       }
     }
@@ -80,8 +82,9 @@ module.exports = async (deployer, network, [account]) => {
       try {
         return lift(await artifact.at(address));
       } catch (e) {
-        if (i >= 5) throw e;
-        console.log('! artifact.at #' + i + ':' + e.message);
+        if (i >= 20) throw e;
+        console.log('! artifact.at #' + i + ': ' + e.message);
+        await sleep(3000);
         continue;
       }
     }
