@@ -25,23 +25,10 @@ import { Vat } from "./vat.sol";
 import { Vow } from "./vow.sol";
 import { Cat } from "./cat.sol";
 import { Dog } from "./dog.sol";
+import { Flipper } from "../dss/flip.sol";
 
 interface PotLike {
     function cage() external;
-}
-
-interface FlipLike {
-    function bids(uint256 id) external view returns (
-        uint256 bid,   // [rad]
-        uint256 lot,   // [wad]
-        address guy,
-        uint48  tic,   // [unix epoch time]
-        uint48  end,   // [unix epoch time]
-        address usr,
-        address gal,
-        uint256 tab    // [rad]
-    );
-    function yank(uint256 id) external;
 }
 
 interface ClipLike {
@@ -328,7 +315,7 @@ contract End {
         require(tag[ilk] != 0, "End/tag-ilk-not-defined");
 
         (address _flip,,) = cat.ilks(ilk);
-        FlipLike flip = FlipLike(_flip);
+        Flipper flip = Flipper(_flip);
         (, uint256 rate,,,) = vat.ilks(ilk);
         (uint256 bid, uint256 lot,,,, address usr,, uint256 tab) = flip.bids(id);
 

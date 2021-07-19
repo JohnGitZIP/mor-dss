@@ -28,11 +28,6 @@ interface JoinLike {
   function live()         external view returns (uint256);
 }
 
-interface FlipLike {
-  function vat()          external view returns (address);
-  function cat()          external view returns (address);
-}
-
 interface ClipLike {
   function vat()          external view returns (address);
   function dog()          external view returns (address);
