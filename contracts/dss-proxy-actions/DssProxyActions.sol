@@ -22,6 +22,7 @@ pragma solidity >=0.5.12;
 import { Vat } from "../dss/vat.sol";
 import { DaiJoin } from "../dss/join.sol";
 import { End } from "../dss/end.sol";
+import { Pot } from "../dss/pot.sol";
 
 interface GemLike {
     function approve(address, uint) external;
@@ -69,13 +70,6 @@ interface HopeLike {
 
 interface JugLike {
     function drip(bytes32) external returns (uint);
-}
-
-interface PotLike {
-    function pie(address) external view returns (uint);
-    function drip() external returns (uint);
-    function join(uint) external;
-    function exit(uint) external;
 }
 
 interface ProxyRegistryLike {
@@ -898,7 +892,7 @@ contract DssProxyActionsDsr is Common {
     ) public {
         Vat vat = DaiJoin(daiJoin).vat();
         // Executes drip to get the chi rate updated to rho == now, otherwise join will fail
-        uint chi = PotLike(pot).drip();
+        uint chi = Pot(pot).drip();
         // Joins wad amount to the vat balance
         daiJoin_join(daiJoin, address(this), wad);
         // Approves the pot to take out DAI from the proxy's balance in the vat
@@ -906,7 +900,7 @@ contract DssProxyActionsDsr is Common {
             vat.hope(pot);
         }
         // Joins the pie value (equivalent to the DAI wad amount) in the pot
-        PotLike(pot).join(_mul(wad, RAY) / chi);
+        Pot(pot).join(_mul(wad, RAY) / chi);
     }
 
     function exit(
@@ -916,11 +910,11 @@ contract DssProxyActionsDsr is Common {
     ) public {
         Vat vat = DaiJoin(daiJoin).vat();
         // Executes drip to count the savings accumulated until this moment
-        uint chi = PotLike(pot).drip();
+        uint chi = Pot(pot).drip();
         // Calculates the pie value in the pot equivalent to the DAI wad amount
         uint pie = _mul(wad, RAY) / chi;
         // Exits DAI from the pot
-        PotLike(pot).exit(pie);
+        Pot(pot).exit(pie);
         // Checks the actual balance of DAI in the vat after the pot exit
         uint bal = DaiJoin(daiJoin).vat().dai(address(this));
         // Allows adapter to access to proxy's DAI balance in the vat
@@ -941,11 +935,11 @@ contract DssProxyActionsDsr is Common {
     ) public {
         Vat vat = DaiJoin(daiJoin).vat();
         // Executes drip to count the savings accumulated until this moment
-        uint chi = PotLike(pot).drip();
+        uint chi = Pot(pot).drip();
         // Gets the total pie belonging to the proxy address
-        uint pie = PotLike(pot).pie(address(this));
+        uint pie = Pot(pot).pie(address(this));
         // Exits DAI from the pot
-        PotLike(pot).exit(pie);
+        Pot(pot).exit(pie);
         // Allows adapter to access to proxy's DAI balance in the vat
         if (vat.can(address(this), address(daiJoin)) == 0) {
             vat.hope(daiJoin);

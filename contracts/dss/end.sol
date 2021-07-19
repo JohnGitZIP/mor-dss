@@ -25,12 +25,9 @@ import { Vat } from "./vat.sol";
 import { Vow } from "./vow.sol";
 import { Cat } from "./cat.sol";
 import { Dog } from "./dog.sol";
-import { Flipper } from "../dss/flip.sol";
-import { Clipper } from "../dss/clip.sol";
-
-interface PotLike {
-    function cage() external;
-}
+import { Flipper } from "./flip.sol";
+import { Clipper } from "./clip.sol";
+import { Pot } from "./pot.sol";
 
 interface PipLike {
     function read() external view returns (bytes32);
@@ -175,7 +172,7 @@ contract End {
     Cat      public cat;
     Dog      public dog;
     Vow      public vow;   // Debt Engine
-    PotLike  public pot;
+    Pot      public pot;
     SpotLike public spot;
 
     uint256  public live;  // Active Flag
@@ -246,7 +243,7 @@ contract End {
         else if (what == "cat")   cat = Cat(data);
         else if (what == "dog")   dog = Dog(data);
         else if (what == "vow")   vow = Vow(data);
-        else if (what == "pot")   pot = PotLike(data);
+        else if (what == "pot")   pot = Pot(data);
         else if (what == "spot") spot = SpotLike(data);
         else revert("End/file-unrecognized-param");
         emit File(what, data);

@@ -19,15 +19,7 @@
 pragma solidity >=0.5.12;
 
 import { Vat } from "../dss/vat.sol";
-
-interface PotLike {
-    function vat() external view returns (address);
-    function chi() external view returns (uint256);
-    function rho() external view returns (uint256);
-    function drip() external returns (uint256);
-    function join(uint256) external;
-    function exit(uint256) external;
-}
+import { Pot } from "../dss/pot.sol";
 
 interface JoinLike {
     function dai() external view returns (address);
@@ -41,7 +33,7 @@ interface GemLike {
 }
 
 contract DsrManager {
-    PotLike  public pot;
+    Pot      public pot;
     GemLike  public dai;
     JoinLike public daiJoin;
 
@@ -76,7 +68,7 @@ contract DsrManager {
     }
 
     constructor(address pot_, address daiJoin_) public {
-        pot = PotLike(pot_);
+        pot = Pot(pot_);
         daiJoin = JoinLike(daiJoin_);
         dai = GemLike(daiJoin.dai());
 
