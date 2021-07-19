@@ -18,9 +18,7 @@
 
 pragma solidity >=0.5.12;
 
-interface VatLike {
-    function hope(address) external;
-}
+import { Vat } from "../dss/vat.sol";
 
 interface PotLike {
     function vat() external view returns (address);
@@ -82,7 +80,7 @@ contract DsrManager {
         daiJoin = JoinLike(daiJoin_);
         dai = GemLike(daiJoin.dai());
 
-        VatLike vat = VatLike(pot.vat());
+        Vat vat = Vat(pot.vat());
         vat.hope(address(daiJoin));
         vat.hope(address(pot));
         dai.approve(address(daiJoin), uint256(-1));

@@ -23,9 +23,7 @@ pragma solidity >=0.5.12;
 // import "dss/lib.sol";
 import { LibNote } from "../median/median.sol";
 
-interface VatLike {
-    function slip(bytes32, address, int256) external;
-}
+import { Vat } from "../dss/vat.sol";
 
 interface GemLike {
     function decimals() external view returns (uint256);
@@ -36,7 +34,7 @@ interface GemLike {
 // For a token that needs restriction on the sources which are able to execute the join function (like SAI through Migration contract)
 
 contract AuthGemJoin is LibNote {
-    VatLike public vat;
+    Vat     public vat;
     bytes32 public ilk;
     GemLike public gem;
     uint256 public dec;
@@ -51,7 +49,7 @@ contract AuthGemJoin is LibNote {
     constructor(address vat_, bytes32 ilk_, address gem_) public {
         wards[msg.sender] = 1;
         live = 1;
-        vat = VatLike(vat_);
+        vat = Vat(vat_);
         ilk = ilk_;
         gem = GemLike(gem_);
         dec = gem.decimals();

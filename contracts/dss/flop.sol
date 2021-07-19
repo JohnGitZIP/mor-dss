@@ -19,14 +19,12 @@
 
 pragma solidity >=0.5.12;
 
+import { Vat } from "./vat.sol";
+
 // FIXME: This contract was altered compared to the production version.
 // It doesn't use LibNote anymore.
 // New deployments of this contract will need to include custom events (TO DO).
 
-interface VatLike {
-    function move(address,address,uint) external;
-    function suck(address,address,uint) external;
-}
 interface GemLike {
     function mint(address,uint) external;
 }
@@ -67,7 +65,7 @@ contract Flopper {
 
     mapping (uint => Bid) public bids;
 
-    VatLike  public   vat;  // CDP Engine
+    Vat      public   vat;  // CDP Engine
     GemLike  public   gem;
 
     uint256  constant ONE = 1.00E18;
@@ -90,7 +88,7 @@ contract Flopper {
     // --- Init ---
     constructor(address vat_, address gem_) public {
         wards[msg.sender] = 1;
-        vat = VatLike(vat_);
+        vat = Vat(vat_);
         gem = GemLike(gem_);
         live = 1;
     }

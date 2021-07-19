@@ -19,6 +19,8 @@
 
 pragma solidity >=0.6.12;
 
+import { Vat } from "./vat.sol";
+
 interface ClipperLike {
     function ilk() external view returns (bytes32);
     function kick(
@@ -27,23 +29,6 @@ interface ClipperLike {
         address usr,
         address kpr
     ) external returns (uint256);
-}
-
-interface VatLike {
-    function ilks(bytes32) external view returns (
-        uint256 Art,  // [wad]
-        uint256 rate, // [ray]
-        uint256 spot, // [ray]
-        uint256 line, // [rad]
-        uint256 dust  // [rad]
-    );
-    function urns(bytes32,address) external view returns (
-        uint256 ink,  // [wad]
-        uint256 art   // [wad]
-    );
-    function grab(bytes32,address,address,address,int256,int256) external;
-    function hope(address) external;
-    function nope(address) external;
 }
 
 interface VowLike {
@@ -68,7 +53,7 @@ contract Dog {
         uint256 dirt;  // Amt DAI needed to cover debt+fees of active auctions per ilk [rad]
     }
 
-    VatLike immutable public vat;  // CDP Engine
+    Vat     immutable public vat;  // CDP Engine
 
     mapping (bytes32 => Ilk) public ilks;
 
@@ -100,7 +85,7 @@ contract Dog {
 
     // --- Init ---
     constructor(address vat_) public {
-        vat = VatLike(vat_);
+        vat = Vat(vat_);
         live = 1;
         wards[msg.sender] = 1;
         emit Rely(msg.sender);

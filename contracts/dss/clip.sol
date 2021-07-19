@@ -19,12 +19,7 @@
 
 pragma solidity >=0.6.12;
 
-interface VatLike {
-    function move(address,address,uint256) external;
-    function flux(bytes32,address,address,uint256) external;
-    function ilks(bytes32) external returns (uint256, uint256, uint256, uint256, uint256);
-    function suck(address,address,uint256) external;
-}
+import { Vat } from "./vat.sol";
 
 interface PipLike {
     function peek() external returns (bytes32, bool);
@@ -60,7 +55,7 @@ contract Clipper {
 
     // --- Data ---
     bytes32  immutable public ilk;   // Collateral type of this Clipper
-    VatLike  immutable public vat;   // Core CDP Engine
+    Vat      immutable public vat;   // Core CDP Engine
 
     DogLike     public dog;      // Liquidation module
     address     public vow;      // Recipient of dai raised in auctions
@@ -135,7 +130,7 @@ contract Clipper {
 
     // --- Init ---
     constructor(address vat_, address spotter_, address dog_, bytes32 ilk_) public {
-        vat     = VatLike(vat_);
+        vat     = Vat(vat_);
         spotter = SpotterLike(spotter_);
         dog     = DogLike(dog_);
         ilk     = ilk_;
@@ -458,7 +453,7 @@ contract Clipper {
 
     // Public function to update the cached dust*chop value.
     function upchost() external {
-        (,,,, uint256 _dust) = VatLike(vat).ilks(ilk);
+        (,,,, uint256 _dust) = Vat(vat).ilks(ilk);
         chost = wmul(_dust, dog.chop(ilk));
     }
 

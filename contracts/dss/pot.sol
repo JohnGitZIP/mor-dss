@@ -19,6 +19,8 @@
 
 pragma solidity >=0.5.12;
 
+import { Vat } from "./vat.sol";
+
 // FIXME: This contract was altered compared to the production version.
 // It doesn't use LibNote anymore.
 // New deployments of this contract will need to include custom events (TO DO).
@@ -42,11 +44,6 @@ pragma solidity >=0.5.12;
 
 */
 
-interface VatLike {
-    function move(address,address,uint256) external;
-    function suck(address,address,uint256) external;
-}
-
 contract Pot {
     // --- Auth ---
     mapping (address => uint) public wards;
@@ -64,7 +61,7 @@ contract Pot {
     uint256 public dsr;   // The Dai Savings Rate          [ray]
     uint256 public chi;   // The Rate Accumulator          [ray]
 
-    VatLike public vat;   // CDP Engine
+    Vat     public vat;   // CDP Engine
     address public vow;   // Debt Engine
     uint256 public rho;   // Time of last drip     [unix epoch time]
 
@@ -73,7 +70,7 @@ contract Pot {
     // --- Init ---
     constructor(address vat_) public {
         wards[msg.sender] = 1;
-        vat = VatLike(vat_);
+        vat = Vat(vat_);
         dsr = ONE;
         chi = ONE;
         rho = now;

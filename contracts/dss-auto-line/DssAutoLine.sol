@@ -19,12 +19,7 @@
 
 pragma solidity ^0.6.11;
 
-interface VatLike {
-    function ilks(bytes32) external view returns (uint256, uint256, uint256, uint256, uint256);
-    function Line() external view returns (uint256);
-    function file(bytes32, uint256) external;
-    function file(bytes32, bytes32, uint256) external;
-}
+import { Vat } from "../dss/vat.sol";
 
 contract DssAutoLine {
     /*** Data ***/
@@ -39,7 +34,7 @@ contract DssAutoLine {
     mapping (bytes32 => Ilk)     public ilks;
     mapping (address => uint256) public wards;
 
-    VatLike immutable public vat;
+    Vat     immutable public vat;
 
     /*** Events ***/
     event Rely(address indexed usr);
@@ -50,7 +45,7 @@ contract DssAutoLine {
 
     /*** Init ***/
     constructor(address vat_) public {
-        vat = VatLike(vat_);
+        vat = Vat(vat_);
         wards[msg.sender] = 1;
         emit Rely(msg.sender);
     }

@@ -16,16 +16,13 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 pragma solidity ^0.6.12;
 
+import { Vat } from "../dss/vat.sol";
+
 interface JoinLike {
   function vat()          external view returns (address);
   function ilk()          external view returns (bytes32);
   function gem()          external view returns (address);
   function dec()          external view returns (uint256);
-  function live()         external view returns (uint256);
-}
-
-interface VatLike {
-  function wards(address) external view returns (uint256);
   function live()         external view returns (uint256);
 }
 
@@ -95,7 +92,7 @@ contract IlkRegistry {
         _;
     }
 
-    VatLike  public  immutable vat;
+    Vat      public  immutable vat;
     GemInfo  private immutable gemInfo;
 
     DogLike  public dog;
@@ -120,7 +117,7 @@ contract IlkRegistry {
     // Initialize the registry
     constructor(address vat_, address dog_, address cat_, address spot_) public {
 
-        VatLike _vat = vat = VatLike(vat_);
+        Vat _vat = vat = Vat(vat_);
         dog = DogLike(dog_);
         cat = CatLike(cat_);
         spot = SpotLike(spot_);

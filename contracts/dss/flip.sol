@@ -19,14 +19,11 @@
 
 pragma solidity >=0.5.12;
 
+import { Vat } from "./vat.sol";
+
 // FIXME: This contract was altered compared to the production version.
 // It doesn't use LibNote anymore.
 // New deployments of this contract will need to include custom events (TO DO).
-
-interface VatLike {
-    function move(address,address,uint256) external;
-    function flux(bytes32,address,address,uint256) external;
-}
 
 interface CatLike {
     function claw(uint256) external;
@@ -70,7 +67,7 @@ contract Flipper {
 
     mapping (uint256 => Bid) public bids;
 
-    VatLike public   vat;            // CDP Engine
+    Vat     public   vat;            // CDP Engine
     bytes32 public   ilk;            // collateral type
 
     uint256 constant ONE = 1.00E18;
@@ -92,7 +89,7 @@ contract Flipper {
 
     // --- Init ---
     constructor(address vat_, address cat_, bytes32 ilk_) public {
-        vat = VatLike(vat_);
+        vat = Vat(vat_);
         cat = CatLike(cat_);
         ilk = ilk_;
         wards[msg.sender] = 1;

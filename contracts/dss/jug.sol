@@ -19,17 +19,11 @@
 
 pragma solidity >=0.5.12;
 
+import { Vat } from "./vat.sol";
+
 // FIXME: This contract was altered compared to the production version.
 // It doesn't use LibNote anymore.
 // New deployments of this contract will need to include custom events (TO DO).
-
-interface VatLike {
-    function ilks(bytes32) external returns (
-        uint256 Art,   // [wad]
-        uint256 rate   // [ray]
-    );
-    function fold(bytes32,address,int) external;
-}
 
 contract Jug {
     // --- Auth ---
@@ -48,14 +42,14 @@ contract Jug {
     }
 
     mapping (bytes32 => Ilk) public ilks;
-    VatLike                  public vat;   // CDP Engine
+    Vat                      public vat;   // CDP Engine
     address                  public vow;   // Debt Engine
     uint256                  public base;  // Global, per-second stability fee contribution [ray]
 
     // --- Init ---
     constructor(address vat_) public {
         wards[msg.sender] = 1;
-        vat = VatLike(vat_);
+        vat = Vat(vat_);
     }
 
     // --- Math ---
@@ -121,7 +115,7 @@ contract Jug {
     // --- Stability Fee Collection ---
     function drip(bytes32 ilk) external returns (uint rate) {
         require(now >= ilks[ilk].rho, "Jug/invalid-now");
-        (, uint prev) = vat.ilks(ilk);
+        (, uint prev,,,) = vat.ilks(ilk);
         rate = rmul(rpow(_add(base, ilks[ilk].duty), now - ilks[ilk].rho, ONE), prev);
         vat.fold(ilk, vow, diff(rate, prev));
         ilks[ilk].rho = now;

@@ -19,6 +19,8 @@
 
 pragma solidity >=0.5.12;
 
+import { Vat } from "./vat.sol";
+
 // FIXME: This contract was altered compared to the production version.
 // It doesn't use LibNote anymore.
 // New deployments of this contract will need to include custom events (TO DO).
@@ -35,14 +37,6 @@ interface FlapLike {
     function live() external returns (uint);
 }
 
-interface VatLike {
-    function dai (address) external view returns (uint);
-    function sin (address) external view returns (uint);
-    function heal(uint256) external;
-    function hope(address) external;
-    function nope(address) external;
-}
-
 contract Vow {
     // --- Auth ---
     mapping (address => uint) public wards;
@@ -54,7 +48,7 @@ contract Vow {
     }
 
     // --- Data ---
-    VatLike public vat;        // CDP Engine
+    Vat      public vat;       // CDP Engine
     FlapLike public flapper;   // Surplus Auction House
     FlopLike public flopper;   // Debt Auction House
 
@@ -74,7 +68,7 @@ contract Vow {
     // --- Init ---
     constructor(address vat_, address flapper_, address flopper_) public {
         wards[msg.sender] = 1;
-        vat     = VatLike(vat_);
+        vat     = Vat(vat_);
         flapper = FlapLike(flapper_);
         flopper = FlopLike(flopper_);
         vat.hope(flapper_);

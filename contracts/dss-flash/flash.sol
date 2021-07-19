@@ -16,6 +16,8 @@
 
 pragma solidity 0.6.12;
 
+import { Vat } from "../dss/vat.sol";
+
 import "./interface/IERC3156FlashLender.sol";
 import "./interface/IERC3156FlashBorrower.sol";
 import "./interface/IVatDaiFlashLender.sol";
@@ -33,14 +35,6 @@ interface DaiJoinLike {
     function exit(address, uint256) external;
 }
 
-interface VatLike {
-    function hope(address) external;
-    function dai(address) external view returns (uint256);
-    function move(address, address, uint256) external;
-    function heal(uint256) external;
-    function suck(address, address, uint256) external;
-}
-
 contract DssFlash is IERC3156FlashLender, IVatDaiFlashLender {
 
     // --- Auth ---
@@ -53,7 +47,7 @@ contract DssFlash is IERC3156FlashLender, IVatDaiFlashLender {
     }
 
     // --- Data ---
-    VatLike     public immutable vat;
+    Vat         public immutable vat;
     DaiJoinLike public immutable daiJoin;
     DaiLike     public immutable dai;
     address     public immutable vow;       // vow intentionally set immutable to save gas
@@ -84,7 +78,7 @@ contract DssFlash is IERC3156FlashLender, IVatDaiFlashLender {
         wards[msg.sender] = 1;
         emit Rely(msg.sender);
 
-        VatLike vat_ = vat = VatLike(DaiJoinLike(daiJoin_).vat());
+        Vat vat_ = vat = Vat(DaiJoinLike(daiJoin_).vat());
         daiJoin = DaiJoinLike(daiJoin_);
         DaiLike dai_ = dai = DaiLike(DaiJoinLike(daiJoin_).dai());
         vow = vow_;
