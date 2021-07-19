@@ -21,6 +21,7 @@ pragma solidity >=0.5.12;
 
 import { Vat } from "../dss/vat.sol";
 import { DaiJoin } from "../dss/join.sol";
+import { End } from "../dss/end.sol";
 
 interface GemLike {
     function approve(address, uint) external;
@@ -64,14 +65,6 @@ interface GNTJoinLike {
 interface HopeLike {
     function hope(address) external;
     function nope(address) external;
-}
-
-interface EndLike {
-    function fix(bytes32) external view returns (uint);
-    function cash(bytes32, uint) external;
-    function free(bytes32) external;
-    function pack(uint) external;
-    function skim(bytes32, address) external;
 }
 
 interface JugLike {
@@ -814,7 +807,7 @@ contract DssProxyActionsEnd is Common {
 
         // If CDP still has debt, it needs to be paid
         if (art > 0) {
-            EndLike(end).skim(ilk, urn);
+            End(end).skim(ilk, urn);
             (ink,) = vat.urns(ilk, urn);
         }
         // Approves the manager to transfer the position to proxy's address in the vat
@@ -824,7 +817,7 @@ contract DssProxyActionsEnd is Common {
         // Transfers position from CDP to the proxy address
         ManagerLike(manager).quit(cdp, address(this));
         // Frees the position and recovers the collateral in the vat registry
-        EndLike(end).free(ilk);
+        End(end).free(ilk);
     }
 
     // Public functions
@@ -865,7 +858,7 @@ contract DssProxyActionsEnd is Common {
         if (vat.can(address(this), address(end)) == 0) {
             vat.hope(end);
         }
-        EndLike(end).pack(wad);
+        End(end).pack(wad);
     }
 
     function cashETH(
@@ -874,8 +867,8 @@ contract DssProxyActionsEnd is Common {
         bytes32 ilk,
         uint wad
     ) public {
-        EndLike(end).cash(ilk, wad);
-        uint wadC = _mul(wad, EndLike(end).fix(ilk)) / RAY;
+        End(end).cash(ilk, wad);
+        uint wadC = _mul(wad, End(end).fix(ilk)) / RAY;
         // Exits WETH amount to proxy address as a token
         GemJoinLike(ethJoin).exit(address(this), wadC);
         // Converts WETH to ETH
@@ -890,9 +883,9 @@ contract DssProxyActionsEnd is Common {
         bytes32 ilk,
         uint wad
     ) public {
-        EndLike(end).cash(ilk, wad);
+        End(end).cash(ilk, wad);
         // Exits token amount to the user's wallet as a token
-        uint amt = _mul(wad, EndLike(end).fix(ilk)) / RAY / 10 ** (18 - GemJoinLike(gemJoin).dec());
+        uint amt = _mul(wad, End(end).fix(ilk)) / RAY / 10 ** (18 - GemJoinLike(gemJoin).dec());
         GemJoinLike(gemJoin).exit(msg.sender, amt);
     }
 }

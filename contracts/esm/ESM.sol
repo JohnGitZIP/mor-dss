@@ -19,17 +19,13 @@
 
 pragma solidity >=0.6.12;
 
+import { End } from "../dss/end.sol";
+
 interface GemLike {
     function balanceOf(address) external view returns (uint256);
     function burn(uint256) external;
     function transfer(address, uint256) external returns (bool);
     function transferFrom(address, address, uint256) external returns (bool);
-}
-
-interface EndLike {
-    function live() external view returns (uint256);
-    function vat()  external view returns (address);
-    function cage() external;
 }
 
 interface DenyLike {
@@ -38,7 +34,7 @@ interface DenyLike {
 
 contract ESM {
     GemLike public immutable gem;   // collateral (MKR token)
-    EndLike public immutable end;   // cage module
+    End     public immutable end;   // cage module
     address public immutable proxy; // Pause proxy
     uint256 public immutable min;   // minimum activation threshold [wad]
 
@@ -50,7 +46,7 @@ contract ESM {
 
     constructor(address gem_, address end_, address proxy_, uint256 min_) public {
         gem = GemLike(gem_);
-        end = EndLike(end_);
+        end = End(end_);
         proxy = proxy_;
         min = min_;
     }
@@ -69,7 +65,7 @@ contract ESM {
         require(Sum >= min,  "ESM/min-not-reached");
 
         if (proxy != address(0)) {
-            DenyLike(end.vat()).deny(proxy);
+            DenyLike(address(end.vat())).deny(proxy); // REVIEW forced type cast
         }
         end.cage();
 

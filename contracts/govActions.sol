@@ -20,6 +20,8 @@
 
 pragma solidity >=0.5.12;
 
+import { End } from "./dss/end.sol";
+
 interface SetterLike {
     function file(bytes32, address) external;
     function file(bytes32, uint) external;
@@ -30,11 +32,6 @@ interface SetterLike {
     function init(bytes32) external;
     function drip() external;
     function drip(bytes32) external;
-}
-
-interface EndLike {
-    function cage() external;
-    function cage(bytes32) external;
 }
 
 interface PauseLike {
@@ -82,7 +79,7 @@ contract GovActions {
     }
 
     function cage(address end) public {
-        EndLike(end).cage();
+        End(end).cage();
     }
 
     function setAuthority(address pause, address newAuthority) public {
