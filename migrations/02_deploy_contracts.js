@@ -93,6 +93,7 @@ module.exports = async (deployer, network, [account]) => {
   const DssDeploy = artifacts.require('DssDeploy');
 
   const web3 = DssDeploy.interfaceAdapter.web3;
+  const initialBalance = await web3.eth.getBalance(account);
 
   const chainId = await web3.eth.net.getId();
 
@@ -1366,4 +1367,7 @@ module.exports = async (deployer, network, [account]) => {
   await dssPsm.rely(MCD_PAUSE_PROXY);
   await dssPsm.rely(LERP);
   await dssPsm.deny(account);
+
+  const finalBalance = await web3.eth.getBalance(account);
+  console.log('TOTAL COST:', BigInt(initialBalance) - BigInt(finalBalance));
 };
