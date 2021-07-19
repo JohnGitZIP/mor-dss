@@ -19,9 +19,7 @@
 
 pragma solidity >=0.5.12;
 
-interface OsmLike {
-    function stop() external;
-}
+import { OSM } from "../osm/osm.sol";
 
 interface AuthorityLike {
     function canCall(address src, address dst, bytes4 sig) external view returns (bool);
@@ -94,6 +92,6 @@ contract OsmMom {
     }
 
     function stop(bytes32 ilk) external note auth {
-        OsmLike(osms[ilk]).stop();
+        OSM(osms[ilk]).stop();
     }
 }

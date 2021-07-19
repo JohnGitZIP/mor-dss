@@ -19,6 +19,8 @@
 
 pragma solidity >=0.6.12;
 
+import { OSM } from "../osm/osm.sol";
+
 interface ClipLike {
     function file(bytes32, uint256) external;
     function ilk() external view returns (bytes32);
@@ -29,13 +31,8 @@ interface AuthorityLike {
     function canCall(address src, address dst, bytes4 sig) external view returns (bool);
 }
 
-interface OsmLike {
-    function peek() external view returns (uint256, bool);
-    function peep() external view returns (uint256, bool);
-}
-
 interface SpotterLike {
-    function ilks(bytes32) external view returns (OsmLike, uint256);
+    function ilks(bytes32) external view returns (OSM, uint256);
 }
 
 contract ClipperMom {
@@ -93,11 +90,15 @@ contract ClipperMom {
     }
 
     function getPrices(address clip) internal view returns (uint256 cur, uint256 nxt) {
-        (OsmLike osm, ) = spotter.ilks(ClipLike(clip).ilk());
+        (OSM osm, ) = spotter.ilks(ClipLike(clip).ilk());
         bool has;
-        (cur, has) = osm.peek();
+        bytes32 _cur;
+        bytes32 _nxt;
+        (_cur, has) = osm.peek();
+        cur = uint256(_cur); // REVIEW forced type cast
         require(has, "ClipperMom/invalid-cur-price");
-        (nxt, has) = osm.peep();
+        (_nxt, has) = osm.peep();
+        nxt = uint256(_nxt); // REVIEW forced type cast
         require(has, "ClipperMom/invalid-nxt-price");
     }
 
