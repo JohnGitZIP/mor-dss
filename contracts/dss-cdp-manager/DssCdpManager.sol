@@ -20,7 +20,7 @@
 pragma solidity >=0.5.12;
 
 import { Vat } from "../dss/vat.sol";
-import { LibNote } from "../osm/osm.sol";
+import { LibNote } from "../median/median.sol";
 
 contract UrnHandler {
     constructor(address vat) public {
