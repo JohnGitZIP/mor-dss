@@ -20,6 +20,7 @@
 pragma solidity >=0.5.12;
 
 import { Vat } from "../dss/vat.sol";
+import { DaiJoin } from "../dss/join.sol";
 
 interface GemLike {
     function approve(address, uint) external;
@@ -58,13 +59,6 @@ interface GemJoinLike {
 interface GNTJoinLike {
     function bags(address) external view returns (address);
     function make(address) external returns (address);
-}
-
-interface DaiJoinLike {
-    function vat() external returns (Vat);
-    function dai() external returns (GemLike);
-    function join(address, uint) external payable;
-    function exit(address, uint) external;
 }
 
 interface HopeLike {
@@ -116,13 +110,13 @@ contract Common {
     // Public functions
 
     function daiJoin_join(address apt, address urn, uint wad) public {
-        GemLike dai = DaiJoinLike(apt).dai();
+        GemLike dai = GemLike(address(DaiJoin(apt).dai())); // REVIEW forced type cast
         // Gets DAI from the user's wallet
         dai.transferFrom(msg.sender, address(this), wad);
         // Approves adapter to take the DAI amount
         dai.approve(apt, wad);
         // Joins DAI into the vat
-        DaiJoinLike(apt).join(urn, wad);
+        DaiJoin(apt).join(urn, wad);
     }
 }
 
@@ -508,7 +502,7 @@ contract DssProxyActions is Common {
             Vat(vat).hope(daiJoin);
         }
         // Exits DAI to the user's wallet as a token
-        DaiJoinLike(daiJoin).exit(msg.sender, wad);
+        DaiJoin(daiJoin).exit(msg.sender, wad);
     }
 
     function wipe(
@@ -616,7 +610,7 @@ contract DssProxyActions is Common {
             Vat(vat).hope(daiJoin);
         }
         // Exits DAI to the user's wallet as a token
-        DaiJoinLike(daiJoin).exit(msg.sender, wadD);
+        DaiJoin(daiJoin).exit(msg.sender, wadD);
     }
 
     function openLockETHAndDraw(
@@ -655,7 +649,7 @@ contract DssProxyActions is Common {
             Vat(vat).hope(daiJoin);
         }
         // Exits DAI to the user's wallet as a token
-        DaiJoinLike(daiJoin).exit(msg.sender, wadD);
+        DaiJoin(daiJoin).exit(msg.sender, wadD);
     }
 
     function openLockGemAndDraw(
@@ -866,7 +860,7 @@ contract DssProxyActionsEnd is Common {
         uint wad
     ) public {
         daiJoin_join(daiJoin, address(this), wad);
-        Vat vat = DaiJoinLike(daiJoin).vat();
+        Vat vat = DaiJoin(daiJoin).vat();
         // Approves the end to take out DAI from the proxy's balance in the vat
         if (vat.can(address(this), address(end)) == 0) {
             vat.hope(end);
@@ -909,7 +903,7 @@ contract DssProxyActionsDsr is Common {
         address pot,
         uint wad
     ) public {
-        Vat vat = DaiJoinLike(daiJoin).vat();
+        Vat vat = DaiJoin(daiJoin).vat();
         // Executes drip to get the chi rate updated to rho == now, otherwise join will fail
         uint chi = PotLike(pot).drip();
         // Joins wad amount to the vat balance
@@ -927,7 +921,7 @@ contract DssProxyActionsDsr is Common {
         address pot,
         uint wad
     ) public {
-        Vat vat = DaiJoinLike(daiJoin).vat();
+        Vat vat = DaiJoin(daiJoin).vat();
         // Executes drip to count the savings accumulated until this moment
         uint chi = PotLike(pot).drip();
         // Calculates the pie value in the pot equivalent to the DAI wad amount
@@ -935,14 +929,14 @@ contract DssProxyActionsDsr is Common {
         // Exits DAI from the pot
         PotLike(pot).exit(pie);
         // Checks the actual balance of DAI in the vat after the pot exit
-        uint bal = DaiJoinLike(daiJoin).vat().dai(address(this));
+        uint bal = DaiJoin(daiJoin).vat().dai(address(this));
         // Allows adapter to access to proxy's DAI balance in the vat
         if (vat.can(address(this), address(daiJoin)) == 0) {
             vat.hope(daiJoin);
         }
         // It is necessary to check if due rounding the exact wad amount can be exited by the adapter.
         // Otherwise it will do the maximum DAI balance in the vat
-        DaiJoinLike(daiJoin).exit(
+        DaiJoin(daiJoin).exit(
             msg.sender,
             bal >= _mul(wad, RAY) ? wad : bal / RAY
         );
@@ -952,7 +946,7 @@ contract DssProxyActionsDsr is Common {
         address daiJoin,
         address pot
     ) public {
-        Vat vat = DaiJoinLike(daiJoin).vat();
+        Vat vat = DaiJoin(daiJoin).vat();
         // Executes drip to count the savings accumulated until this moment
         uint chi = PotLike(pot).drip();
         // Gets the total pie belonging to the proxy address
@@ -964,6 +958,6 @@ contract DssProxyActionsDsr is Common {
             vat.hope(daiJoin);
         }
         // Exits the DAI amount corresponding to the value of pie
-        DaiJoinLike(daiJoin).exit(msg.sender, _mul(chi, pie) / RAY);
+        DaiJoin(daiJoin).exit(msg.sender, _mul(chi, pie) / RAY);
     }
 }
