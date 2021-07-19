@@ -26,21 +26,10 @@ import { Vow } from "./vow.sol";
 import { Cat } from "./cat.sol";
 import { Dog } from "./dog.sol";
 import { Flipper } from "../dss/flip.sol";
+import { Clipper } from "../dss/clip.sol";
 
 interface PotLike {
     function cage() external;
-}
-
-interface ClipLike {
-    function sales(uint256 id) external view returns (
-        uint256 pos,
-        uint256 tab,
-        uint256 lot,
-        address usr,
-        uint96  tic,
-        uint256 top
-    );
-    function yank(uint256 id) external;
 }
 
 interface PipLike {
@@ -297,7 +286,7 @@ contract End {
         require(tag[ilk] != 0, "End/tag-ilk-not-defined");
 
         (address _clip,,,) = dog.ilks(ilk);
-        ClipLike clip = ClipLike(_clip);
+        Clipper clip = Clipper(_clip);
         (, uint256 rate,,,) = vat.ilks(ilk);
         (, uint256 tab, uint256 lot, address usr,,) = clip.sales(id);
 

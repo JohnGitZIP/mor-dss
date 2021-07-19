@@ -19,13 +19,8 @@
 
 pragma solidity >=0.6.12;
 
+import { Clipper } from "../dss/clip.sol";
 import { OSM } from "../osm/osm.sol";
-
-interface ClipLike {
-    function file(bytes32, uint256) external;
-    function ilk() external view returns (bytes32);
-    function stopped() external view returns (uint256);
-}
 
 interface AuthorityLike {
     function canCall(address src, address dst, bytes4 sig) external view returns (bool);
@@ -90,7 +85,7 @@ contract ClipperMom {
     }
 
     function getPrices(address clip) internal view returns (uint256 cur, uint256 nxt) {
-        (OSM osm, ) = spotter.ilks(ClipLike(clip).ilk());
+        (OSM osm, ) = spotter.ilks(Clipper(clip).ilk());
         bool has;
         bytes32 _cur;
         bytes32 _nxt;
@@ -125,7 +120,7 @@ contract ClipperMom {
     // Governance action without delay
     function setBreaker(address clip, uint256 level, uint256 delay) external auth {
         require(level <= 3, "ClipperMom/nonexistent-level");
-        ClipLike(clip).file("stopped", level);
+        Clipper(clip).file("stopped", level);
         // If governance changes the status of the breaker we want to lock for one hour
         // the permissionless function so the osm can pull new nxt price to compare
         locked[clip] = add(block.timestamp, delay);
@@ -145,14 +140,14 @@ contract ClipperMom {
         must reset the breaker manually.
     */
     function tripBreaker(address clip) external {
-        require(ClipLike(clip).stopped() < 2, "ClipperMom/clipper-already-stopped");
+        require(Clipper(clip).stopped() < 2, "ClipperMom/clipper-already-stopped");
         require(block.timestamp > locked[clip], "ClipperMom/temporary-locked");
       
         (uint256 cur, uint256 nxt) = getPrices(clip);
 
         // tolerance[clip] == 0 will always make the following require to revert
         require(nxt < rmul(cur, tolerance[clip]), "ClipperMom/price-within-bounds");
-        ClipLike(clip).file("stopped", 2);
+        Clipper(clip).file("stopped", 2);
         emit SetBreaker(clip, 2);
     }
 }
