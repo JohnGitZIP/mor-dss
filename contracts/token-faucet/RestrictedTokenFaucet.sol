@@ -26,7 +26,7 @@ interface ERC20Like {
     function transfer(address,uint256) external; // return bool?
 }
 
-contract RestrictedTokenFaucet is DSNote {
+contract RestrictedTokenFaucet is _DSNote {
     // --- Auth ---
     mapping (address => uint256) public wards;
     function rely(address guy) public auth note { wards[guy] = 1; }
