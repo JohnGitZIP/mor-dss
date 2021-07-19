@@ -21,16 +21,11 @@ pragma solidity >=0.5.12;
 
 import { Vat } from "./vat.sol";
 import { Flapper } from "./flap.sol";
+import { Flopper } from "./flop.sol";
 
 // FIXME: This contract was altered compared to the production version.
 // It doesn't use LibNote anymore.
 // New deployments of this contract will need to include custom events (TO DO).
-
-interface FlopLike {
-    function kick(address gal, uint lot, uint bid) external returns (uint);
-    function cage() external;
-    function live() external returns (uint);
-}
 
 contract Vow {
     // --- Auth ---
@@ -45,7 +40,7 @@ contract Vow {
     // --- Data ---
     Vat      public vat;       // CDP Engine
     Flapper  public flapper;   // Surplus Auction House
-    FlopLike public flopper;   // Debt Auction House
+    Flopper  public flopper;   // Debt Auction House
 
     mapping (uint256 => uint256) public sin;  // debt queue
     uint256 public Sin;   // Queued debt            [rad]
@@ -65,7 +60,7 @@ contract Vow {
         wards[msg.sender] = 1;
         vat     = Vat(vat_);
         flapper = Flapper(flapper_);
-        flopper = FlopLike(flopper_);
+        flopper = Flopper(flopper_);
         vat.hope(flapper_);
         live = 1;
     }
@@ -97,7 +92,7 @@ contract Vow {
             flapper = Flapper(data);
             vat.hope(data);
         }
-        else if (what == "flopper") flopper = FlopLike(data);
+        else if (what == "flopper") flopper = Flopper(data);
         else revert("Vow/file-unrecognized-param");
     }
 
