@@ -17,6 +17,7 @@
 pragma solidity ^0.6.12;
 
 import { Vat } from "../dss/vat.sol";
+import { Cat } from "../dss/cat.sol";
 
 interface JoinLike {
   function vat()          external view returns (address);
@@ -30,12 +31,6 @@ interface DogLike {
   function vat()          external view returns (address);
   function live()         external view returns (uint256);
   function ilks(bytes32)  external view returns (address, uint256, uint256, uint256);
-}
-
-interface CatLike {
-  function vat()          external view returns (address);
-  function live()         external view returns (uint256);
-  function ilks(bytes32)  external view returns (address, uint256, uint256);
 }
 
 interface FlipLike {
@@ -96,7 +91,7 @@ contract IlkRegistry {
     GemInfo  private immutable gemInfo;
 
     DogLike  public dog;
-    CatLike  public cat;
+    Cat      public cat;
     SpotLike public spot;
 
     struct Ilk {
@@ -119,11 +114,11 @@ contract IlkRegistry {
 
         Vat _vat = vat = Vat(vat_);
         dog = DogLike(dog_);
-        cat = CatLike(cat_);
+        cat = Cat(cat_);
         spot = SpotLike(spot_);
 
         require(dog.vat() == vat_,      "IlkRegistry/invalid-dog-vat");
-        require(cat.vat() == vat_,      "IlkRegistry/invalid-cat-vat");
+        require(address(cat.vat()) == vat_,      "IlkRegistry/invalid-cat-vat"); // REVIEW forced type cast
         require(spot.vat() == vat_,     "IlkRegistry/invalid-spotter-vat");
         require(_vat.wards(cat_) == 1,  "IlkRegistry/cat-not-authorized");
         require(_vat.wards(spot_) == 1, "IlkRegistry/spot-not-authorized");
@@ -216,7 +211,7 @@ contract IlkRegistry {
     // Authed edit function
     function file(bytes32 what, address data) external auth {
         if      (what == "dog")  dog  = DogLike(data);
-        else if (what == "cat")  cat  = CatLike(data);
+        else if (what == "cat")  cat  = Cat(data);
         else if (what == "spot") spot = SpotLike(data);
         else revert("IlkRegistry/file-unrecognized-param-address");
         emit File(what, data);
