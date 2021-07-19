@@ -18,6 +18,7 @@ pragma solidity ^0.6.12;
 
 import { Vat } from "../dss/vat.sol";
 import { Cat } from "../dss/cat.sol";
+import { Dog } from "../dss/dog.sol";
 
 interface JoinLike {
   function vat()          external view returns (address);
@@ -25,12 +26,6 @@ interface JoinLike {
   function gem()          external view returns (address);
   function dec()          external view returns (uint256);
   function live()         external view returns (uint256);
-}
-
-interface DogLike {
-  function vat()          external view returns (address);
-  function live()         external view returns (uint256);
-  function ilks(bytes32)  external view returns (address, uint256, uint256, uint256);
 }
 
 interface FlipLike {
@@ -90,7 +85,7 @@ contract IlkRegistry {
     Vat      public  immutable vat;
     GemInfo  private immutable gemInfo;
 
-    DogLike  public dog;
+    Dog      public dog;
     Cat      public cat;
     SpotLike public spot;
 
@@ -113,11 +108,11 @@ contract IlkRegistry {
     constructor(address vat_, address dog_, address cat_, address spot_) public {
 
         Vat _vat = vat = Vat(vat_);
-        dog = DogLike(dog_);
+        dog = Dog(dog_);
         cat = Cat(cat_);
         spot = SpotLike(spot_);
 
-        require(dog.vat() == vat_,      "IlkRegistry/invalid-dog-vat");
+        require(address(dog.vat()) == vat_,      "IlkRegistry/invalid-dog-vat"); // REVIEW forced type cast
         require(address(cat.vat()) == vat_,      "IlkRegistry/invalid-cat-vat"); // REVIEW forced type cast
         require(spot.vat() == vat_,     "IlkRegistry/invalid-spotter-vat");
         require(_vat.wards(cat_) == 1,  "IlkRegistry/cat-not-authorized");
@@ -210,7 +205,7 @@ contract IlkRegistry {
 
     // Authed edit function
     function file(bytes32 what, address data) external auth {
-        if      (what == "dog")  dog  = DogLike(data);
+        if      (what == "dog")  dog  = Dog(data);
         else if (what == "cat")  cat  = Cat(data);
         else if (what == "spot") spot = SpotLike(data);
         else revert("IlkRegistry/file-unrecognized-param-address");

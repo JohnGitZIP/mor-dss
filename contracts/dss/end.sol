@@ -24,16 +24,7 @@ pragma solidity >=0.6.12;
 import { Vat } from "./vat.sol";
 import { Vow } from "./vow.sol";
 import { Cat } from "./cat.sol";
-
-interface DogLike {
-    function ilks(bytes32) external returns (
-        address clip,
-        uint256 chop,
-        uint256 hole,
-        uint256 dirt
-    );
-    function cage() external;
-}
+import { Dog } from "./dog.sol";
 
 interface PotLike {
     function cage() external;
@@ -206,7 +197,7 @@ contract End {
     // --- Data ---
     Vat      public vat;   // CDP Engine
     Cat      public cat;
-    DogLike  public dog;
+    Dog      public dog;
     Vow      public vow;   // Debt Engine
     PotLike  public pot;
     SpotLike public spot;
@@ -277,7 +268,7 @@ contract End {
         require(live == 1, "End/not-live");
         if (what == "vat")  vat = Vat(data);
         else if (what == "cat")   cat = Cat(data);
-        else if (what == "dog")   dog = DogLike(data);
+        else if (what == "dog")   dog = Dog(data);
         else if (what == "vow")   vow = Vow(data);
         else if (what == "pot")   pot = PotLike(data);
         else if (what == "spot") spot = SpotLike(data);

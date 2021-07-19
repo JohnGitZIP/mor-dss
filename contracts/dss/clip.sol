@@ -20,6 +20,7 @@
 pragma solidity >=0.6.12;
 
 import { Vat } from "./vat.sol";
+import { Dog } from "./dog.sol";
 
 interface PipLike {
     function peek() external returns (bytes32, bool);
@@ -28,11 +29,6 @@ interface PipLike {
 interface SpotterLike {
     function par() external returns (uint256);
     function ilks(bytes32) external returns (PipLike, uint256);
-}
-
-interface DogLike {
-    function chop(bytes32) external returns (uint256);
-    function digs(bytes32, uint256) external;
 }
 
 interface ClipperCallee {
@@ -57,7 +53,7 @@ contract Clipper {
     bytes32  immutable public ilk;   // Collateral type of this Clipper
     Vat      immutable public vat;   // Core CDP Engine
 
-    DogLike     public dog;      // Liquidation module
+    Dog         public dog;      // Liquidation module
     address     public vow;      // Recipient of dai raised in auctions
     SpotterLike public spotter;  // Collateral price module
     AbacusLike  public calc;     // Current price calculator
@@ -132,7 +128,7 @@ contract Clipper {
     constructor(address vat_, address spotter_, address dog_, bytes32 ilk_) public {
         vat     = Vat(vat_);
         spotter = SpotterLike(spotter_);
-        dog     = DogLike(dog_);
+        dog     = Dog(dog_);
         ilk     = ilk_;
         buf     = RAY;
         wards[msg.sender] = 1;
@@ -165,7 +161,7 @@ contract Clipper {
     }
     function file(bytes32 what, address data) external auth lock {
         if (what == "spotter") spotter = SpotterLike(data);
-        else if (what == "dog")    dog = DogLike(data);
+        else if (what == "dog")    dog = Dog(data);
         else if (what == "vow")    vow = data;
         else if (what == "calc")  calc = AbacusLike(data);
         else revert("Clipper/file-unrecognized-param");
@@ -385,7 +381,7 @@ contract Clipper {
             // Do external call (if data is defined) but to be
             // extremely careful we don't allow to do it to the two
             // contracts which the Clipper needs to be authorized
-            DogLike dog_ = dog;
+            Dog dog_ = dog;
             if (data.length > 0 && who != address(vat) && who != address(dog_)) {
                 ClipperCallee(who).clipperCall(msg.sender, owe, slice, data);
             }
