@@ -20,14 +20,11 @@
 pragma solidity >=0.6.12;
 
 import { Clipper } from "../dss/clip.sol";
+import { Spotter, PipLike } from "../dss/spot.sol";
 import { OSM } from "../osm/osm.sol";
 
 interface AuthorityLike {
     function canCall(address src, address dst, bytes4 sig) external view returns (bool);
-}
-
-interface SpotterLike {
-    function ilks(bytes32) external view returns (OSM, uint256);
 }
 
 contract ClipperMom {
@@ -36,7 +33,7 @@ contract ClipperMom {
     mapping (address => uint256) public locked;    // timestamp when becomes unlocked (per clipper)
     mapping (address => uint256) public tolerance; // clipper -> ray
 
-    SpotterLike public immutable spotter;
+    Spotter     public immutable spotter;
 
     event SetOwner(address indexed oldOwner, address indexed newOwner);
     event SetAuthority(address indexed oldAuthority, address indexed newAuthority);
@@ -54,7 +51,7 @@ contract ClipperMom {
 
     constructor(address spotter_) public {
         owner = msg.sender;
-        spotter = SpotterLike(spotter_);
+        spotter = Spotter(spotter_);
         emit SetOwner(address(0), msg.sender);
     }
 
@@ -85,7 +82,8 @@ contract ClipperMom {
     }
 
     function getPrices(address clip) internal view returns (uint256 cur, uint256 nxt) {
-        (OSM osm, ) = spotter.ilks(Clipper(clip).ilk());
+        (PipLike _osm, ) = spotter.ilks(Clipper(clip).ilk());
+        OSM osm = OSM(address(_osm)); // REVIEW forced type cast
         bool has;
         bytes32 _cur;
         bytes32 _nxt;

@@ -25,6 +25,7 @@ import { Vat } from "./vat.sol";
 
 interface PipLike {
     function peek() external returns (bytes32, bool);
+    function read() external view returns (bytes32);
 }
 
 contract Spotter {

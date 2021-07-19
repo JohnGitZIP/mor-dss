@@ -21,15 +21,7 @@ pragma solidity >=0.6.12;
 
 import { Vat } from "./vat.sol";
 import { Dog } from "./dog.sol";
-
-interface PipLike {
-    function peek() external returns (bytes32, bool);
-}
-
-interface SpotterLike {
-    function par() external returns (uint256);
-    function ilks(bytes32) external returns (PipLike, uint256);
-}
+import { Spotter, PipLike } from "./spot.sol";
 
 interface ClipperCallee {
     function clipperCall(address, uint256, uint256, bytes calldata) external;
@@ -55,7 +47,7 @@ contract Clipper {
 
     Dog         public dog;      // Liquidation module
     address     public vow;      // Recipient of dai raised in auctions
-    SpotterLike public spotter;  // Collateral price module
+    Spotter     public spotter;  // Collateral price module
     AbacusLike  public calc;     // Current price calculator
 
     uint256 public buf;    // Multiplicative factor to increase starting price                  [ray]
@@ -127,7 +119,7 @@ contract Clipper {
     // --- Init ---
     constructor(address vat_, address spotter_, address dog_, bytes32 ilk_) public {
         vat     = Vat(vat_);
-        spotter = SpotterLike(spotter_);
+        spotter = Spotter(spotter_);
         dog     = Dog(dog_);
         ilk     = ilk_;
         buf     = RAY;
@@ -160,7 +152,7 @@ contract Clipper {
         emit File(what, data);
     }
     function file(bytes32 what, address data) external auth lock {
-        if (what == "spotter") spotter = SpotterLike(data);
+        if (what == "spotter") spotter = Spotter(data);
         else if (what == "dog")    dog = Dog(data);
         else if (what == "vow")    vow = data;
         else if (what == "calc")  calc = AbacusLike(data);

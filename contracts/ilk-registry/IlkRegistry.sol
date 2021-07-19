@@ -19,6 +19,7 @@ pragma solidity ^0.6.12;
 import { Vat } from "../dss/vat.sol";
 import { Cat } from "../dss/cat.sol";
 import { Dog } from "../dss/dog.sol";
+import { Spotter, PipLike } from "../dss/spot.sol";
 
 interface JoinLike {
   function vat()          external view returns (address);
@@ -26,12 +27,6 @@ interface JoinLike {
   function gem()          external view returns (address);
   function dec()          external view returns (uint256);
   function live()         external view returns (uint256);
-}
-
-interface SpotLike {
-  function live()         external view returns (uint256);
-  function vat()          external view returns (address);
-  function ilks(bytes32)  external view returns (address, uint256);
 }
 
 interface TokenLike {
@@ -77,7 +72,7 @@ contract IlkRegistry {
 
     Dog      public dog;
     Cat      public cat;
-    SpotLike public spot;
+    Spotter  public spot;
 
     struct Ilk {
         uint96  pos;     // Index in ilks array
@@ -100,11 +95,11 @@ contract IlkRegistry {
         Vat _vat = vat = Vat(vat_);
         dog = Dog(dog_);
         cat = Cat(cat_);
-        spot = SpotLike(spot_);
+        spot = Spotter(spot_);
 
         require(address(dog.vat()) == vat_,      "IlkRegistry/invalid-dog-vat"); // REVIEW forced type cast
         require(address(cat.vat()) == vat_,      "IlkRegistry/invalid-cat-vat"); // REVIEW forced type cast
-        require(spot.vat() == vat_,     "IlkRegistry/invalid-spotter-vat");
+        require(address(spot.vat()) == vat_,     "IlkRegistry/invalid-spotter-vat"); // REVIEW forced type cast
         require(_vat.wards(cat_) == 1,  "IlkRegistry/cat-not-authorized");
         require(_vat.wards(spot_) == 1, "IlkRegistry/spot-not-authorized");
         require(_vat.live() == 1,       "IlkRegistry/vat-not-live");
@@ -129,8 +124,8 @@ contract IlkRegistry {
         require(_ilk != 0, "IlkRegistry/ilk-adapter-invalid");
         require(ilkData[_ilk].join == address(0), "IlkRegistry/ilk-already-exists");
 
-        (address _pip,) = spot.ilks(_ilk);
-        require(_pip != address(0), "IlkRegistry/pip-invalid");
+        (PipLike _pip,) = spot.ilks(_ilk);
+        require(address(_pip) != address(0), "IlkRegistry/pip-invalid");
 
         (address _xlip,,,) = dog.ilks(_ilk);
 
@@ -167,7 +162,7 @@ contract IlkRegistry {
             gem: _join.gem(),
             dec: uint8(_join.dec()),
             class: _class,
-            pip: _pip,
+            pip: address(_pip), // REVIEW forced type cast
             xlip: _xlip,
             name: name,
             symbol: symbol
@@ -197,7 +192,7 @@ contract IlkRegistry {
     function file(bytes32 what, address data) external auth {
         if      (what == "dog")  dog  = Dog(data);
         else if (what == "cat")  cat  = Cat(data);
-        else if (what == "spot") spot = SpotLike(data);
+        else if (what == "spot") spot = Spotter(data);
         else revert("IlkRegistry/file-unrecognized-param-address");
         emit File(what, data);
     }
@@ -352,10 +347,10 @@ contract IlkRegistry {
         uint96 _class = ilkData[ilk].class;
         require(_class == 1 || _class == 2, "IlkRegistry/invalid-class");
 
-        (address _pip,) = spot.ilks(ilk);
-        require(_pip != address(0), "IlkRegistry/pip-invalid");
+        (PipLike _pip,) = spot.ilks(ilk);
+        require(address(_pip) != address(0), "IlkRegistry/pip-invalid");
 
-        ilkData[ilk].pip    = _pip;
+        ilkData[ilk].pip    = address(_pip); // REVIEW forced type cast
         emit UpdateIlk(ilk);
     }
 

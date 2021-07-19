@@ -28,19 +28,7 @@ import { Dog } from "./dog.sol";
 import { Flipper } from "./flip.sol";
 import { Clipper } from "./clip.sol";
 import { Pot } from "./pot.sol";
-
-interface PipLike {
-    function read() external view returns (bytes32);
-}
-
-interface SpotLike {
-    function par() external view returns (uint256);
-    function ilks(bytes32) external view returns (
-        PipLike pip,
-        uint256 mat    // [ray]
-    );
-    function cage() external;
-}
+import { Spotter, PipLike } from "./spot.sol";
 
 /*
     This is the `End` and it coordinates Global Settlement. This is an
@@ -173,7 +161,7 @@ contract End {
     Dog      public dog;
     Vow      public vow;   // Debt Engine
     Pot      public pot;
-    SpotLike public spot;
+    Spotter  public spot;
 
     uint256  public live;  // Active Flag
     uint256  public when;  // Time of cage                   [unix epoch time]
@@ -244,7 +232,7 @@ contract End {
         else if (what == "dog")   dog = Dog(data);
         else if (what == "vow")   vow = Vow(data);
         else if (what == "pot")   pot = Pot(data);
-        else if (what == "spot") spot = SpotLike(data);
+        else if (what == "spot") spot = Spotter(data);
         else revert("End/file-unrecognized-param");
         emit File(what, data);
     }
