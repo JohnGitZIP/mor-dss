@@ -20,6 +20,7 @@
 pragma solidity >=0.6.12;
 
 import { Vat } from "./vat.sol";
+import { Vow } from "./vow.sol";
 
 interface ClipperLike {
     function ilk() external view returns (bytes32);
@@ -29,10 +30,6 @@ interface ClipperLike {
         address usr,
         address kpr
     ) external returns (uint256);
-}
-
-interface VowLike {
-    function fess(uint256) external;
 }
 
 contract Dog {
@@ -57,7 +54,7 @@ contract Dog {
 
     mapping (bytes32 => Ilk) public ilks;
 
-    VowLike public vow;   // Debt Engine
+    Vow     public vow;   // Debt Engine
     uint256 public live;  // Active Flag
     uint256 public Hole;  // Max DAI needed to cover debt+fees of active auctions [rad]
     uint256 public Dirt;  // Amt DAI needed to cover debt+fees of active auctions [rad]
@@ -109,7 +106,7 @@ contract Dog {
 
     // --- Administration ---
     function file(bytes32 what, address data) external auth {
-        if (what == "vow") vow = VowLike(data);
+        if (what == "vow") vow = Vow(data);
         else revert("Dog/file-unrecognized-param");
         emit File(what, data);
     }

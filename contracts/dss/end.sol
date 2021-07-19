@@ -22,6 +22,7 @@
 pragma solidity >=0.6.12;
 
 import { Vat } from "./vat.sol";
+import { Vow } from "./vow.sol";
 
 interface CatLike {
     function ilks(bytes32) external returns (
@@ -43,10 +44,6 @@ interface DogLike {
 }
 
 interface PotLike {
-    function cage() external;
-}
-
-interface VowLike {
     function cage() external;
 }
 
@@ -218,7 +215,7 @@ contract End {
     Vat      public vat;   // CDP Engine
     CatLike  public cat;
     DogLike  public dog;
-    VowLike  public vow;   // Debt Engine
+    Vow      public vow;   // Debt Engine
     PotLike  public pot;
     SpotLike public spot;
 
@@ -289,7 +286,7 @@ contract End {
         if (what == "vat")  vat = Vat(data);
         else if (what == "cat")   cat = CatLike(data);
         else if (what == "dog")   dog = DogLike(data);
-        else if (what == "vow")   vow = VowLike(data);
+        else if (what == "vow")   vow = Vow(data);
         else if (what == "pot")   pot = PotLike(data);
         else if (what == "spot") spot = SpotLike(data);
         else revert("End/file-unrecognized-param");
