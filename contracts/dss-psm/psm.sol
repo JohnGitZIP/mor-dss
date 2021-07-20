@@ -19,14 +19,7 @@ pragma solidity ^0.6.7;
 import { DaiJoinAbstract } from "../dss-interfaces/dss/DaiJoinAbstract.sol";
 import { DaiAbstract } from "../dss-interfaces/dss/DaiAbstract.sol";
 import { VatAbstract } from "../dss-interfaces/dss/VatAbstract.sol";
-
-interface AuthGemJoinAbstractExt {
-    function dec() external view returns (uint256);
-    function vat() external view returns (address);
-    function ilk() external view returns (bytes32);
-    function join(address, uint256, address) external;
-    function exit(address, uint256) external;
-}
+import { AuthGemJoin5 } from "./join-5-auth.sol";
 
 // Peg Stability Module
 // Allows anyone to go between Dai and the Gem by pooling the liquidity
@@ -41,7 +34,7 @@ contract DssPsm {
     modifier auth { require(wards[msg.sender] == 1); _; }
 
     VatAbstract immutable public vat;
-    AuthGemJoinAbstractExt immutable public gemJoin;
+    AuthGemJoin5 immutable public gemJoin;
     DaiAbstract immutable public dai;
     DaiJoinAbstract immutable public daiJoin;
     bytes32 immutable public ilk;
@@ -63,7 +56,7 @@ contract DssPsm {
     constructor(address gemJoin_, address daiJoin_, address vow_) public {
         wards[msg.sender] = 1;
         emit Rely(msg.sender);
-        AuthGemJoinAbstractExt gemJoin__ = gemJoin = AuthGemJoinAbstractExt(gemJoin_);
+        AuthGemJoin5 gemJoin__ = gemJoin = AuthGemJoin5(gemJoin_);
         DaiJoinAbstract daiJoin__ = daiJoin = DaiJoinAbstract(daiJoin_);
         VatAbstract vat__ = vat = VatAbstract(address(gemJoin__.vat()));
         DaiAbstract dai__ = dai = DaiAbstract(address(daiJoin__.dai()));
