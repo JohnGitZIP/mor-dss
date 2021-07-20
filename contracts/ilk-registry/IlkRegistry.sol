@@ -20,14 +20,7 @@ import { Vat } from "../dss/vat.sol";
 import { Cat } from "../dss/cat.sol";
 import { Dog } from "../dss/dog.sol";
 import { Spotter, PipLike } from "../dss/spot.sol";
-
-interface JoinLike {
-  function vat()          external view returns (address);
-  function ilk()          external view returns (bytes32);
-  function gem()          external view returns (address);
-  function dec()          external view returns (uint256);
-  function live()         external view returns (uint256);
-}
+import { GemJoin } from "../dss/join.sol";
 
 interface TokenLike {
     function name()       external view returns (string memory);
@@ -113,10 +106,10 @@ contract IlkRegistry {
 
     // Pass an active join adapter to the registry to add it to the set
     function add(address adapter) external {
-        JoinLike _join = JoinLike(adapter);
+        GemJoin _join = GemJoin(adapter);
 
         // Validate adapter
-        require(_join.vat() == address(vat),    "IlkRegistry/invalid-join-adapter-vat");
+        require(address(_join.vat()) == address(vat),    "IlkRegistry/invalid-join-adapter-vat"); // REVIEW forced type cast
         require(vat.wards(address(_join)) == 1, "IlkRegistry/adapter-not-authorized");
 
         // Validate ilk
@@ -137,7 +130,7 @@ contract IlkRegistry {
         }
 
         string memory name = bytes32ToStr(_ilk);
-        try gemInfo.name(_join.gem()) returns (string memory _name) {
+        try gemInfo.name(address(_join.gem())) returns (string memory _name) { // REVIEW forced type cast
             if (bytes(_name).length != 0) {
                 name = _name;
             }
@@ -146,7 +139,7 @@ contract IlkRegistry {
         }
 
         string memory symbol = bytes32ToStr(_ilk);
-        try gemInfo.symbol(_join.gem()) returns (string memory _symbol) {
+        try gemInfo.symbol(address(_join.gem())) returns (string memory _symbol) { // REVIEW forced type cast
             if (bytes(_symbol).length != 0) {
                 symbol = _symbol;
             }
@@ -159,7 +152,7 @@ contract IlkRegistry {
         ilkData[ilks[ilks.length - 1]] = Ilk({
             pos: uint96(ilks.length - 1),
             join: address(_join),
-            gem: _join.gem(),
+            gem: address(_join.gem()), // REVIEW forced type cast
             dec: uint8(_join.dec()),
             class: _class,
             pip: address(_pip), // REVIEW forced type cast
@@ -173,7 +166,7 @@ contract IlkRegistry {
 
     // Anyone can remove an ilk if the adapter has been caged
     function remove(bytes32 ilk) external {
-        JoinLike _join = JoinLike(ilkData[ilk].join);
+        GemJoin _join = GemJoin(ilkData[ilk].join);
         require(address(_join) != address(0), "IlkRegistry/invalid-ilk");
         uint96 _class = ilkData[ilk].class;
         require(_class == 1 || _class == 2, "IlkRegistry/invalid-class");
@@ -342,8 +335,8 @@ contract IlkRegistry {
 
     // Public function to update an ilk's pip and flip if the ilk has been updated.
     function update(bytes32 ilk) external {
-        require(JoinLike(ilkData[ilk].join).vat() == address(vat), "IlkRegistry/invalid-ilk");
-        require(JoinLike(ilkData[ilk].join).live() == 1, "IlkRegistry/ilk-not-live-use-remove-instead");
+        require(GemJoin(ilkData[ilk].join).vat() == vat, "IlkRegistry/invalid-ilk");
+        require(GemJoin(ilkData[ilk].join).live() == 1, "IlkRegistry/ilk-not-live-use-remove-instead");
         uint96 _class = ilkData[ilk].class;
         require(_class == 1 || _class == 2, "IlkRegistry/invalid-class");
 
