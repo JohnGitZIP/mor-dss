@@ -17,9 +17,7 @@
 
 pragma solidity ^0.6.12;
 
-interface DenyLike {
-    function deny(address) external;
-}
+import { DenyLike } from "../esm/ESM.sol";
 
 interface FileLike {
     function file(bytes32, uint256) external;
