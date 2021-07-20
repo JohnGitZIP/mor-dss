@@ -20,7 +20,7 @@ import { DaiJoinAbstract } from "../dss-interfaces/dss/DaiJoinAbstract.sol";
 import { DaiAbstract } from "../dss-interfaces/dss/DaiAbstract.sol";
 import { VatAbstract } from "../dss-interfaces/dss/VatAbstract.sol";
 
-interface AuthGemJoinAbstract {
+interface AuthGemJoinAbstractExt {
     function dec() external view returns (uint256);
     function vat() external view returns (address);
     function ilk() external view returns (bytes32);
@@ -41,7 +41,7 @@ contract DssPsm {
     modifier auth { require(wards[msg.sender] == 1); _; }
 
     VatAbstract immutable public vat;
-    AuthGemJoinAbstract immutable public gemJoin;
+    AuthGemJoinAbstractExt immutable public gemJoin;
     DaiAbstract immutable public dai;
     DaiJoinAbstract immutable public daiJoin;
     bytes32 immutable public ilk;
@@ -63,7 +63,7 @@ contract DssPsm {
     constructor(address gemJoin_, address daiJoin_, address vow_) public {
         wards[msg.sender] = 1;
         emit Rely(msg.sender);
-        AuthGemJoinAbstract gemJoin__ = gemJoin = AuthGemJoinAbstract(gemJoin_);
+        AuthGemJoinAbstractExt gemJoin__ = gemJoin = AuthGemJoinAbstractExt(gemJoin_);
         DaiJoinAbstract daiJoin__ = daiJoin = DaiJoinAbstract(daiJoin_);
         VatAbstract vat__ = vat = VatAbstract(address(gemJoin__.vat()));
         DaiAbstract dai__ = dai = DaiAbstract(address(daiJoin__.dai()));
