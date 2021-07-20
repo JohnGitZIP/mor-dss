@@ -21,6 +21,8 @@
 pragma solidity >=0.5.12;
 
 import { End } from "./dss/end.sol";
+import { DSAuthority } from "./ds-auth/auth.sol";
+import { DSPause } from "./ds-pause/pause.sol";
 
 interface SetterLike {
     function file(bytes32, address) external;
@@ -32,11 +34,6 @@ interface SetterLike {
     function init(bytes32) external;
     function drip() external;
     function drip(bytes32) external;
-}
-
-interface PauseLike {
-    function setAuthority(address) external;
-    function setDelay(uint) external;
 }
 
 contract GovActions {
@@ -83,15 +80,15 @@ contract GovActions {
     }
 
     function setAuthority(address pause, address newAuthority) public {
-        PauseLike(pause).setAuthority(newAuthority);
+        DSPause(pause).setAuthority(DSAuthority(newAuthority)); // REVIEW forced type cast
     }
 
     function setDelay(address pause, uint newDelay) public {
-        PauseLike(pause).setDelay(newDelay);
+        DSPause(pause).setDelay(newDelay);
     }
 
     function setAuthorityAndDelay(address pause, address newAuthority, uint newDelay) public {
-        PauseLike(pause).setAuthority(newAuthority);
-        PauseLike(pause).setDelay(newDelay);
+        DSPause(pause).setAuthority(DSAuthority(newAuthority)); // REVIEW forced type cast
+        DSPause(pause).setDelay(newDelay);
     }
 }
