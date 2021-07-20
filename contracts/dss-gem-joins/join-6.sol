@@ -25,7 +25,7 @@ import { LibNote } from "../median/median.sol";
 
 import { Vat } from "../dss/vat.sol";
 
-interface GemLike {
+interface GemLike6 {
     function decimals() external view returns (uint256);
     function balanceOf(address) external returns (uint256);
     function transfer(address, uint256) external returns (bool);
@@ -49,7 +49,7 @@ contract GemJoin6 is LibNote {
 
     Vat     public vat;
     bytes32 public ilk;
-    GemLike public gem;
+    GemLike6 public gem;
     uint256 public dec;
     uint256 public live;  // Access Flag
 
@@ -60,7 +60,7 @@ contract GemJoin6 is LibNote {
         live = 1;
         vat = Vat(vat_);
         ilk = ilk_;
-        gem = GemLike(gem_);
+        gem = GemLike6(gem_);
         setImplementation(gem.implementation(), 1);
         dec = gem.decimals();
     }

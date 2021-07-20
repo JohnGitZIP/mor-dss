@@ -22,14 +22,14 @@ import { Vat } from "../dss/vat.sol";
 import { Pot } from "../dss/pot.sol";
 import { DaiJoin } from "../dss/join.sol";
 
-interface GemLike {
+interface DsrGemLike {
     function transferFrom(address,address,uint256) external returns (bool);
     function approve(address,uint256) external returns (bool);
 }
 
 contract DsrManager {
     Pot      public pot;
-    GemLike  public dai;
+    DsrGemLike  public dai;
     DaiJoin  public daiJoin;
 
     uint256 public supply;
@@ -65,7 +65,7 @@ contract DsrManager {
     constructor(address pot_, address daiJoin_) public {
         pot = Pot(pot_);
         daiJoin = DaiJoin(daiJoin_);
-        dai = GemLike(address(daiJoin.dai())); // REVIEW forced type cast
+        dai = DsrGemLike(address(daiJoin.dai())); // REVIEW forced type cast
 
         Vat vat = Vat(pot.vat());
         vat.hope(address(daiJoin));

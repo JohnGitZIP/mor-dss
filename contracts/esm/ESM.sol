@@ -20,20 +20,14 @@
 pragma solidity >=0.6.12;
 
 import { End } from "../dss/end.sol";
-
-interface GemLike {
-    function balanceOf(address) external view returns (uint256);
-    function burn(uint256) external;
-    function transfer(address, uint256) external returns (bool);
-    function transferFrom(address, address, uint256) external returns (bool);
-}
+import { DSToken } from "../ds-token/token.sol";
 
 interface DenyLike {
     function deny(address) external;
 }
 
 contract ESM {
-    GemLike public immutable gem;   // collateral (MKR token)
+    DSToken public immutable gem;   // collateral (MKR token)
     End     public immutable end;   // cage module
     address public immutable proxy; // Pause proxy
     uint256 public immutable min;   // minimum activation threshold [wad]
@@ -45,7 +39,7 @@ contract ESM {
     event Join(address indexed usr, uint256 wad);
 
     constructor(address gem_, address end_, address proxy_, uint256 min_) public {
-        gem = GemLike(gem_);
+        gem = DSToken(gem_);
         end = End(end_);
         proxy = proxy_;
         min = min_;

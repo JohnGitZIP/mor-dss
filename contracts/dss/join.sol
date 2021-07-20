@@ -25,7 +25,7 @@ import { Vat } from "./vat.sol";
 // It doesn't use LibNote anymore.
 // New deployments of this contract will need to include custom events (TO DO).
 
-interface GemLike {
+interface Gem {
     function decimals() external view returns (uint);
     function transfer(address,uint) external returns (bool);
     function transferFrom(address,address,uint) external returns (bool);
@@ -72,7 +72,7 @@ contract GemJoin {
 
     Vat     public vat;   // CDP Engine
     bytes32 public ilk;   // Collateral Type
-    GemLike public gem;
+    Gem     public gem;
     uint    public dec;
     uint    public live;  // Active Flag
 
@@ -81,7 +81,7 @@ contract GemJoin {
         live = 1;
         vat = Vat(vat_);
         ilk = ilk_;
-        gem = GemLike(gem_);
+        gem = Gem(gem_);
         dec = gem.decimals();
     }
     function cage() external auth {

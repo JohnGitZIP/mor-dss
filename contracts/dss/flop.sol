@@ -21,14 +21,11 @@ pragma solidity >=0.5.12;
 
 import { Vat } from "./vat.sol";
 import { Vow } from "./vow.sol";
+import { DSToken } from "../ds-token/token.sol";
 
 // FIXME: This contract was altered compared to the production version.
 // It doesn't use LibNote anymore.
 // New deployments of this contract will need to include custom events (TO DO).
-
-interface GemLike {
-    function mint(address,uint) external;
-}
 
 /*
    This thing creates gems on demand in return for dai.
@@ -63,7 +60,7 @@ contract Flopper {
     mapping (uint => Bid) public bids;
 
     Vat      public   vat;  // CDP Engine
-    GemLike  public   gem;
+    DSToken  public   gem;
 
     uint256  constant ONE = 1.00E18;
     uint256  public   beg = 1.05E18;  // 5% minimum bid increase
@@ -86,7 +83,7 @@ contract Flopper {
     constructor(address vat_, address gem_) public {
         wards[msg.sender] = 1;
         vat = Vat(vat_);
-        gem = GemLike(gem_);
+        gem = DSToken(gem_);
         live = 1;
     }
 
