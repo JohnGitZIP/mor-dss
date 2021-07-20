@@ -53,6 +53,10 @@ module.exports = async (deployer, network, [account]) => {
     });
   }
 
+  function sleep(delay) {
+    return new Promise((resolve) => setTimeout(resolve, delay));
+  }
+
   async function artifact_deploy(artifact, ...params) {
     for (let i = 0; ; i++) {
       try {
@@ -97,7 +101,7 @@ module.exports = async (deployer, network, [account]) => {
 
   const chainId = await web3.eth.net.getId();
 
-  const config = require('./config/freshtest.json');
+  const config = require('./config/maticmain.json');
   const config_import = config.import || {};
   const config_tokens = config.tokens || {};
 
