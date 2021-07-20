@@ -101,7 +101,7 @@ module.exports = async (deployer, network, [account]) => {
 
   const chainId = await web3.eth.net.getId();
 
-  const config = require('./config/maticmain.json');
+  const config = require('./config/freshtest.json');
   const config_import = config.import || {};
   const config_tokens = config.tokens || {};
 
