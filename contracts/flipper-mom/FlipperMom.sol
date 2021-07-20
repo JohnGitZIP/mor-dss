@@ -20,10 +20,7 @@
 pragma solidity >=0.5.12;
 
 import { Flipper } from "../dss/flip.sol";
-
-interface AuthorityLike {
-    function canCall(address src, address dst, bytes4 sig) external view returns (bool);
-}
+import { DSAuthority } from "../ds-auth/auth.sol";
 
 contract FlipperMom {
     address public owner;
@@ -42,7 +39,7 @@ contract FlipperMom {
         } else if (authority == address(0)) {
             return false;
         } else {
-            return AuthorityLike(authority).canCall(src, address(this), sig);
+            return DSAuthority(authority).canCall(src, address(this), sig);
         }
     }
 

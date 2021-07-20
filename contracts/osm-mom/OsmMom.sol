@@ -20,10 +20,7 @@
 pragma solidity >=0.5.12;
 
 import { OSM } from "../osm/osm.sol";
-
-interface AuthorityLike {
-    function canCall(address src, address dst, bytes4 sig) external view returns (bool);
-}
+import { DSAuthority } from "../ds-auth/auth.sol";
 
 contract OsmMom {
     event LogNote(
@@ -69,7 +66,7 @@ contract OsmMom {
         } else if (authority == address(0)) {
             return false;
         } else {
-            return AuthorityLike(authority).canCall(src, address(this), sig);
+            return DSAuthority(authority).canCall(src, address(this), sig);
         }
     }
 

@@ -22,10 +22,7 @@ pragma solidity >=0.6.12;
 import { Clipper } from "../dss/clip.sol";
 import { Spotter, PipLike } from "../dss/spot.sol";
 import { OSM } from "../osm/osm.sol";
-
-interface AuthorityLike {
-    function canCall(address src, address dst, bytes4 sig) external view returns (bool);
-}
+import { DSAuthority } from "../ds-auth/auth.sol";
 
 contract ClipperMom {
     address public owner;
@@ -77,7 +74,7 @@ contract ClipperMom {
         } else if (authority == address(0)) {
             return false;
         } else {
-            return AuthorityLike(authority).canCall(src, address(this), sig);
+            return DSAuthority(authority).canCall(src, address(this), sig);
         }
     }
 
