@@ -21,19 +21,15 @@ import { Cat } from "../dss/cat.sol";
 import { Dog } from "../dss/dog.sol";
 import { Spotter, PipLike } from "../dss/spot.sol";
 import { GemJoin } from "../dss/join.sol";
-
-interface TokenLike {
-    function name()       external view returns (string memory);
-    function symbol()     external view returns (string memory);
-}
+import { DSToken } from "../ds-token/token.sol";
 
 contract GemInfo {
     function name(address token) external view returns (string memory) {
-        return TokenLike(token).name();
+        return DSToken(token).name();
     }
 
     function symbol(address token) external view returns (string memory) {
-        return TokenLike(token).symbol();
+        return DSToken(token).symbol();
     }
 }
 
