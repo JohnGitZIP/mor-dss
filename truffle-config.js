@@ -57,7 +57,7 @@ module.exports = {
       gasPrice,
       networkCheckTimeout: 10000, // fixes truffle bug
       provider: () => new HDWalletProvider(privateKey, 'wss://bsc-ws-node.nariox.org:443'),
-      // provider: () => new HDWalletProvider(privateKey, 'wss://apis.ankr.com/wss/' + ankrApikeyBscmain + '/' + ankrProjectId + '/binance/full/test'),
+      // provider: () => new HDWalletProvider(privateKey, 'wss://apis.ankr.com/wss/' + ankrApikeyBscmain + '/' + ankrProjectId + '/binance/full/main'),
       skipDryRun: false,
     },
     bsctest: {
@@ -71,14 +71,14 @@ module.exports = {
       gasPrice,
       networkCheckTimeout: 10000, // fixes truffle bug
       provider: () => new HDWalletProvider(privateKey, 'wss://ws-matic-mainnet.chainstacklabs.com/'),
-      // provider: () => new HDWalletProvider(privateKey, 'wss://apis.ankr.com/wss/' + ankrApikeyMaticmain + '/' + ankrProjectId + '/binance/full/test'),
+      // provider: () => new HDWalletProvider(privateKey, 'wss://apis.ankr.com/wss/' + ankrApikeyMaticmain + '/' + ankrProjectId + '/polygon/full/main'),
       skipDryRun: false,
     },
     matictest: {
       network_id: 80001,
       networkCheckTimeout: 10000, // fixes truffle bug
       provider: () => new HDWalletProvider(privateKey, 'wss://ws-matic-mumbai.chainstacklabs.com/'),
-      // provider: () => new HDWalletProvider(privateKey, 'wss://apis.ankr.com/wss/' + ankrApikeyMatictest + '/' + ankrProjectId + '/binance/full/test'),
+      // provider: () => new HDWalletProvider(privateKey, 'wss://apis.ankr.com/wss/' + ankrApikeyMatictest + '/' + ankrProjectId + '/polygon/full/test'),
       skipDryRun: true,
     },
     development: {
