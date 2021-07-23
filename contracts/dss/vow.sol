@@ -19,29 +19,13 @@
 
 pragma solidity >=0.5.12;
 
+import { Vat } from "./vat.sol";
+import { Flapper } from "./flap.sol";
+import { Flopper } from "./flop.sol";
+
 // FIXME: This contract was altered compared to the production version.
 // It doesn't use LibNote anymore.
 // New deployments of this contract will need to include custom events (TO DO).
-
-interface FlopLike {
-    function kick(address gal, uint lot, uint bid) external returns (uint);
-    function cage() external;
-    function live() external returns (uint);
-}
-
-interface FlapLike {
-    function kick(uint lot, uint bid) external returns (uint);
-    function cage(uint) external;
-    function live() external returns (uint);
-}
-
-interface VatLike {
-    function dai (address) external view returns (uint);
-    function sin (address) external view returns (uint);
-    function heal(uint256) external;
-    function hope(address) external;
-    function nope(address) external;
-}
 
 contract Vow {
     // --- Auth ---
@@ -54,9 +38,9 @@ contract Vow {
     }
 
     // --- Data ---
-    VatLike public vat;        // CDP Engine
-    FlapLike public flapper;   // Surplus Auction House
-    FlopLike public flopper;   // Debt Auction House
+    Vat      public vat;       // CDP Engine
+    Flapper  public flapper;   // Surplus Auction House
+    Flopper  public flopper;   // Debt Auction House
 
     mapping (uint256 => uint256) public sin;  // debt queue
     uint256 public Sin;   // Queued debt            [rad]
@@ -74,9 +58,9 @@ contract Vow {
     // --- Init ---
     constructor(address vat_, address flapper_, address flopper_) public {
         wards[msg.sender] = 1;
-        vat     = VatLike(vat_);
-        flapper = FlapLike(flapper_);
-        flopper = FlopLike(flopper_);
+        vat     = Vat(vat_);
+        flapper = Flapper(flapper_);
+        flopper = Flopper(flopper_);
         vat.hope(flapper_);
         live = 1;
     }
@@ -105,10 +89,10 @@ contract Vow {
     function file(bytes32 what, address data) external auth {
         if (what == "flapper") {
             vat.nope(address(flapper));
-            flapper = FlapLike(data);
+            flapper = Flapper(data);
             vat.hope(data);
         }
-        else if (what == "flopper") flopper = FlopLike(data);
+        else if (what == "flopper") flopper = Flopper(data);
         else revert("Vow/file-unrecognized-param");
     }
 

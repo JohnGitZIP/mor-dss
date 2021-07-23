@@ -19,21 +19,13 @@
 
 pragma solidity >=0.5.12;
 
+import { Vat } from "./vat.sol";
+import { Vow } from "./vow.sol";
+import { DSToken } from "../ds-token/token.sol";
+
 // FIXME: This contract was altered compared to the production version.
 // It doesn't use LibNote anymore.
 // New deployments of this contract will need to include custom events (TO DO).
-
-interface VatLike {
-    function move(address,address,uint) external;
-    function suck(address,address,uint) external;
-}
-interface GemLike {
-    function mint(address,uint) external;
-}
-interface VowLike {
-    function Ash() external returns (uint);
-    function kiss(uint) external;
-}
 
 /*
    This thing creates gems on demand in return for dai.
@@ -67,8 +59,8 @@ contract Flopper {
 
     mapping (uint => Bid) public bids;
 
-    VatLike  public   vat;  // CDP Engine
-    GemLike  public   gem;
+    Vat      public   vat;  // CDP Engine
+    DSToken  public   gem;
 
     uint256  constant ONE = 1.00E18;
     uint256  public   beg = 1.05E18;  // 5% minimum bid increase
@@ -90,8 +82,8 @@ contract Flopper {
     // --- Init ---
     constructor(address vat_, address gem_) public {
         wards[msg.sender] = 1;
-        vat = VatLike(vat_);
-        gem = GemLike(gem_);
+        vat = Vat(vat_);
+        gem = DSToken(gem_);
         live = 1;
     }
 
@@ -149,8 +141,8 @@ contract Flopper {
 
             // on first dent, clear as much Ash as possible
             if (bids[id].tic == 0) {
-                uint Ash = VowLike(bids[id].guy).Ash();
-                VowLike(bids[id].guy).kiss(min(bid, Ash));
+                uint Ash = Vow(bids[id].guy).Ash();
+                Vow(bids[id].guy).kiss(min(bid, Ash));
             }
 
             bids[id].guy = msg.sender;

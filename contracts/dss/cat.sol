@@ -19,6 +19,9 @@
 
 pragma solidity >=0.5.12;
 
+import { Vat } from "./vat.sol";
+import { Vow } from "./vow.sol";
+
 // FIXME: This contract was altered compared to the production version.
 // It doesn't use LibNote anymore.
 // New deployments of this contract will need to include custom events (TO DO).
@@ -26,27 +29,6 @@ pragma solidity >=0.5.12;
 interface Kicker {
     function kick(address urn, address gal, uint256 tab, uint256 lot, uint256 bid)
         external returns (uint256);
-}
-
-interface VatLike {
-    function ilks(bytes32) external view returns (
-        uint256 Art,  // [wad]
-        uint256 rate, // [ray]
-        uint256 spot, // [ray]
-        uint256 line, // [rad]
-        uint256 dust  // [rad]
-    );
-    function urns(bytes32,address) external view returns (
-        uint256 ink,  // [wad]
-        uint256 art   // [wad]
-    );
-    function grab(bytes32,address,address,address,int256,int256) external;
-    function hope(address) external;
-    function nope(address) external;
-}
-
-interface VowLike {
-    function fess(uint256) external;
 }
 
 contract Cat {
@@ -69,8 +51,8 @@ contract Cat {
     mapping (bytes32 => Ilk) public ilks;
 
     uint256 public live;   // Active Flag
-    VatLike public vat;    // CDP Engine
-    VowLike public vow;    // Debt Engine
+    Vat     public vat;    // CDP Engine
+    Vow     public vow;    // Debt Engine
     uint256 public box;    // Max Dai out for liquidation        [rad]
     uint256 public litter; // Balance of Dai out for liquidation [rad]
 
@@ -88,7 +70,7 @@ contract Cat {
     // --- Init ---
     constructor(address vat_) public {
         wards[msg.sender] = 1;
-        vat = VatLike(vat_);
+        vat = Vat(vat_);
         live = 1;
     }
 
@@ -110,7 +92,7 @@ contract Cat {
 
     // --- Administration ---
     function file(bytes32 what, address data) external auth {
-        if (what == "vow") vow = VowLike(data);
+        if (what == "vow") vow = Vow(data);
         else revert("Cat/file-unrecognized-param");
     }
     function file(bytes32 what, uint256 data) external auth {

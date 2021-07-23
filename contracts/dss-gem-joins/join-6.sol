@@ -23,11 +23,9 @@ pragma solidity >=0.5.12;
 // import "dss/lib.sol";
 import { LibNote } from "../median/median.sol";
 
-interface VatLike {
-    function slip(bytes32, address, int256) external;
-}
+import { Vat } from "../dss/vat.sol";
 
-interface GemLike {
+interface GemLike6 {
     function decimals() external view returns (uint256);
     function balanceOf(address) external returns (uint256);
     function transfer(address, uint256) external returns (bool);
@@ -49,9 +47,9 @@ contract GemJoin6 is LibNote {
         _;
     }
 
-    VatLike public vat;
+    Vat     public vat;
     bytes32 public ilk;
-    GemLike public gem;
+    GemLike6 public gem;
     uint256 public dec;
     uint256 public live;  // Access Flag
 
@@ -60,9 +58,9 @@ contract GemJoin6 is LibNote {
     constructor(address vat_, bytes32 ilk_, address gem_) public {
         wards[msg.sender] = 1;
         live = 1;
-        vat = VatLike(vat_);
+        vat = Vat(vat_);
         ilk = ilk_;
-        gem = GemLike(gem_);
+        gem = GemLike6(gem_);
         setImplementation(gem.implementation(), 1);
         dec = gem.decimals();
     }

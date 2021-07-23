@@ -19,17 +19,12 @@
 
 pragma solidity >=0.5.12;
 
+import { Vat } from "./vat.sol";
+import { DSToken } from "../ds-token/token.sol";
+
 // FIXME: This contract was altered compared to the production version.
 // It doesn't use LibNote anymore.
 // New deployments of this contract will need to include custom events (TO DO).
-
-interface VatLike {
-    function move(address,address,uint) external;
-}
-interface GemLike {
-    function move(address,address,uint) external;
-    function burn(address,uint) external;
-}
 
 /*
    This thing lets you sell some dai in return for gems.
@@ -62,8 +57,8 @@ contract Flapper {
 
     mapping (uint => Bid) public bids;
 
-    VatLike  public   vat;  // CDP Engine
-    GemLike  public   gem;
+    Vat      public   vat;  // CDP Engine
+    DSToken  public   gem;
 
     uint256  constant ONE = 1.00E18;
     uint256  public   beg = 1.05E18;  // 5% minimum bid increase
@@ -82,8 +77,8 @@ contract Flapper {
     // --- Init ---
     constructor(address vat_, address gem_) public {
         wards[msg.sender] = 1;
-        vat = VatLike(vat_);
-        gem = GemLike(gem_);
+        vat = Vat(vat_);
+        gem = DSToken(gem_);
         live = 1;
     }
 

@@ -19,22 +19,19 @@
 
 pragma solidity >=0.5.12;
 
-interface PauseLike {
-    function plot(address, bytes32, bytes calldata, uint) external;
-    function exec(address, bytes32, bytes calldata, uint) external;
-}
+import { DSPause } from "../ds-pause/pause.sol";
 
 contract DssDeployPauseProxyActions {
     function file(address pause, address actions, address who, bytes32 what, uint data) external {
         bytes32 tag;
         assembly { tag := extcodehash(actions) }
-        PauseLike(pause).plot(
+        DSPause(pause).plot(
             address(actions),
             tag,
             abi.encodeWithSignature("file(address,bytes32,uint256)", who, what, data),
             now
         );
-        PauseLike(pause).exec(
+        DSPause(pause).exec(
             address(actions),
             tag,
             abi.encodeWithSignature("file(address,bytes32,uint256)", who, what, data),
@@ -45,13 +42,13 @@ contract DssDeployPauseProxyActions {
     function file(address pause, address actions, address who, bytes32 ilk, bytes32 what, uint data) external {
         bytes32 tag;
         assembly { tag := extcodehash(actions) }
-        PauseLike(pause).plot(
+        DSPause(pause).plot(
             address(actions),
             tag,
             abi.encodeWithSignature("file(address,bytes32,bytes32,uint256)", who, ilk, what, data),
             now
         );
-        PauseLike(pause).exec(
+        DSPause(pause).exec(
             address(actions),
             tag,
             abi.encodeWithSignature("file(address,bytes32,bytes32,uint256)", who, ilk, what, data),
@@ -62,13 +59,13 @@ contract DssDeployPauseProxyActions {
     function file(address pause, address actions, address who, bytes32 ilk, bytes32 what, address data) external {
         bytes32 tag;
         assembly { tag := extcodehash(actions) }
-        PauseLike(pause).plot(
+        DSPause(pause).plot(
             address(actions),
             tag,
             abi.encodeWithSignature("file(address,bytes32,bytes32,address)", who, ilk, what, data),
             now
         );
-        PauseLike(pause).exec(
+        DSPause(pause).exec(
             address(actions),
             tag,
             abi.encodeWithSignature("file(address,bytes32,bytes32,address)", who, ilk, what, data),
@@ -79,13 +76,13 @@ contract DssDeployPauseProxyActions {
     function rely(address pause, address actions, address who, address to) external {
         bytes32 tag;
         assembly { tag := extcodehash(actions) }
-        PauseLike(pause).plot(
+        DSPause(pause).plot(
             address(actions),
             tag,
             abi.encodeWithSignature("rely(address,address)", who, to),
             now
         );
-        PauseLike(pause).exec(
+        DSPause(pause).exec(
             address(actions),
             tag,
             abi.encodeWithSignature("rely(address,address)", who, to),
@@ -96,13 +93,13 @@ contract DssDeployPauseProxyActions {
     function dripAndFile(address pause, address actions, address who, bytes32 what, uint data) external {
         bytes32 tag;
         assembly { tag := extcodehash(actions) }
-        PauseLike(pause).plot(
+        DSPause(pause).plot(
             address(actions),
             tag,
             abi.encodeWithSignature("dripAndFile(address,bytes32,uint256)", who, what, data),
             now
         );
-        PauseLike(pause).exec(
+        DSPause(pause).exec(
             address(actions),
             tag,
             abi.encodeWithSignature("dripAndFile(address,bytes32,uint256)", who, what, data),
@@ -113,13 +110,13 @@ contract DssDeployPauseProxyActions {
     function dripAndFile(address pause, address actions, address who, bytes32 ilk, bytes32 what, uint data) external {
         bytes32 tag;
         assembly { tag := extcodehash(actions) }
-        PauseLike(pause).plot(
+        DSPause(pause).plot(
             address(actions),
             tag,
             abi.encodeWithSignature("dripAndFile(address,bytes32,bytes32,uint256)", who, ilk, what, data),
             now
         );
-        PauseLike(pause).exec(
+        DSPause(pause).exec(
             address(actions),
             tag,
             abi.encodeWithSignature("dripAndFile(address,bytes32,bytes32,uint256)", who, ilk, what, data),
@@ -130,13 +127,13 @@ contract DssDeployPauseProxyActions {
     function setAuthorityAndDelay(address pause, address actions, address newAuthority, uint newDelay) external {
         bytes32 tag;
         assembly { tag := extcodehash(actions) }
-        PauseLike(pause).plot(
+        DSPause(pause).plot(
             address(actions),
             tag,
             abi.encodeWithSignature("setAuthorityAndDelay(address,address,uint256)", pause, newAuthority, newDelay),
             now
         );
-        PauseLike(pause).exec(
+        DSPause(pause).exec(
             address(actions),
             tag,
             abi.encodeWithSignature("setAuthorityAndDelay(address,address,uint256)", pause, newAuthority, newDelay),

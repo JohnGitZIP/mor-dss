@@ -19,11 +19,13 @@
 
 pragma solidity >=0.5.12;
 
+import { Vat } from "./vat.sol";
+
 // FIXME: This contract was altered compared to the production version.
 // It doesn't use LibNote anymore.
 // New deployments of this contract will need to include custom events (TO DO).
 
-interface GemLike {
+interface Gem {
     function decimals() external view returns (uint);
     function transfer(address,uint) external returns (bool);
     function transferFrom(address,address,uint) external returns (bool);
@@ -32,11 +34,6 @@ interface GemLike {
 interface DSTokenLike {
     function mint(address,uint) external;
     function burn(address,uint) external;
-}
-
-interface VatLike {
-    function slip(bytes32,address,int) external;
-    function move(address,address,uint) external;
 }
 
 /*
@@ -73,18 +70,18 @@ contract GemJoin {
         _;
     }
 
-    VatLike public vat;   // CDP Engine
+    Vat     public vat;   // CDP Engine
     bytes32 public ilk;   // Collateral Type
-    GemLike public gem;
+    Gem     public gem;
     uint    public dec;
     uint    public live;  // Active Flag
 
     constructor(address vat_, bytes32 ilk_, address gem_) public {
         wards[msg.sender] = 1;
         live = 1;
-        vat = VatLike(vat_);
+        vat = Vat(vat_);
         ilk = ilk_;
-        gem = GemLike(gem_);
+        gem = Gem(gem_);
         dec = gem.decimals();
     }
     function cage() external auth {
@@ -113,14 +110,14 @@ contract DaiJoin {
         _;
     }
 
-    VatLike public vat;      // CDP Engine
+    Vat         public vat;  // CDP Engine
     DSTokenLike public dai;  // Stablecoin Token
     uint    public live;     // Active Flag
 
     constructor(address vat_, address dai_) public {
         wards[msg.sender] = 1;
         live = 1;
-        vat = VatLike(vat_);
+        vat = Vat(vat_);
         dai = DSTokenLike(dai_);
     }
     function cage() external auth {

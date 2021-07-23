@@ -17,16 +17,15 @@
 
 pragma solidity >=0.5.12;
 
+import { Vat } from "./vat.sol";
+
 // FIXME: This contract was altered compared to the production version.
 // It doesn't use LibNote anymore.
 // New deployments of this contract will need to include custom events (TO DO).
 
-interface VatLike {
-    function file(bytes32, bytes32, uint) external;
-}
-
 interface PipLike {
     function peek() external returns (bytes32, bool);
+    function read() external view returns (bytes32);
 }
 
 contract Spotter {
@@ -47,7 +46,7 @@ contract Spotter {
 
     mapping (bytes32 => Ilk) public ilks;
 
-    VatLike public vat;  // CDP Engine
+    Vat     public vat;  // CDP Engine
     uint256 public par;  // ref per dai [ray]
 
     uint256 public live;
@@ -62,7 +61,7 @@ contract Spotter {
     // --- Init ---
     constructor(address vat_) public {
         wards[msg.sender] = 1;
-        vat = VatLike(vat_);
+        vat = Vat(vat_);
         par = ONE;
         live = 1;
     }

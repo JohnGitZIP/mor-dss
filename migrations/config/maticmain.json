@@ -1,0 +1,109 @@
+{
+  "description": "Polygon Mainnet deployment",
+  "pauseDelay": "0",
+  "vat_line": "1000",
+  "vow_wait": "0",
+  "vow_bump": "1",
+  "vow_dump": "0.01",
+  "vow_sump": "0.1",
+  "vow_hump": "10",
+  "cat_box": "10000",
+  "dog_hole": "10000",
+  "jug_base": "0",
+  "pot_dsr": "1",
+  "end_wait": "3600",
+  "esm_min": "1",
+  "flap_beg": "1",
+  "flap_ttl": "3600",
+  "flap_tau": "18000",
+  "flop_beg": "5",
+  "flop_pad": "50",
+  "flop_ttl": "10800",
+  "flop_tau": "172800",
+  "flash_max": "100000",
+  "flash_toll": "0.1",
+  "tokens": {
+    "MATIC": {
+      "import": {
+        "gem": "0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270"
+      },
+      "joinDeploy": {
+        "src": "GemJoin",
+        "extraParams": []
+      },
+      "pipDeploy": {
+        "osmDelay": "0",
+        "type": "median",
+        "signers": [
+        ]
+      },
+      "ilks": {
+        "A": {
+          "mat": "115",
+          "line": "0",
+          "autoLine": "100",
+          "autoLineGap": "30",
+          "autoLineTtl": "3600",
+          "dust": "1",
+          "duty": "5",
+          "clipDeploy": {
+            "chop": "8",
+            "hole": "1000",
+            "chip": "0",
+            "tip": "0.01",
+            "buf": "110",
+            "tail": "1320",
+            "cusp": "20",
+            "calc": {
+              "type": "StairstepExponentialDecrease",
+              "step": "60",
+              "cut":  "99"
+            },
+            "cm_tolerance": "50"
+          }
+        }
+      }
+    },
+    "ETH": {
+      "import": {
+        "gem": "0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619"
+      },
+      "joinDeploy": {
+        "src": "GemJoin",
+        "extraParams": []
+      },
+      "pipDeploy": {
+        "osmDelay": "0",
+        "type": "median",
+        "signers": [
+        ]
+      },
+      "ilks": {
+        "A": {
+          "mat": "115",
+          "line": "0",
+          "autoLine": "1000000",
+          "autoLineGap": "30",
+          "autoLineTtl": "3600",
+          "dust": "1",
+          "duty": "5",
+          "clipDeploy": {
+            "chop": "8",
+            "hole": "1000",
+            "chip": "0",
+            "tip": "0.01",
+            "buf": "110",
+            "tail": "1320",
+            "cusp": "20",
+            "calc": {
+              "type": "StairstepExponentialDecrease",
+              "step": "60",
+              "cut":  "99"
+            },
+            "cm_tolerance": "50"
+          }
+        }
+      }
+    }
+  }
+}

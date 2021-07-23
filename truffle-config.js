@@ -30,6 +30,7 @@ module.exports = {
     },
     ropsten: {
       network_id: 3,
+      networkCheckTimeout: 10000, // fixes truffle bug
       provider: () => new HDWalletProvider(privateKey, 'wss://ropsten.infura.io/ws/v3/' + infuraProjectId),
       skipDryRun: true,
     },
@@ -55,32 +56,29 @@ module.exports = {
       network_id: 56,
       gasPrice,
       networkCheckTimeout: 10000, // fixes truffle bug
-      provider: () => new HDWalletProvider(privateKey, 'https://bsc-dataseed.binance.org/'),
-      // provider: () => new HDWalletProvider(privateKey, 'https://apis.ankr.com/' + ankrApikeyBscmain + '/' + ankrProjectId + '/binance/full/main'),
+      provider: () => new HDWalletProvider(privateKey, 'wss://bsc-ws-node.nariox.org:443'),
+      // provider: () => new HDWalletProvider(privateKey, 'wss://apis.ankr.com/wss/' + ankrApikeyBscmain + '/' + ankrProjectId + '/binance/full/main'),
       skipDryRun: false,
     },
     bsctest: {
       network_id: 97,
       networkCheckTimeout: 10000, // fixes truffle bug
-      provider: () => new HDWalletProvider(privateKey, 'https://data-seed-prebsc-1-s1.binance.org:8545/'),
-      // provider: () => new HDWalletProvider(privateKey, 'https://apis.ankr.com/' + ankrApikeyBsctest + '/' + ankrProjectId + '/binance/full/test'),
+      provider: () => new HDWalletProvider(privateKey, 'wss://apis.ankr.com/wss/' + ankrApikeyBsctest + '/' + ankrProjectId + '/binance/full/test'),
       skipDryRun: true,
     },
     maticmain: {
       network_id: 137,
       gasPrice,
       networkCheckTimeout: 10000, // fixes truffle bug
-      // provider: () => new HDWalletProvider(privateKey, 'https://rpc-mainnet.maticvigil.com/'),
-      provider: () => new HDWalletProvider(privateKey, 'https://polygon-mainnet.infura.io/v3/' + infuraProjectId),
-      // provider: () => new HDWalletProvider(privateKey, 'https://apis.ankr.com/' + ankrApikeyMaticmain + '/' + ankrProjectId + '/polygon/full/main'),
+      provider: () => new HDWalletProvider(privateKey, 'wss://ws-matic-mainnet.chainstacklabs.com/'),
+      // provider: () => new HDWalletProvider(privateKey, 'wss://apis.ankr.com/wss/' + ankrApikeyMaticmain + '/' + ankrProjectId + '/polygon/full/main'),
       skipDryRun: false,
     },
     matictest: {
       network_id: 80001,
       networkCheckTimeout: 10000, // fixes truffle bug
-      // provider: () => new HDWalletProvider(privateKey, 'https://rpc-mumbai.maticvigil.com/'),
-      provider: () => new HDWalletProvider(privateKey, 'https://polygon-mumbai.infura.io/v3/' + infuraProjectId),
-      // provider: () => new HDWalletProvider(privateKey, 'https://apis.ankr.com/' + ankrApikeyMatictest + '/' + ankrProjectId + '/polygon/full/test'),
+      provider: () => new HDWalletProvider(privateKey, 'wss://ws-matic-mumbai.chainstacklabs.com/'),
+      // provider: () => new HDWalletProvider(privateKey, 'wss://apis.ankr.com/wss/' + ankrApikeyMatictest + '/' + ankrProjectId + '/polygon/full/test'),
       skipDryRun: true,
     },
     development: {

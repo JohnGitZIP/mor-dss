@@ -19,15 +19,8 @@
 
 pragma solidity >=0.5.12;
 
-interface FlipLike {
-    function wards(address) external returns (uint);
-    function rely(address) external;
-    function deny(address) external;
-}
-
-interface AuthorityLike {
-    function canCall(address src, address dst, bytes4 sig) external view returns (bool);
-}
+import { Flipper } from "../dss/flip.sol";
+import { DSAuthority } from "../ds-auth/auth.sol";
 
 contract FlipperMom {
     address public owner;
@@ -46,7 +39,7 @@ contract FlipperMom {
         } else if (authority == address(0)) {
             return false;
         } else {
-            return AuthorityLike(authority).canCall(src, address(this), sig);
+            return DSAuthority(authority).canCall(src, address(this), sig);
         }
     }
 
@@ -73,12 +66,12 @@ contract FlipperMom {
     event Rely(address flip, address usr);
     function rely(address flip) external auth {
         emit Rely(flip, cat);
-        FlipLike(flip).rely(cat);
+        Flipper(flip).rely(cat);
     }
 
     event Deny(address flip, address cat);
     function deny(address flip) external auth {
         emit Deny(flip, cat);
-        FlipLike(flip).deny(cat);
+        Flipper(flip).deny(cat);
     }
 }

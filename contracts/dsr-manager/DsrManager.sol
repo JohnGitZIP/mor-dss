@@ -18,34 +18,19 @@
 
 pragma solidity >=0.5.12;
 
-interface VatLike {
-    function hope(address) external;
-}
+import { Vat } from "../dss/vat.sol";
+import { Pot } from "../dss/pot.sol";
+import { DaiJoin } from "../dss/join.sol";
 
-interface PotLike {
-    function vat() external view returns (address);
-    function chi() external view returns (uint256);
-    function rho() external view returns (uint256);
-    function drip() external returns (uint256);
-    function join(uint256) external;
-    function exit(uint256) external;
-}
-
-interface JoinLike {
-    function dai() external view returns (address);
-    function join(address, uint256) external;
-    function exit(address, uint256) external;
-}
-
-interface GemLike {
+interface DsrGemLike {
     function transferFrom(address,address,uint256) external returns (bool);
     function approve(address,uint256) external returns (bool);
 }
 
 contract DsrManager {
-    PotLike  public pot;
-    GemLike  public dai;
-    JoinLike public daiJoin;
+    Pot      public pot;
+    DsrGemLike  public dai;
+    DaiJoin  public daiJoin;
 
     uint256 public supply;
 
@@ -78,11 +63,11 @@ contract DsrManager {
     }
 
     constructor(address pot_, address daiJoin_) public {
-        pot = PotLike(pot_);
-        daiJoin = JoinLike(daiJoin_);
-        dai = GemLike(daiJoin.dai());
+        pot = Pot(pot_);
+        daiJoin = DaiJoin(daiJoin_);
+        dai = DsrGemLike(address(daiJoin.dai())); // REVIEW forced type cast
 
-        VatLike vat = VatLike(pot.vat());
+        Vat vat = Vat(pot.vat());
         vat.hope(address(daiJoin));
         vat.hope(address(pot));
         dai.approve(address(daiJoin), uint256(-1));

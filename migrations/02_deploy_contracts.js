@@ -53,6 +53,10 @@ module.exports = async (deployer, network, [account]) => {
     });
   }
 
+  function sleep(delay) {
+    return new Promise((resolve) => setTimeout(resolve, delay));
+  }
+
   async function artifact_deploy(artifact, ...params) {
     for (let i = 0; ; i++) {
       try {
@@ -166,101 +170,101 @@ module.exports = async (deployer, network, [account]) => {
 
   // FABS
 
-  console.log('Publishing VatFab...');
-  const VatFab = artifacts.require('VatFab');
-  const vatFab = await artifact_deploy(VatFab);
-  const VAT_FAB = vatFab.address;
-  console.log('VAT_FAB=' + VAT_FAB);
+  // console.log('Publishing VatFab...');
+  // const VatFab = artifacts.require('VatFab');
+  // const vatFab = await artifact_deploy(VatFab);
+  // const VAT_FAB = vatFab.address;
+  // console.log('VAT_FAB=' + VAT_FAB);
 
-  console.log('Publishing JugFab...');
-  const JugFab = artifacts.require('JugFab');
-  const jugFab = await artifact_deploy(JugFab);
-  const JUG_FAB = jugFab.address;
-  console.log('JUG_FAB=' + JUG_FAB);
+  // console.log('Publishing JugFab...');
+  // const JugFab = artifacts.require('JugFab');
+  // const jugFab = await artifact_deploy(JugFab);
+  // const JUG_FAB = jugFab.address;
+  // console.log('JUG_FAB=' + JUG_FAB);
 
-  console.log('Publishing VowFab...');
-  const VowFab = artifacts.require('VowFab');
-  const vowFab = await artifact_deploy(VowFab);
-  const VOW_FAB = vowFab.address;
-  console.log('VOW_FAB=' + VOW_FAB);
+  // console.log('Publishing VowFab...');
+  // const VowFab = artifacts.require('VowFab');
+  // const vowFab = await artifact_deploy(VowFab);
+  // const VOW_FAB = vowFab.address;
+  // console.log('VOW_FAB=' + VOW_FAB);
 
-  console.log('Publishing CatFab...');
-  const CatFab = artifacts.require('CatFab');
-  const catFab = await artifact_deploy(CatFab);
-  const CAT_FAB = catFab.address;
-  console.log('CAT_FAB=' + CAT_FAB);
+  // console.log('Publishing CatFab...');
+  // const CatFab = artifacts.require('CatFab');
+  // const catFab = await artifact_deploy(CatFab);
+  // const CAT_FAB = catFab.address;
+  // console.log('CAT_FAB=' + CAT_FAB);
 
-  console.log('Publishing DogFab...');
-  const DogFab = artifacts.require('DogFab');
-  const dogFab = await artifact_deploy(DogFab);
-  const DOG_FAB = dogFab.address;
-  console.log('DOG_FAB=' + DOG_FAB);
+  // console.log('Publishing DogFab...');
+  // const DogFab = artifacts.require('DogFab');
+  // const dogFab = await artifact_deploy(DogFab);
+  // const DOG_FAB = dogFab.address;
+  // console.log('DOG_FAB=' + DOG_FAB);
 
-  console.log('Publishing DaiFab...');
-  const DaiFab = artifacts.require('DaiFab');
-  const daiFab = await artifact_deploy(DaiFab);
-  const DAI_FAB = daiFab.address;
-  console.log('DAI_FAB=' + DAI_FAB);
+  // console.log('Publishing DaiFab...');
+  // const DaiFab = artifacts.require('DaiFab');
+  // const daiFab = await artifact_deploy(DaiFab);
+  // const DAI_FAB = daiFab.address;
+  // console.log('DAI_FAB=' + DAI_FAB);
 
-  console.log('Publishing DaiJoinFab...');
-  const DaiJoinFab = artifacts.require('DaiJoinFab');
-  const daiJoinFab = await artifact_deploy(DaiJoinFab);
-  const MCD_JOIN_FAB = daiJoinFab.address;
-  console.log('MCD_JOIN_FAB=' + MCD_JOIN_FAB);
+  // console.log('Publishing DaiJoinFab...');
+  // const DaiJoinFab = artifacts.require('DaiJoinFab');
+  // const daiJoinFab = await artifact_deploy(DaiJoinFab);
+  // const MCD_JOIN_FAB = daiJoinFab.address;
+  // console.log('MCD_JOIN_FAB=' + MCD_JOIN_FAB);
 
-  console.log('Publishing FlapFab...');
-  const FlapFab = artifacts.require('FlapFab');
-  const flapFab = await artifact_deploy(FlapFab);
-  const FLAP_FAB = flapFab.address;
-  console.log('FLAP_FAB=' + FLAP_FAB);
+  // console.log('Publishing FlapFab...');
+  // const FlapFab = artifacts.require('FlapFab');
+  // const flapFab = await artifact_deploy(FlapFab);
+  // const FLAP_FAB = flapFab.address;
+  // console.log('FLAP_FAB=' + FLAP_FAB);
 
-  console.log('Publishing FlopFab...');
-  const FlopFab = artifacts.require('FlopFab');
-  const flopFab = await artifact_deploy(FlopFab);
-  const FLOP_FAB = flopFab.address;
-  console.log('FLOP_FAB=' + FLOP_FAB);
+  // console.log('Publishing FlopFab...');
+  // const FlopFab = artifacts.require('FlopFab');
+  // const flopFab = await artifact_deploy(FlopFab);
+  // const FLOP_FAB = flopFab.address;
+  // console.log('FLOP_FAB=' + FLOP_FAB);
 
-  console.log('Publishing FlipFab...');
-  const FlipFab = artifacts.require('FlipFab');
-  const flipFab = await artifact_deploy(FlipFab);
-  const FLIP_FAB = flipFab.address;
-  console.log('FLIP_FAB=' + FLIP_FAB);
+  // console.log('Publishing FlipFab...');
+  // const FlipFab = artifacts.require('FlipFab');
+  // const flipFab = await artifact_deploy(FlipFab);
+  // const FLIP_FAB = flipFab.address;
+  // console.log('FLIP_FAB=' + FLIP_FAB);
 
-  console.log('Publishing ClipFab...');
-  const ClipFab = artifacts.require('ClipFab');
-  const clipFab = await artifact_deploy(ClipFab);
-  const CLIP_FAB = clipFab.address;
-  console.log('CLIP_FAB=' + CLIP_FAB);
+  // console.log('Publishing ClipFab...');
+  // const ClipFab = artifacts.require('ClipFab');
+  // const clipFab = await artifact_deploy(ClipFab);
+  // const CLIP_FAB = clipFab.address;
+  // console.log('CLIP_FAB=' + CLIP_FAB);
 
-  console.log('Publishing SpotFab...');
-  const SpotFab = artifacts.require('SpotFab');
-  const spotFab = await artifact_deploy(SpotFab);
-  const SPOT_FAB = spotFab.address;
-  console.log('SPOT_FAB=' + SPOT_FAB);
+  // console.log('Publishing SpotFab...');
+  // const SpotFab = artifacts.require('SpotFab');
+  // const spotFab = await artifact_deploy(SpotFab);
+  // const SPOT_FAB = spotFab.address;
+  // console.log('SPOT_FAB=' + SPOT_FAB);
 
-  console.log('Publishing PotFab...');
-  const PotFab = artifacts.require('PotFab');
-  const potFab = await artifact_deploy(PotFab);
-  const POT_FAB = potFab.address;
-  console.log('POT_FAB=' + POT_FAB);
+  // console.log('Publishing PotFab...');
+  // const PotFab = artifacts.require('PotFab');
+  // const potFab = await artifact_deploy(PotFab);
+  // const POT_FAB = potFab.address;
+  // console.log('POT_FAB=' + POT_FAB);
 
-  console.log('Publishing EndFab...');
-  const EndFab = artifacts.require('EndFab');
-  const endFab = await artifact_deploy(EndFab);
-  const END_FAB = endFab.address;
-  console.log('END_FAB=' + END_FAB);
+  // console.log('Publishing EndFab...');
+  // const EndFab = artifacts.require('EndFab');
+  // const endFab = await artifact_deploy(EndFab);
+  // const END_FAB = endFab.address;
+  // console.log('END_FAB=' + END_FAB);
 
-  console.log('Publishing ESMFab...');
-  const ESMFab = artifacts.require('ESMFab');
-  const esmFab = await artifact_deploy(ESMFab);
-  const ESM_FAB = esmFab.address;
-  console.log('ESM_FAB=' + ESM_FAB);
+  // console.log('Publishing ESMFab...');
+  // const ESMFab = artifacts.require('ESMFab');
+  // const esmFab = await artifact_deploy(ESMFab);
+  // const ESM_FAB = esmFab.address;
+  // console.log('ESM_FAB=' + ESM_FAB);
 
-  console.log('Publishing PauseFab...');
-  const PauseFab = artifacts.require('PauseFab');
-  const pauseFab = await artifact_deploy(PauseFab);
-  const PAUSE_FAB = pauseFab.address;
-  console.log('PAUSE_FAB=' + PAUSE_FAB);
+  // console.log('Publishing PauseFab...');
+  // const PauseFab = artifacts.require('PauseFab');
+  // const pauseFab = await artifact_deploy(PauseFab);
+  // const PAUSE_FAB = pauseFab.address;
+  // console.log('PAUSE_FAB=' + PAUSE_FAB);
 
   // GOV TOKEN
 
@@ -277,10 +281,10 @@ module.exports = async (deployer, network, [account]) => {
 
   // CORE DEPLOYER
 
-  console.log('Publishing DssDeploy...');
-  const dssDeploy = await artifact_deploy(DssDeploy, VAT_FAB, JUG_FAB, VOW_FAB, CAT_FAB, DOG_FAB, DAI_FAB, MCD_JOIN_FAB, FLAP_FAB, FLOP_FAB, FLIP_FAB, CLIP_FAB, SPOT_FAB, POT_FAB, END_FAB, ESM_FAB, PAUSE_FAB);
-  const MCD_DEPLOY = dssDeploy.address;
-  console.log('MCD_DEPLOY=' + MCD_DEPLOY);
+  // console.log('Publishing DssDeploy...');
+  // const dssDeploy = await artifact_deploy(DssDeploy, VAT_FAB, JUG_FAB, VOW_FAB, CAT_FAB, DOG_FAB, DAI_FAB, MCD_JOIN_FAB, FLAP_FAB, FLOP_FAB, FLIP_FAB, CLIP_FAB, SPOT_FAB, POT_FAB, END_FAB, ESM_FAB, PAUSE_FAB);
+  // const MCD_DEPLOY = dssDeploy.address;
+  // console.log('MCD_DEPLOY=' + MCD_DEPLOY);
 
   // AUTHORITY
 
@@ -296,42 +300,157 @@ module.exports = async (deployer, network, [account]) => {
   // CORE
 
   console.log('Deploying Core...');
-  await dssDeploy.deploy1(chainId, MCD_GOV);
-  await dssDeploy.deploy2(MCD_GOV, 0, MCD_ADM, units(config.esm_min, 18));
-  const mods = await dssDeploy.mods();
-  const MCD_VAT = mods.vat;
-  const MCD_SPOT = mods.spotter;
-  const MCD_DAI = mods.dai;
-  const MCD_JOIN_DAI = mods.daiJoin;
-  const MCD_JUG = mods.jug;
-  const MCD_POT = mods.pot;
-  const MCD_FLAP = mods.flap;
-  const MCD_FLOP = mods.flop;
-  const MCD_VOW = mods.vow;
-  const MCD_CAT = mods.cat;
-  const MCD_DOG = mods.dog;
-  const MCD_END = mods.end;
-  const MCD_PAUSE = mods.pause;
-  const MCD_ESM = mods.esm;
-  console.log('MCD_VAT=' + MCD_VAT);
-  console.log('MCD_SPOT=' + MCD_SPOT);
-  console.log('MCD_DAI=' + MCD_DAI);
-  console.log('MCD_JOIN_DAI=' + MCD_JOIN_DAI);
-  console.log('MCD_JUG=' + MCD_JUG);
-  console.log('MCD_POT=' + MCD_POT);
-  console.log('MCD_FLAP=' + MCD_FLAP);
-  console.log('MCD_FLOP=' + MCD_FLOP);
-  console.log('MCD_VOW=' + MCD_VOW);
-  console.log('MCD_CAT=' + MCD_CAT);
-  console.log('MCD_DOG=' + MCD_DOG);
-  console.log('MCD_END=' + MCD_END);
-  console.log('MCD_PAUSE=' + MCD_PAUSE);
-  console.log('MCD_ESM=' + MCD_ESM);
+  // await dssDeploy.deploy1(chainId, MCD_GOV);
 
+  // Deploy Vat
+  const Vat = artifacts.require('Vat');
+  const vat = await artifact_deploy(Vat);
+  const MCD_VAT = vat.address;
+  console.log('MCD_VAT=' + MCD_VAT);
+  const Spotter = artifacts.require('Spotter');
+  const spotter = await artifact_deploy(Spotter, MCD_VAT);
+  const MCD_SPOT = spotter.address;
+  console.log('MCD_SPOT=' + MCD_SPOT);
+  await vat.rely(MCD_SPOT);
+
+  // Deploy Dai
+  const Dai = artifacts.require('Dai');
+  const dai = await artifact_deploy(Dai, chainId);
+  const MCD_DAI = dai.address;
+  console.log('MCD_DAI=' + MCD_DAI);
+  const DaiJoin = artifacts.require('DaiJoin');
+  const daiJoin = await artifact_deploy(DaiJoin, MCD_VAT, MCD_DAI);
+  const MCD_JOIN_DAI = daiJoin.address;
+  console.log('MCD_JOIN_DAI=' + MCD_JOIN_DAI);
+  await dai.rely(MCD_JOIN_DAI);
+
+  // Deploy Taxation
+  const Jug = artifacts.require('Jug');
+  const jug = await artifact_deploy(Jug, MCD_VAT);
+  const MCD_JUG = jug.address;
+  console.log('MCD_JUG=' + MCD_JUG);
+  const Pot = artifacts.require('Pot');
+  const pot = await artifact_deploy(Pot, MCD_VAT);
+  const MCD_POT = pot.address;
+  console.log('MCD_POT=' + MCD_POT);
+  await vat.rely(MCD_JUG);
+  await vat.rely(MCD_POT);
+
+  // Deploy Auctions
+  const Flapper = artifacts.require('Flapper');
+  const flap = await artifact_deploy(Flapper, MCD_VAT, MCD_GOV);
+  const MCD_FLAP = flap.address;
+  console.log('MCD_FLAP=' + MCD_FLAP);
+  const Flopper = artifacts.require('Flopper');
+  const flop = await artifact_deploy(Flopper, MCD_VAT, MCD_GOV);
+  const MCD_FLOP = flop.address;
+  console.log('MCD_FLOP=' + MCD_FLOP);
+  const Vow = artifacts.require('Vow');
+  const vow = await artifact_deploy(Vow, MCD_VAT, MCD_FLAP, MCD_FLOP);
+  const MCD_VOW = vow.address;
+  console.log('MCD_VOW=' + MCD_VOW);
+  await jug.file(web3.utils.asciiToHex('vow'), MCD_VOW);
+  await pot.file(web3.utils.asciiToHex('vow'), MCD_VOW);
+  await vat.rely(MCD_FLOP);
+  await flap.rely(MCD_VOW);
+  await flop.rely(MCD_VOW);
+
+  // await dssDeploy.deploy2(MCD_GOV, 0, MCD_ADM, units(config.esm_min, 18));
+
+  // Deploy Liquidator
+  const Cat = artifacts.require('Cat');
+  const cat = await artifact_deploy(Cat, MCD_VAT);
+  const MCD_CAT = cat.address;
+  console.log('MCD_CAT=' + MCD_CAT);
+  const Dog = artifacts.require('Dog');
+  const dog = await artifact_deploy(Dog, MCD_VAT);
+  const MCD_DOG = dog.address;
+  console.log('MCD_DOG=' + MCD_DOG);
+  await cat.file(web3.utils.asciiToHex('vow'), MCD_VOW);
+  await dog.file(web3.utils.asciiToHex('vow'), MCD_VOW);
+  await vat.rely(MCD_CAT);
+  await vat.rely(MCD_DOG);
+  await vow.rely(MCD_CAT);
+  await vow.rely(MCD_DOG);
+
+  // Deploy End
+  const End = artifacts.require('End');
+  const end = await artifact_deploy(End);
+  const MCD_END = end.address;
+  console.log('MCD_END=' + MCD_END);
+  await end.file(web3.utils.asciiToHex('vat'), MCD_VAT);
+  await end.file(web3.utils.asciiToHex('cat'), MCD_CAT);
+  await end.file(web3.utils.asciiToHex('dog'), MCD_DOG);
+  await end.file(web3.utils.asciiToHex('vow'), MCD_VOW);
+  await end.file(web3.utils.asciiToHex('pot'), MCD_POT);
+  await end.file(web3.utils.asciiToHex('spot'), MCD_SPOT);
+  await vat.rely(MCD_END);
+  await cat.rely(MCD_END);
+  await dog.rely(MCD_END);
+  await vow.rely(MCD_END);
+  await pot.rely(MCD_END);
+  await spotter.rely(MCD_END);
+
+  // Deploy Pause
   const DSPause = artifacts.require('DSPause');
-  const pause = await artifact_at(DSPause, MCD_PAUSE);
+  const pause = await artifact_deploy(DSPause, 0, ZERO_ADDRESS, MCD_ADM);
+  const MCD_PAUSE = pause.address;
+  console.log('MCD_PAUSE=' + MCD_PAUSE);
   const MCD_PAUSE_PROXY = await pause.proxy();
   console.log('MCD_PAUSE_PROXY=' + MCD_PAUSE_PROXY);
+  await vat.rely(MCD_PAUSE_PROXY);
+  await cat.rely(MCD_PAUSE_PROXY);
+  await dog.rely(MCD_PAUSE_PROXY);
+  await vow.rely(MCD_PAUSE_PROXY);
+  await jug.rely(MCD_PAUSE_PROXY);
+  await pot.rely(MCD_PAUSE_PROXY);
+  await spotter.rely(MCD_PAUSE_PROXY);
+  await flap.rely(MCD_PAUSE_PROXY);
+  await flop.rely(MCD_PAUSE_PROXY);
+  await end.rely(MCD_PAUSE_PROXY);
+
+  // Deploy ESM
+  const ESM = artifacts.require('ESM');
+  const esm = await artifact_deploy(ESM, MCD_GOV, MCD_END, MCD_PAUSE_PROXY, units(config.esm_min, 18));
+  const MCD_ESM = esm.address;
+  console.log('MCD_ESM=' + MCD_ESM);
+  await end.rely(MCD_ESM);
+  await vat.rely(MCD_ESM);
+
+  // const mods = await dssDeploy.mods();
+  // const MCD_VAT = mods.vat;
+  // const MCD_SPOT = mods.spotter;
+  // const MCD_DAI = mods.dai;
+  // const MCD_JOIN_DAI = mods.daiJoin;
+  // const MCD_JUG = mods.jug;
+  // const MCD_POT = mods.pot;
+  // const MCD_FLAP = mods.flap;
+  // const MCD_FLOP = mods.flop;
+  // const MCD_VOW = mods.vow;
+  // const MCD_CAT = mods.cat;
+  // const MCD_DOG = mods.dog;
+  // const MCD_END = mods.end;
+  // const MCD_PAUSE = mods.pause;
+  // const MCD_ESM = mods.esm;
+  // console.log('MCD_VAT=' + MCD_VAT);
+  // console.log('MCD_SPOT=' + MCD_SPOT);
+  // console.log('MCD_DAI=' + MCD_DAI);
+  // console.log('MCD_JOIN_DAI=' + MCD_JOIN_DAI);
+  // console.log('MCD_JUG=' + MCD_JUG);
+  // console.log('MCD_POT=' + MCD_POT);
+  // console.log('MCD_FLAP=' + MCD_FLAP);
+  // console.log('MCD_FLOP=' + MCD_FLOP);
+  // console.log('MCD_VOW=' + MCD_VOW);
+  // console.log('MCD_CAT=' + MCD_CAT);
+  // console.log('MCD_DOG=' + MCD_DOG);
+  // console.log('MCD_END=' + MCD_END);
+  // console.log('MCD_PAUSE=' + MCD_PAUSE);
+  // console.log('MCD_ESM=' + MCD_ESM);
+
+  // const DSPause = artifacts.require('DSPause');
+  // const pause = await artifact_at(DSPause, MCD_PAUSE);
+  // const MCD_PAUSE_PROXY = await pause.proxy();
+  // console.log('MCD_PAUSE_PROXY=' + MCD_PAUSE_PROXY);
 
   // FAUCET CONFIG
 
@@ -432,10 +551,24 @@ module.exports = async (deployer, network, [account]) => {
         console.log('MCD_JOIN_' + token_name + '_' + ilk + '=' + MCD_JOIN_[token_name][ilk]);
 
         if (ilk_config.flipDeploy !== undefined) {
-          await dssDeploy.deployCollateralFlip(ilk_name, MCD_JOIN_[token_name][ilk], PIP_[token_name]);
-          const { flip } = await dssDeploy.ilks(ilk_name);
-          MCD_FLIP_[token_name][ilk] = flip;
+          // await dssDeploy.deployCollateralFlip(ilk_name, MCD_JOIN_[token_name][ilk], PIP_[token_name]);
+          // const { flip } = await dssDeploy.ilks(ilk_name);
+          // MCD_FLIP_[token_name][ilk] = flip;
+          // console.log('MCD_FLIP_' + token_name + '_' + ilk + '=' + MCD_FLIP_[token_name][ilk]);
+          const Flipper = artifacts.require('Flipper');
+          const flip = await artifact_deploy(Flipper, MCD_VAT, MCD_CAT, ilk_name);
+          MCD_FLIP_[token_name][ilk] = flip.address;
           console.log('MCD_FLIP_' + token_name + '_' + ilk + '=' + MCD_FLIP_[token_name][ilk]);
+          await spotter.file(ilk_name, web3.utils.asciiToHex('pip'), PIP_[token_name]);
+          await cat.file(ilk_name, web3.utils.asciiToHex('flip'), MCD_FLIP_[token_name][ilk]);
+          await vat.init(ilk_name);
+          await jug.init(ilk_name);
+          await vat.rely(MCD_JOIN_[token_name][ilk]);
+          await cat.rely(MCD_FLIP_[token_name][ilk]);
+          await flip.rely(MCD_CAT);
+          await flip.rely(MCD_END);
+          await flip.rely(MCD_ESM);
+          await flip.rely(MCD_PAUSE_PROXY);
         }
 
         if (ilk_config.clipDeploy !== undefined) {
@@ -453,10 +586,27 @@ module.exports = async (deployer, network, [account]) => {
           console.log('MCD_CLIP_CALC_' + token_name + '_' + ilk + '=' + MCD_CLIP_CALC_[token_name][ilk]);
           await calc.rely(MCD_PAUSE_PROXY);
           await calc.deny(account);
-          await dssDeploy.deployCollateralClip(ilk_name, MCD_JOIN_[token_name][ilk], PIP_[token_name], MCD_CLIP_CALC_[token_name][ilk]);
-          const { clip } = await dssDeploy.ilks(ilk_name);
-          MCD_CLIP_[token_name][ilk] = clip;
+          // await dssDeploy.deployCollateralClip(ilk_name, MCD_JOIN_[token_name][ilk], PIP_[token_name], MCD_CLIP_CALC_[token_name][ilk]);
+          // const { clip } = await dssDeploy.ilks(ilk_name);
+          // MCD_CLIP_[token_name][ilk] = clip;
+          // console.log('MCD_CLIP_' + token_name + '_' + ilk + '=' + MCD_CLIP_[token_name][ilk]);
+          const Clipper = artifacts.require('Clipper');
+          const clip = await artifact_deploy(Clipper, MCD_VAT, MCD_SPOT, MCD_DOG, ilk_name);
+          MCD_CLIP_[token_name][ilk] = clip.address;
           console.log('MCD_CLIP_' + token_name + '_' + ilk + '=' + MCD_CLIP_[token_name][ilk]);
+          await spotter.file(ilk_name, web3.utils.asciiToHex('pip'), PIP_[token_name]);
+          await dog.file(ilk_name, web3.utils.asciiToHex('clip'), MCD_CLIP_[token_name][ilk]);
+          await clip.file(web3.utils.asciiToHex('vow'), MCD_VOW);
+          await clip.file(web3.utils.asciiToHex('calc'), MCD_CLIP_CALC_[token_name][ilk]);
+          await vat.init(ilk_name);
+          await jug.init(ilk_name);
+          await vat.rely(MCD_JOIN_[token_name][ilk]);
+          await vat.rely(MCD_CLIP_[token_name][ilk]);
+          await dog.rely(MCD_CLIP_[token_name][ilk]);
+          await clip.rely(MCD_DOG);
+          await clip.rely(MCD_END);
+          await clip.rely(MCD_ESM);
+          await clip.rely(MCD_PAUSE_PROXY);
         }
       }
     }
@@ -540,7 +690,18 @@ module.exports = async (deployer, network, [account]) => {
   // REMOVE AUTH
 
   console.log('Releasing Auth...');
-  await dssDeploy.releaseAuth();
+  // await dssDeploy.releaseAuth();
+  await vat.deny(account);
+  await cat.deny(account);
+  await dog.deny(account);
+  await vow.deny(account);
+  await jug.deny(account);
+  await pot.deny(account);
+  await dai.deny(account);
+  await spotter.deny(account);
+  await flap.deny(account);
+  await flop.deny(account);
+  await end.deny(account);
 
   for (const token_name in config_tokens) {
     const token_config = config_tokens[token_name];
@@ -555,10 +716,16 @@ module.exports = async (deployer, network, [account]) => {
       await gemJoin.rely(MCD_PAUSE_PROXY);
       await gemJoin.deny(account);
       if (ilk_config.flipDeploy !== undefined) {
-        await dssDeploy.releaseAuthFlip(ilk_name);
+        // await dssDeploy.releaseAuthFlip(ilk_name);
+        const Flipper = artifacts.require('Flipper');
+        const flip = await artifact_at(Flipper, MCD_FLIP_[token_name][ilk]);
+        await flip.deny(account);
       }
       if (ilk_config.clipDeploy !== undefined) {
-        await dssDeploy.releaseAuthClip(ilk_name);
+        // await dssDeploy.releaseAuthClip(ilk_name);
+        const Clipper = artifacts.require('Clipper');
+        const clip = await artifact_at(Clipper, MCD_CLIP_[token_name][ilk]);
+        await clip.deny(account);
       }
     }
   }
@@ -1347,10 +1514,12 @@ module.exports = async (deployer, network, [account]) => {
   console.log('Deploying AuthGemJoin5...');
   const AuthGemJoin5 = artifacts.require('AuthGemJoin5');
   const authGemJoin5 = await artifact_deploy(AuthGemJoin5, MCD_VAT, web3.utils.asciiToHex('PSM-USDC-A'), USDC[chainId]);
+  const PSM_USDC = authGemJoin5.address;
+  console.log('PSM_USDC=' + PSM_USDC);
 
   console.log('Deploying DssPsm...');
   const DssPsm = artifacts.require('DssPsm');
-  const dssPsm = await artifact_deploy(DssPsm, authGemJoin5.address, MCD_JOIN_DAI, MCD_VOW);
+  const dssPsm = await artifact_deploy(DssPsm, PSM_USDC, MCD_JOIN_DAI, MCD_VOW);
   const DSS_PSM = dssPsm.address;
   console.log('DSS_PSM=' + DSS_PSM);
 

@@ -21,93 +21,14 @@
 
 pragma solidity >=0.6.12;
 
-interface VatLike {
-    function dai(address) external view returns (uint256);
-    function ilks(bytes32 ilk) external returns (
-        uint256 Art,   // [wad]
-        uint256 rate,  // [ray]
-        uint256 spot,  // [ray]
-        uint256 line,  // [rad]
-        uint256 dust   // [rad]
-    );
-    function urns(bytes32 ilk, address urn) external returns (
-        uint256 ink,   // [wad]
-        uint256 art    // [wad]
-    );
-    function debt() external returns (uint256);
-    function move(address src, address dst, uint256 rad) external;
-    function hope(address) external;
-    function flux(bytes32 ilk, address src, address dst, uint256 rad) external;
-    function grab(bytes32 i, address u, address v, address w, int256 dink, int256 dart) external;
-    function suck(address u, address v, uint256 rad) external;
-    function cage() external;
-}
-
-interface CatLike {
-    function ilks(bytes32) external returns (
-        address flip,
-        uint256 chop,  // [ray]
-        uint256 lump   // [rad]
-    );
-    function cage() external;
-}
-
-interface DogLike {
-    function ilks(bytes32) external returns (
-        address clip,
-        uint256 chop,
-        uint256 hole,
-        uint256 dirt
-    );
-    function cage() external;
-}
-
-interface PotLike {
-    function cage() external;
-}
-
-interface VowLike {
-    function cage() external;
-}
-
-interface FlipLike {
-    function bids(uint256 id) external view returns (
-        uint256 bid,   // [rad]
-        uint256 lot,   // [wad]
-        address guy,
-        uint48  tic,   // [unix epoch time]
-        uint48  end,   // [unix epoch time]
-        address usr,
-        address gal,
-        uint256 tab    // [rad]
-    );
-    function yank(uint256 id) external;
-}
-
-interface ClipLike {
-    function sales(uint256 id) external view returns (
-        uint256 pos,
-        uint256 tab,
-        uint256 lot,
-        address usr,
-        uint96  tic,
-        uint256 top
-    );
-    function yank(uint256 id) external;
-}
-
-interface PipLike {
-    function read() external view returns (bytes32);
-}
-
-interface SpotLike {
-    function par() external view returns (uint256);
-    function ilks(bytes32) external view returns (
-        PipLike pip,
-        uint256 mat    // [ray]
-    );
-    function cage() external;
-}
+import { Vat } from "./vat.sol";
+import { Vow } from "./vow.sol";
+import { Cat } from "./cat.sol";
+import { Dog } from "./dog.sol";
+import { Flipper } from "./flip.sol";
+import { Clipper } from "./clip.sol";
+import { Pot } from "./pot.sol";
+import { Spotter, PipLike } from "./spot.sol";
 
 /*
     This is the `End` and it coordinates Global Settlement. This is an
@@ -235,12 +156,12 @@ contract End {
     }
 
     // --- Data ---
-    VatLike  public vat;   // CDP Engine
-    CatLike  public cat;
-    DogLike  public dog;
-    VowLike  public vow;   // Debt Engine
-    PotLike  public pot;
-    SpotLike public spot;
+    Vat      public vat;   // CDP Engine
+    Cat      public cat;
+    Dog      public dog;
+    Vow      public vow;   // Debt Engine
+    Pot      public pot;
+    Spotter  public spot;
 
     uint256  public live;  // Active Flag
     uint256  public when;  // Time of cage                   [unix epoch time]
@@ -306,12 +227,12 @@ contract End {
     // --- Administration ---
     function file(bytes32 what, address data) external auth {
         require(live == 1, "End/not-live");
-        if (what == "vat")  vat = VatLike(data);
-        else if (what == "cat")   cat = CatLike(data);
-        else if (what == "dog")   dog = DogLike(data);
-        else if (what == "vow")   vow = VowLike(data);
-        else if (what == "pot")   pot = PotLike(data);
-        else if (what == "spot") spot = SpotLike(data);
+        if (what == "vat")  vat = Vat(data);
+        else if (what == "cat")   cat = Cat(data);
+        else if (what == "dog")   dog = Dog(data);
+        else if (what == "vow")   vow = Vow(data);
+        else if (what == "pot")   pot = Pot(data);
+        else if (what == "spot") spot = Spotter(data);
         else revert("End/file-unrecognized-param");
         emit File(what, data);
     }
@@ -350,7 +271,7 @@ contract End {
         require(tag[ilk] != 0, "End/tag-ilk-not-defined");
 
         (address _clip,,,) = dog.ilks(ilk);
-        ClipLike clip = ClipLike(_clip);
+        Clipper clip = Clipper(_clip);
         (, uint256 rate,,,) = vat.ilks(ilk);
         (, uint256 tab, uint256 lot, address usr,,) = clip.sales(id);
 
@@ -368,7 +289,7 @@ contract End {
         require(tag[ilk] != 0, "End/tag-ilk-not-defined");
 
         (address _flip,,) = cat.ilks(ilk);
-        FlipLike flip = FlipLike(_flip);
+        Flipper flip = Flipper(_flip);
         (, uint256 rate,,,) = vat.ilks(ilk);
         (uint256 bid, uint256 lot,,,, address usr,, uint256 tab) = flip.bids(id);
 

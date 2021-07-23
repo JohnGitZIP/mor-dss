@@ -19,18 +19,12 @@
 
 pragma solidity >=0.5.12;
 
+import { Vat } from "./vat.sol";
+import { Cat } from "./cat.sol";
+
 // FIXME: This contract was altered compared to the production version.
 // It doesn't use LibNote anymore.
 // New deployments of this contract will need to include custom events (TO DO).
-
-interface VatLike {
-    function move(address,address,uint256) external;
-    function flux(bytes32,address,address,uint256) external;
-}
-
-interface CatLike {
-    function claw(uint256) external;
-}
 
 /*
    This thing lets you flip some gems for a given amount of dai.
@@ -70,7 +64,7 @@ contract Flipper {
 
     mapping (uint256 => Bid) public bids;
 
-    VatLike public   vat;            // CDP Engine
+    Vat     public   vat;            // CDP Engine
     bytes32 public   ilk;            // collateral type
 
     uint256 constant ONE = 1.00E18;
@@ -78,7 +72,7 @@ contract Flipper {
     uint48  public   ttl = 3 hours;  // 3 hours bid duration         [seconds]
     uint48  public   tau = 2 days;   // 2 days total auction length  [seconds]
     uint256 public kicks = 0;
-    CatLike public   cat;            // cat liquidation module
+    Cat     public   cat;            // cat liquidation module
 
     // --- Events ---
     event Kick(
@@ -92,8 +86,8 @@ contract Flipper {
 
     // --- Init ---
     constructor(address vat_, address cat_, bytes32 ilk_) public {
-        vat = VatLike(vat_);
-        cat = CatLike(cat_);
+        vat = Vat(vat_);
+        cat = Cat(cat_);
         ilk = ilk_;
         wards[msg.sender] = 1;
     }
@@ -114,7 +108,7 @@ contract Flipper {
         else revert("Flipper/file-unrecognized-param");
     }
     function file(bytes32 what, address data) external auth {
-        if (what == "cat") cat = CatLike(data);
+        if (what == "cat") cat = Cat(data);
         else revert("Flipper/file-unrecognized-param");
     }
 

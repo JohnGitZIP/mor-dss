@@ -16,6 +16,9 @@
 
 pragma solidity 0.6.12;
 
+import { Vat } from "../dss/vat.sol";
+import { DaiJoin } from "../dss/join.sol";
+
 import "./interface/IERC3156FlashLender.sol";
 import "./interface/IERC3156FlashBorrower.sol";
 import "./interface/IVatDaiFlashLender.sol";
@@ -24,21 +27,6 @@ interface DaiLike {
     function balanceOf(address) external returns (uint256);
     function transferFrom(address, address, uint256) external returns (bool);
     function approve(address, uint256) external returns (bool);
-}
-
-interface DaiJoinLike {
-    function dai() external view returns (address);
-    function vat() external view returns (address);
-    function join(address, uint256) external;
-    function exit(address, uint256) external;
-}
-
-interface VatLike {
-    function hope(address) external;
-    function dai(address) external view returns (uint256);
-    function move(address, address, uint256) external;
-    function heal(uint256) external;
-    function suck(address, address, uint256) external;
 }
 
 contract DssFlash is IERC3156FlashLender, IVatDaiFlashLender {
@@ -53,8 +41,8 @@ contract DssFlash is IERC3156FlashLender, IVatDaiFlashLender {
     }
 
     // --- Data ---
-    VatLike     public immutable vat;
-    DaiJoinLike public immutable daiJoin;
+    Vat         public immutable vat;
+    DaiJoin     public immutable daiJoin;
     DaiLike     public immutable dai;
     address     public immutable vow;       // vow intentionally set immutable to save gas
 
@@ -84,9 +72,9 @@ contract DssFlash is IERC3156FlashLender, IVatDaiFlashLender {
         wards[msg.sender] = 1;
         emit Rely(msg.sender);
 
-        VatLike vat_ = vat = VatLike(DaiJoinLike(daiJoin_).vat());
-        daiJoin = DaiJoinLike(daiJoin_);
-        DaiLike dai_ = dai = DaiLike(DaiJoinLike(daiJoin_).dai());
+        Vat vat_ = vat = Vat(DaiJoin(daiJoin_).vat());
+        daiJoin = DaiJoin(daiJoin_);
+        DaiLike dai_ = dai = DaiLike(address(DaiJoin(daiJoin_).dai())); // REVIEW forced type cast
         vow = vow_;
 
         vat_.hope(daiJoin_);
