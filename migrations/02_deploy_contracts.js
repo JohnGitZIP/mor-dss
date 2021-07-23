@@ -1514,10 +1514,12 @@ module.exports = async (deployer, network, [account]) => {
   console.log('Deploying AuthGemJoin5...');
   const AuthGemJoin5 = artifacts.require('AuthGemJoin5');
   const authGemJoin5 = await artifact_deploy(AuthGemJoin5, MCD_VAT, web3.utils.asciiToHex('PSM-USDC-A'), USDC[chainId]);
+  const PSM_USDC = authGemJoin5.address;
+  console.log('PSM_USDC=' + PSM_USDC);
 
   console.log('Deploying DssPsm...');
   const DssPsm = artifacts.require('DssPsm');
-  const dssPsm = await artifact_deploy(DssPsm, authGemJoin5.address, MCD_JOIN_DAI, MCD_VOW);
+  const dssPsm = await artifact_deploy(DssPsm, PSM_USDC, MCD_JOIN_DAI, MCD_VOW);
   const DSS_PSM = dssPsm.address;
   console.log('DSS_PSM=' + DSS_PSM);
 
