@@ -111,6 +111,7 @@ module.exports = async (deployer, network, [account]) => {
   const PIP_ = {};
   const DSValue = artifacts.require('DSValue');
   const Median = artifacts.require('Median');
+  const LinkOracle = artifacts.require('LinkOracle');
   for (const token_name in config_tokens) {
     const token_config = config_tokens[token_name];
     const token_import = token_config.import || {};
@@ -118,6 +119,12 @@ module.exports = async (deployer, network, [account]) => {
 
     VAL_[token_name] = token_import.pip;
     if (token_import.pip === undefined) {
+      if (token_pipDeploy.type == 'chainlink') {
+        console.log('Publishing LinkOracle...');
+        const linkOracle = await artifact_deploy(LinkOracle, token_pipDeploy.src, token_pipDeploy.dec);
+        VAL_[token_name] = linkOracle.address;
+        console.log('VAL_' + token_name + '=' + VAL_[token_name]);
+      }
       if (token_pipDeploy.type == 'median') {
         console.log('Publishing Median...');
         const wat = web3.utils.asciiToHex(token_name + 'USD');
@@ -1409,6 +1416,10 @@ module.exports = async (deployer, network, [account]) => {
         PIP_[token_name] = osm.address;
         console.log('PIP_' + token_name + '=' + PIP_[token_name]);
         await osm.step(osmDelay);
+        if (token_pipDeploy.type == 'chainlink') {
+          const linkOracle = await artifact_at(LinkOracle, VAL_[token_name]);
+          await linkOracle.methods['kiss(address)'](PIP_[token_name]);
+        }
         if (token_pipDeploy.type == 'median') {
           const median = await artifact_at(Median, VAL_[token_name]);
           await median.methods['kiss(address)'](PIP_[token_name]);
