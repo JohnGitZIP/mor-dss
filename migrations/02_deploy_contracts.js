@@ -1134,7 +1134,7 @@ module.exports = async (deployer, network, [account]) => {
       for (const ilk in token_ilks) {
         const ilk_name = web3.utils.asciiToHex(token_name + '-' + ilk);
 
-        await spot.poke(ilk_name);
+        await spotter.poke(ilk_name);
       }
     }
   }
