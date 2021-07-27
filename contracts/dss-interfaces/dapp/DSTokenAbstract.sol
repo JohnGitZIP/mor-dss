@@ -13,9 +13,11 @@ interface DSTokenAbstract {
     function approve(address, uint256) external returns (bool);
     function approve(address) external returns (bool);
     function transferFrom(address, address, uint256) external returns (bool);
+    /*
     function push(address, uint256) external;
     function pull(address, uint256) external;
     function move(address, address, uint256) external;
+    */
     function mint(uint256) external;
     function mint(address,uint) external;
     function burn(uint256) external;

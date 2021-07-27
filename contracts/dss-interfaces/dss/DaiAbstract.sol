@@ -21,8 +21,10 @@ interface DaiAbstract {
     function mint(address, uint256) external;
     function burn(address, uint256) external;
     function approve(address, uint256) external returns (bool);
+    /*
     function push(address, uint256) external;
     function pull(address, uint256) external;
     function move(address, address, uint256) external;
+    */
     function permit(address, address, uint256, uint256, bool, uint8, bytes32, bytes32) external;
 }

@@ -108,6 +108,7 @@ contract Dai {
     }
 
     // --- Alias ---
+    /*
     function push(address usr, uint wad) external {
         transferFrom(msg.sender, usr, wad);
     }
@@ -117,6 +118,7 @@ contract Dai {
     function move(address src, address dst, uint wad) external {
         transferFrom(src, dst, wad);
     }
+    */
 
     // --- Approve by signature ---
     function permit(address holder, address spender, uint256 nonce, uint256 expiry,

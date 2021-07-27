@@ -84,6 +84,7 @@ contract DSToken is DSMath, DSAuth {
         return true;
     }
 
+    /*
     function push(address dst, uint wad) external {
         transferFrom(msg.sender, dst, wad);
     }
@@ -95,6 +96,7 @@ contract DSToken is DSMath, DSAuth {
     function move(address src, address dst, uint wad) external {
         transferFrom(src, dst, wad);
     }
+    */
 
 
     function mint(uint wad) external {

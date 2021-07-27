@@ -68,7 +68,7 @@ contract DSChiefApprovals is DSThing {
         note
     {
         last[msg.sender] = block.number;
-        GOV.pull(msg.sender, wad);
+        GOV.transferFrom(msg.sender, address(this), wad);
         IOU.mint(msg.sender, wad);
         deposits[msg.sender] = add(deposits[msg.sender], wad);
         addWeight(wad, votes[msg.sender]);
@@ -82,7 +82,7 @@ contract DSChiefApprovals is DSThing {
         deposits[msg.sender] = sub(deposits[msg.sender], wad);
         subWeight(wad, votes[msg.sender]);
         IOU.burn(msg.sender, wad);
-        GOV.push(msg.sender, wad);
+        GOV.transfer(msg.sender, wad);
     }
 
     function etch(address[] memory yays)

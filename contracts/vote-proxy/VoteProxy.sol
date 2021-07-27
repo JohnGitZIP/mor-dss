@@ -56,18 +56,18 @@ contract VoteProxy {
     }
 
     function lock(uint256 wad) public auth {
-        gov.pull(cold, wad);   // mkr from cold
+        gov.transferFrom(cold, address(this), wad);   // mkr from cold
         chief.lock(wad);       // mkr out, ious in
     }
 
     function free(uint256 wad) public auth {
         chief.free(wad);       // ious out, mkr in
-        gov.push(cold, wad);   // mkr to cold
+        gov.transfer(cold, wad);   // mkr to cold
     }
 
     function freeAll() public auth {
         chief.free(chief.deposits(address(this)));
-        gov.push(cold, gov.balanceOf(address(this)));
+        gov.transfer(cold, gov.balanceOf(address(this)));
     }
 
     function vote(address[] memory yays) public auth returns (bytes32) {
