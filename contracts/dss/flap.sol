@@ -141,7 +141,8 @@ contract Flapper {
         require(live == 1, "Flapper/not-live");
         require(bids[id].tic != 0 && (bids[id].tic < now || bids[id].end < now), "Flapper/not-finished");
         vat.move(address(this), bids[id].guy, bids[id].lot);
-        gem.burn(address(this), bids[id].bid);
+        uint256 bid = bids[id].bid;
+        try gem.burn(bid) {} catch { gem.transfer(address(0xdead), bid); }
         delete bids[id];
     }
 

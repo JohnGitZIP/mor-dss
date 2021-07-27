@@ -154,7 +154,7 @@ contract Flopper {
     function deal(uint id) external {
         require(live == 1, "Flopper/not-live");
         require(bids[id].tic != 0 && (bids[id].tic < now || bids[id].end < now), "Flopper/not-finished");
-        gem.mint(bids[id].guy, bids[id].lot);
+        gem.mint(bids[id].guy, bids[id].lot); // will fail if mint is unavailable
         delete bids[id];
     }
 

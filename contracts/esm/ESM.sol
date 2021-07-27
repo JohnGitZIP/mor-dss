@@ -83,6 +83,7 @@ contract ESM {
     }
 
     function burn() external {
-        gem.burn(gem.balanceOf(address(this)));
+        uint256 balance = gem.balanceOf(address(this));
+        try gem.burn(balance) {} catch { gem.transfer(address(0xdead), balance); }
     }
 }
