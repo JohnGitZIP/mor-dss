@@ -22,6 +22,10 @@
   "flop_tau": "172800",
   "flash_max": "100000",
   "flash_toll": "0.1",
+  "import": {
+    "gov": "0x336eD56D8615271b38EcEE6F4786B55d0EE91b96",
+    "faucet": "0x0000000000000000000000000000000000000000"
+  },
   "tokens": {
     "BNB": {
       "import": {
