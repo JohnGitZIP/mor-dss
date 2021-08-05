@@ -15,13 +15,11 @@ contract LinkOracle is LibNote {
     function rely(address _usr) external auth { wards[_usr] = 1;  }
     function deny(address _usr) external auth { wards[_usr] = 0; }
     modifier auth {
-        require(wards[msg.sender] == 1, "LINKOracle/not-authorized");
+        require(wards[msg.sender] == 1, "LinkOracle/not-authorized");
         _;
     }
 
     // --- Math ---
-    uint constant ONE = 10 ** 27;
-
     function mul(uint x, uint y) internal pure returns (uint z) {
         require(y == 0 || (z = x * y) / y == x);
     }
@@ -31,11 +29,11 @@ contract LinkOracle is LibNote {
 
     // --- Whitelisting ---
     mapping (address => uint256) public bud;
-    modifier toll { require(bud[msg.sender] == 1, "LINKOracle/contract-not-whitelisted"); _; }
+    modifier toll { require(bud[msg.sender] == 1, "LinkOracle/contract-not-whitelisted"); _; }
 
     constructor (address _src, uint8 _dec) public {
-        require(_src  != address(0), "LINKOracle/invalid-src-address");
-        require(_dec  <=         18, "LINKOracle/invalid-dec-places");
+        require(_src  != address(0), "LinkOracle/invalid-src-address");
+        require(_dec  <=         18, "LinkOracle/invalid-dec-places");
         wards[msg.sender] = 1;
         src  = _src;
         factor = 10 ** (18 - uint256(_dec));
@@ -43,7 +41,7 @@ contract LinkOracle is LibNote {
 
     function read() external view toll returns (uint256) {
         (,int256 price,,,) = AggregatorV3Interface(src).latestRoundData();
-        require(price > 0, "LINKOracle/invalid-price-feed");
+        require(price > 0, "LinkOracle/invalid-price-feed");
         return mul(uint256(price), factor);
     }
 
@@ -53,7 +51,7 @@ contract LinkOracle is LibNote {
     }
 
     function kiss(address a) external note auth {
-        require(a != address(0), "LINKOracle/no-contract-0");
+        require(a != address(0), "LinkOracle/no-contract-0");
         bud[a] = 1;
     }
 
@@ -63,7 +61,7 @@ contract LinkOracle is LibNote {
 
     function kiss(address[] calldata a) external note auth {
         for(uint i = 0; i < a.length; i++) {
-            require(a[i] != address(0), "LINKOracle/no-contract-0");
+            require(a[i] != address(0), "LinkOracle/no-contract-0");
             bud[a[i]] = 1;
         }
     }
