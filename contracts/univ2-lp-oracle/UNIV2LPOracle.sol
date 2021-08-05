@@ -82,6 +82,7 @@ interface UniswapV2PairLike {
 }
 
 interface OracleLike {
+    function peek() external view returns (uint256,bool);
     function read() external view returns (uint256);
 }
 
