@@ -891,6 +891,13 @@ module.exports = async (deployer, network, [account]) => {
     await mkrAuthority.setRoot(MCD_PAUSE_PROXY);
   }
 
+  // POLL EMITTER
+  console.log('Publishing Poll Emitter...');
+  const PollingEmitter = artifacts.require('PollingEmitter');
+  const pollingEmitter = await artifact_deploy(PollingEmitter);
+  const BATCH_POLLING = pollingEmitter.address;
+  console.log('BATCH_POLLING=' + BATCH_POLLING);
+
   // AUTO LINE
 
   console.log('Publishing Auto Line...');
