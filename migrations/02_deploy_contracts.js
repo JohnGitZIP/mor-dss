@@ -889,9 +889,22 @@ module.exports = async (deployer, network, [account]) => {
 
     console.log('Publishing Vote Proxy Factory...');
     const VoteProxyFactory = artifacts.require('VoteProxyFactory');
-    const voteProxyFactory = await artifact_deploy(VoteProxyFactory, dsChief.address);
+    const voteProxyFactory = await artifact_deploy(VoteProxyFactory, MCD_ADM);
     const VOTE_PROXY_FACTORY = voteProxyFactory.address;
     console.log('VOTE_PROXY_FACTORY=' + VOTE_PROXY_FACTORY);
+
+    // POLL EMITTER
+    console.log('Publishing Poll Emitter...');
+    const PollingEmitter = artifacts.require('PollingEmitter');
+    const pollingEmitter = await artifact_deploy(PollingEmitter);
+    const BATCH_POLLING = pollingEmitter.address;
+    console.log('BATCH_POLLING=' + BATCH_POLLING);
+
+    console.log('Publishing Vote Delegate Factory...');
+    const VoteDelegateFactory = artifacts.require('VoteDelegateFactory');
+    const voteDelegateFactory = await artifact_deploy(VoteDelegateFactory, MCD_ADM, BATCH_POLLING);
+    const VOTE_DELEGATE_FACTORY = voteDelegateFactory.address;
+    console.log('VOTE_DELEGATE_FACTORY=' + VOTE_DELEGATE_FACTORY);
   }
 
   // GOV GUARD CONFIG
@@ -899,13 +912,6 @@ module.exports = async (deployer, network, [account]) => {
   if (config_import.gov === undefined) {
     await mkrAuthority.setRoot(MCD_PAUSE_PROXY);
   }
-
-  // POLL EMITTER
-  console.log('Publishing Poll Emitter...');
-  const PollingEmitter = artifacts.require('PollingEmitter');
-  const pollingEmitter = await artifact_deploy(PollingEmitter);
-  const BATCH_POLLING = pollingEmitter.address;
-  console.log('BATCH_POLLING=' + BATCH_POLLING);
 
   // AUTO LINE
 
