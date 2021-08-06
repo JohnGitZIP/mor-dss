@@ -18,20 +18,8 @@
 // VoteDelegate - delegate your vote
 pragma solidity 0.6.12;
 
-interface TokenLike {
-    function approve(address, uint256) external returns (bool);
-    function pull(address, uint256) external;
-    function push(address, uint256) external;
-}
-
-interface ChiefLike {
-    function GOV() external view returns (TokenLike);
-    function IOU() external view returns (TokenLike);
-    function lock(uint256) external;
-    function free(uint256) external;
-    function vote(address[] calldata) external returns (bytes32);
-    function vote(bytes32) external;
-}
+import { DSToken } from "../ds-token/token.sol";
+import { ChiefLike } from "../vote-proxy/VoteProxy.sol";
 
 interface PollingLike {
     function withdrawPoll(uint256) external;
@@ -43,8 +31,8 @@ interface PollingLike {
 contract VoteDelegate {
     mapping(address => uint256) public stake;
     address     public immutable delegate;
-    TokenLike   public immutable gov;
-    TokenLike   public immutable iou;
+    DSToken     public immutable gov;
+    DSToken     public immutable iou;
     ChiefLike   public immutable chief;
     PollingLike public immutable polling;
     uint256     public immutable expiration;
@@ -58,8 +46,8 @@ contract VoteDelegate {
         delegate = _delegate;
         expiration = block.timestamp + 365 days;
 
-        TokenLike _gov = gov = ChiefLike(_chief).GOV();
-        TokenLike _iou = iou = ChiefLike(_chief).IOU();
+        DSToken _gov = gov = ChiefLike(_chief).GOV();
+        DSToken _iou = iou = ChiefLike(_chief).IOU();
 
         _gov.approve(_chief, type(uint256).max);
         _iou.approve(_chief, type(uint256).max);
@@ -81,9 +69,9 @@ contract VoteDelegate {
 
     function lock(uint256 wad) external live {
         stake[msg.sender] = add(stake[msg.sender], wad);
-        gov.pull(msg.sender, wad);
+        gov.transferFrom(msg.sender, address(this), wad);
         chief.lock(wad);
-        iou.push(msg.sender, wad);
+        iou.transfer(msg.sender, wad);
 
         emit Lock(msg.sender, wad);
     }
@@ -92,9 +80,9 @@ contract VoteDelegate {
         require(stake[msg.sender] >= wad, "VoteDelegate/insufficient-stake");
 
         stake[msg.sender] -= wad;
-        iou.pull(msg.sender, wad);
+        iou.transferFrom(msg.sender, address(this), wad);
         chief.free(wad);
-        gov.push(msg.sender, wad);
+        gov.transfer(msg.sender, wad);
 
         emit Free(msg.sender, wad);
     }
