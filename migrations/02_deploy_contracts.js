@@ -94,10 +94,12 @@ module.exports = async (deployer, network, [account]) => {
     }
   }
 
+  const DEPLOYER = account;
+
   const DssDeploy = artifacts.require('DssDeploy');
 
   const web3 = DssDeploy.interfaceAdapter.web3;
-  const initialBalance = await web3.eth.getBalance(account);
+  const initialBalance = await web3.eth.getBalance(DEPLOYER);
 
   const chainId = await web3.eth.net.getId();
 
@@ -308,7 +310,7 @@ module.exports = async (deployer, network, [account]) => {
     const dsRoles = await artifact_deploy(DSRoles);
     const MCD_ADM = dsRoles.address;
     console.log('MCD_ADM=' + MCD_ADM);
-    await dsRoles.setRootUser(account, true);
+    await dsRoles.setRootUser(DEPLOYER, true);
   // }
 
   // CORE
@@ -599,7 +601,7 @@ module.exports = async (deployer, network, [account]) => {
           MCD_CLIP_CALC_[token_name][ilk] = calc.address;
           console.log('MCD_CLIP_CALC_' + token_name + '_' + ilk + '=' + MCD_CLIP_CALC_[token_name][ilk]);
           await calc.rely(MCD_PAUSE_PROXY);
-          await calc.deny(account);
+          await calc.deny(DEPLOYER);
           // await dssDeploy.deployCollateralClip(ilk_name, MCD_JOIN_[token_name][ilk], PIP_[token_name], MCD_CLIP_CALC_[token_name][ilk]);
           // const { clip } = await dssDeploy.ilks(ilk_name);
           // MCD_CLIP_[token_name][ilk] = clip;
@@ -705,17 +707,17 @@ module.exports = async (deployer, network, [account]) => {
 
   console.log('Releasing Auth...');
   // await dssDeploy.releaseAuth();
-  await vat.deny(account);
-  await cat.deny(account);
-  await dog.deny(account);
-  await vow.deny(account);
-  await jug.deny(account);
-  await pot.deny(account);
-  await dai.deny(account);
-  await spotter.deny(account);
-  await flap.deny(account);
-  await flop.deny(account);
-  await end.deny(account);
+  await vat.deny(DEPLOYER);
+  await cat.deny(DEPLOYER);
+  await dog.deny(DEPLOYER);
+  await vow.deny(DEPLOYER);
+  await jug.deny(DEPLOYER);
+  await pot.deny(DEPLOYER);
+  await dai.deny(DEPLOYER);
+  await spotter.deny(DEPLOYER);
+  await flap.deny(DEPLOYER);
+  await flop.deny(DEPLOYER);
+  await end.deny(DEPLOYER);
 
   for (const token_name in config_tokens) {
     const token_config = config_tokens[token_name];
@@ -728,18 +730,18 @@ module.exports = async (deployer, network, [account]) => {
       const GemJoin = artifacts.require('GemJoin');
       const gemJoin = await artifact_at(GemJoin, MCD_JOIN_[token_name][ilk]);
       await gemJoin.rely(MCD_PAUSE_PROXY);
-      await gemJoin.deny(account);
+      await gemJoin.deny(DEPLOYER);
       if (ilk_config.flipDeploy !== undefined) {
         // await dssDeploy.releaseAuthFlip(ilk_name);
         const Flipper = artifacts.require('Flipper');
         const flip = await artifact_at(Flipper, MCD_FLIP_[token_name][ilk]);
-        await flip.deny(account);
+        await flip.deny(DEPLOYER);
       }
       if (ilk_config.clipDeploy !== undefined) {
         // await dssDeploy.releaseAuthClip(ilk_name);
         const Clipper = artifacts.require('Clipper');
         const clip = await artifact_at(Clipper, MCD_CLIP_[token_name][ilk]);
-        await clip.deny(account);
+        await clip.deny(DEPLOYER);
       }
     }
   }
@@ -762,11 +764,11 @@ module.exports = async (deployer, network, [account]) => {
 
   // PROXY DEPLOYER
 
-  let PROXY_DEPLOYER = await proxyRegistry.proxies(account);
+  let PROXY_DEPLOYER = await proxyRegistry.proxies(DEPLOYER);
   if (PROXY_DEPLOYER === ZERO_ADDRESS) {
     console.log('Building Proxy Deployer...');
     await proxyRegistry.build();
-    PROXY_DEPLOYER = await proxyRegistry.proxies(account);
+    PROXY_DEPLOYER = await proxyRegistry.proxies(DEPLOYER);
   }
   console.log('PROXY_DEPLOYER=' + PROXY_DEPLOYER);
   const DSProxy = artifacts.require('DSProxy');
@@ -923,7 +925,7 @@ module.exports = async (deployer, network, [account]) => {
   console.log('MCD_FLASH=' + MCD_FLASH);
   await rely(MCD_VAT, MCD_FLASH);
   await dssFlash.rely(MCD_PAUSE_PROXY);
-  await dssFlash.deny(account);
+  await dssFlash.deny(DEPLOYER);
 
   // CORE CONFIG
 
@@ -1036,7 +1038,7 @@ module.exports = async (deployer, network, [account]) => {
     const osm = await artifact_at(OSM, PIP_[token_name]);
     let relied;
     try {
-      relied = Number(await osm.wards(account)) === 1;
+      relied = Number(await osm.wards(DEPLOYER)) === 1;
     } catch {
       relied = false;
     }
@@ -1096,7 +1098,7 @@ module.exports = async (deployer, network, [account]) => {
     }
   }
   await dssAutoLine.rely(MCD_PAUSE_PROXY);
-  await dssAutoLine.deny(account);
+  await dssAutoLine.deny(DEPLOYER);
 
   // SET ILKS DUST
 
@@ -1452,7 +1454,7 @@ module.exports = async (deployer, network, [account]) => {
           await filex(MCD_SPOT, ilk_name, 'pip', PIP_[token_name]);
         }
         await osm.rely(MCD_PAUSE_PROXY);
-        await osm.deny(account);
+        await osm.deny(DEPLOYER);
       }
     }
   }
@@ -1476,7 +1478,7 @@ module.exports = async (deployer, network, [account]) => {
         const ilk_name = web3.utils.asciiToHex(token_name + '-' + ilk);
 
         await osmMom.setOsm(ilk_name, PIP_[token_name]);
-        const wards = await osm.wards(account);
+        const wards = await osm.wards(DEPLOYER);
         if (Number(wards) === 1) {
           await osm.rely(OSM_MOM);
         }
@@ -1556,12 +1558,12 @@ module.exports = async (deployer, network, [account]) => {
 
   await authGemJoin5.rely(MCD_PAUSE_PROXY);
   await authGemJoin5.rely(DSS_PSM);
-  await authGemJoin5.deny(account);
+  await authGemJoin5.deny(DEPLOYER);
 
   await dssPsm.rely(MCD_PAUSE_PROXY);
   await dssPsm.rely(LERP);
-  await dssPsm.deny(account);
+  await dssPsm.deny(DEPLOYER);
 
-  const finalBalance = await web3.eth.getBalance(account);
+  const finalBalance = await web3.eth.getBalance(DEPLOYER);
   console.log('TOTAL COST:', BigInt(initialBalance) - BigInt(finalBalance));
 };
