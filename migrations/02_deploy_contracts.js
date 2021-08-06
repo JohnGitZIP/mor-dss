@@ -144,6 +144,13 @@ module.exports = async (deployer, network, [account]) => {
     PIP_[token_name] = VAL_[token_name];
   }
 
+  // MULTICALL
+  console.log('Publishing Multicall...');
+  const Multicall = artifacts.require('Multicall');
+  const multicall = await artifact_deploy(Multicall);
+  const MULTICALL = multicall.address;
+  console.log('MULTICALL=' + MULTICALL);
+
   // FAUCET
 
   let FAUCET = config_import.faucet;
