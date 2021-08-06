@@ -308,8 +308,8 @@ module.exports = async (deployer, network, [account]) => {
     console.log('Deploying DSRoles...');
     const DSRoles = artifacts.require('DSRoles');
     const dsRoles = await artifact_deploy(DSRoles);
-    const MCD_ADM = dsRoles.address;
-    console.log('MCD_ADM=' + MCD_ADM);
+    const MCD_ADM_TEMP = dsRoles.address;
+    console.log('MCD_ADM_TEMP=' + MCD_ADM_TEMP);
     await dsRoles.setRootUser(DEPLOYER, true);
   // }
 
@@ -371,7 +371,7 @@ module.exports = async (deployer, network, [account]) => {
   await flap.rely(MCD_VOW);
   await flop.rely(MCD_VOW);
 
-  // await dssDeploy.deploy2(MCD_GOV, 0, MCD_ADM, units(config.esm_min, 18));
+  // await dssDeploy.deploy2(MCD_GOV, 0, MCD_ADM_TEMP, units(config.esm_min, 18));
 
   // Deploy Liquidator
   const Cat = artifacts.require('Cat');
@@ -409,7 +409,7 @@ module.exports = async (deployer, network, [account]) => {
 
   // Deploy Pause
   const DSPause = artifacts.require('DSPause');
-  const pause = await artifact_deploy(DSPause, 0, ZERO_ADDRESS, MCD_ADM);
+  const pause = await artifact_deploy(DSPause, 0, ZERO_ADDRESS, MCD_ADM_TEMP);
   const MCD_PAUSE = pause.address;
   console.log('MCD_PAUSE=' + MCD_PAUSE);
   const MCD_PAUSE_PROXY = await pause.proxy();
@@ -873,8 +873,8 @@ module.exports = async (deployer, network, [account]) => {
 
   // ADM CHIEF
 
-  let MCD_ADM_CHIEF = config_import.authority;
-  if (MCD_ADM_CHIEF === undefined) {
+  let MCD_ADM = config_import.authority;
+  if (MCD_ADM === undefined) {
     console.log('Publishing IOU Token...');
     const iouToken = await artifact_deploy(DSToken, 'IOU');
     const MCD_IOU = iouToken.address;
@@ -883,9 +883,9 @@ module.exports = async (deployer, network, [account]) => {
     console.log('Publishing DS Chief...');
     const DSChief = artifacts.require('DSChief');
     const dsChief = await artifact_deploy(DSChief, MCD_GOV, MCD_IOU, 5);
-    MCD_ADM_CHIEF = dsChief.address;
-    console.log('MCD_ADM_CHIEF=' + MCD_ADM_CHIEF);
-    iouToken.setOwner(MCD_ADM_CHIEF);
+    MCD_ADM = dsChief.address;
+    console.log('MCD_ADM=' + MCD_ADM);
+    iouToken.setOwner(MCD_ADM);
 
     console.log('Publishing Vote Proxy Factory...');
     const VoteProxyFactory = artifacts.require('VoteProxyFactory');
@@ -1485,7 +1485,7 @@ module.exports = async (deployer, network, [account]) => {
       }
     }
   }
-  await osmMom.setAuthority(MCD_ADM_CHIEF);
+  await osmMom.setAuthority(MCD_ADM);
   await osmMom.setOwner(MCD_PAUSE_PROXY);
 
   // SET ILKS FLIPPER-MOM
@@ -1504,7 +1504,7 @@ module.exports = async (deployer, network, [account]) => {
       }
     }
   }
-  await flipperMom.setAuthority(MCD_ADM_CHIEF);
+  await flipperMom.setAuthority(MCD_ADM);
   await flipperMom.setOwner(MCD_PAUSE_PROXY);
 
   // SET ILKS CLIPPER-MOM
@@ -1525,14 +1525,14 @@ module.exports = async (deployer, network, [account]) => {
       }
     }
   }
-  await clipperMom.setAuthority(MCD_ADM_CHIEF);
+  await clipperMom.setAuthority(MCD_ADM);
   await clipperMom.setOwner(MCD_PAUSE_PROXY);
 
   // SET PAUSE AUTH DELAY
 
   console.log('Configuring Authority & Delay...');
   if (Number(config.pauseDelay) >= 0) {
-    await setAuthorityAndDelay(MCD_ADM_CHIEF, units(config.pauseDelay, 0));
+    await setAuthorityAndDelay(MCD_ADM, units(config.pauseDelay, 0));
   }
 
   // PSM
