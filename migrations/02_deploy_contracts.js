@@ -880,6 +880,7 @@ module.exports = async (deployer, network, [account]) => {
     const iouToken = await artifact_deploy(DSToken, 'IOU');
     const MCD_IOU = iouToken.address;
     console.log('MCD_IOU=' + MCD_IOU);
+    await govToken.setName('IOweyoU');
 
     console.log('Publishing DS Chief...');
     const DSChief = artifacts.require('DSChief');
