@@ -162,7 +162,7 @@ module.exports = async (deployer, network, [account]) => {
     const restrictedTokenFaucet = await artifact_deploy(RestrictedTokenFaucet);
     FAUCET = restrictedTokenFaucet.address;
     console.log('FAUCET=' + FAUCET);
-    restrictedTokenFaucet.hope(ZERO_ADDRESS);
+    await restrictedTokenFaucet.hope(ZERO_ADDRESS);
   }
   const restrictedTokenFaucet = await artifact_at(RestrictedTokenFaucet, FAUCET);
 
@@ -475,6 +475,7 @@ module.exports = async (deployer, network, [account]) => {
     console.log('Configuring Faucet...');
     await govToken.mint(FAUCET, units('1000000', 18));
     await restrictedTokenFaucet.gulp(MCD_GOV);
+    await restrictedTokenFaucet.setAmt(MCD_GOV, units('1000', 18));
 
     console.log('Publishing MKR Authority ...');
     const MkrAuthority = artifacts.require('MkrAuthority');
