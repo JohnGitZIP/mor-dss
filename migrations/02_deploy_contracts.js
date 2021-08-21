@@ -165,13 +165,14 @@ module.exports = async (deployer, network, [account]) => {
 
   // PROXY REGISTRY
 
+  let PROXY_FACTORY = ZERO_ADDRESS;
   let PROXY_REGISTRY = config_import.proxyRegistry;
   const ProxyRegistry = artifacts.require('ProxyRegistry');
   if (config_import.proxyRegistry === undefined) {
     console.log('Publishing Proxy Factory...');
     const DSProxyFactory = artifacts.require('DSProxyFactory');
     const dsProxyFactory = await artifact_deploy(DSProxyFactory);
-    const PROXY_FACTORY = dsProxyFactory.address;
+    PROXY_FACTORY = dsProxyFactory.address;
     console.log('PROXY_FACTORY=' + PROXY_FACTORY);
 
     console.log('Publishing Proxy Registry...');
@@ -467,6 +468,7 @@ module.exports = async (deployer, network, [account]) => {
 
   // FAUCET CONFIG
 
+  let GOV_GUARD  = ZERO_ADDRESS;
   let mkrAuthority;
   if (config_import.gov === undefined) {
     console.log('Configuring Faucet...');
@@ -477,7 +479,7 @@ module.exports = async (deployer, network, [account]) => {
     console.log('Publishing MKR Authority ...');
     const MkrAuthority = artifacts.require('MkrAuthority');
     mkrAuthority = await artifact_deploy(MkrAuthority);
-    const GOV_GUARD = mkrAuthority.address;
+    GOV_GUARD = mkrAuthority.address;
     console.log('GOV_GUARD=' + GOV_GUARD);
     govToken.setAuthority(GOV_GUARD);
     govToken.setOwner(MCD_PAUSE_PROXY);
@@ -873,6 +875,7 @@ module.exports = async (deployer, network, [account]) => {
 
   // ADM CHIEF
 
+  let VOTE_PROXY_FACTORY = ZERO_ADDRESS;
   let MCD_ADM = config_import.authority;
   if (MCD_ADM === undefined) {
     console.log('Publishing IOU Token...');
@@ -891,10 +894,11 @@ module.exports = async (deployer, network, [account]) => {
     console.log('Publishing Vote Proxy Factory...');
     const VoteProxyFactory = artifacts.require('VoteProxyFactory');
     const voteProxyFactory = await artifact_deploy(VoteProxyFactory, MCD_ADM);
-    const VOTE_PROXY_FACTORY = voteProxyFactory.address;
+    VOTE_PROXY_FACTORY = voteProxyFactory.address;
     console.log('VOTE_PROXY_FACTORY=' + VOTE_PROXY_FACTORY);
 
     // POLLING EMITTER
+
     console.log('Publishing Polling Emitter...');
     const PollingEmitter = artifacts.require('PollingEmitter');
     const pollingEmitter = await artifact_deploy(PollingEmitter);
@@ -902,6 +906,7 @@ module.exports = async (deployer, network, [account]) => {
     console.log('MCD_POLLING_EMITTER=' + MCD_POLLING_EMITTER);
 
     // VOTE DELEGATE FACTORY
+
     console.log('Publishing Vote Delegate Factory...');
     const VoteDelegateFactory = artifacts.require('VoteDelegateFactory');
     const voteDelegateFactory = await artifact_deploy(VoteDelegateFactory, MCD_ADM, MCD_POLLING_EMITTER);
@@ -928,6 +933,15 @@ module.exports = async (deployer, network, [account]) => {
   await rely(MCD_VAT, MCD_FLASH);
   await dssFlash.rely(MCD_PAUSE_PROXY);
   await dssFlash.deny(DEPLOYER);
+
+  // CHAIN LOG
+
+  console.log('Publishing Chain Log...');
+  const ChainLog = artifacts.require('ChainLog');
+  const chainLog = await artifact_deploy(ChainLog);
+  const CHANGELOG = chainLog.address;
+  console.log('CHANGELOG=' + CHANGELOG);
+  await chainLog.rely(MCD_PAUSE_PROXY);
 
   // CORE CONFIG
 
@@ -1531,6 +1545,7 @@ module.exports = async (deployer, network, [account]) => {
   await clipperMom.setOwner(MCD_PAUSE_PROXY);
 
   // SET PIPS RIGHTS
+
   console.log('Configuring PIPs Rights...');
   for (const token_name in config_tokens) {
     const token_config = config_tokens[token_name];
@@ -1561,6 +1576,7 @@ module.exports = async (deployer, network, [account]) => {
   }
 
   // SET ILK REGISTRY
+
   console.log('Configuring ILK Registry...');
   for (const token_name in config_tokens) {
     const token_config = config_tokens[token_name];
@@ -1651,6 +1667,81 @@ module.exports = async (deployer, network, [account]) => {
     }
   }
   await lerpFactory.deny(DEPLOYER);
+
+  // CONFIGURE CHAIN LOG
+
+  console.log('Configuring Chain Log...');
+  for (const token_name in T_) {
+    await chainLog.setAddress(web3.utils.asciiToHex(token_name), T_[token_name]);
+  }
+  for (const token_name in PIP_) {
+    await chainLog.setAddress(web3.utils.asciiToHex('PIP_' + token_name), PIP_[token_name]);
+  }
+  for (const token_name in MCD_JOIN_) {
+    for (const ilk in MCD_JOIN_[token_name]) {
+      await chainLog.setAddress(web3.utils.asciiToHex('MCD_JOIN_' + token_name + '_' + ilk), MCD_JOIN_[token_name][ilk]);
+    }
+  }
+  for (const token_name in MCD_FLIP_) {
+    for (const ilk in MCD_FLIP_[token_name]) {
+      await chainLog.setAddress(web3.utils.asciiToHex('MCD_FLIP_' + token_name + '_' + ilk), MCD_FLIP_[token_name][ilk]);
+    }
+  }
+  for (const token_name in MCD_CLIP_) {
+    for (const ilk in MCD_CLIP_[token_name]) {
+      await chainLog.setAddress(web3.utils.asciiToHex('MCD_CLIP_' + token_name + '_' + ilk), MCD_CLIP_[token_name][ilk]);
+    }
+  }
+  for (const token_name in MCD_CLIP_CALC_) {
+    for (const ilk in MCD_CLIP_CALC_[token_name]) {
+      await chainLog.setAddress(web3.utils.asciiToHex('MCD_CLIP_CALC_' + token_name + '_' + ilk), MCD_CLIP_CALC_[token_name][ilk]);
+    }
+  }
+  await chainLog.setAddress(web3.utils.asciiToHex('CDP_MANAGER'), CDP_MANAGER);
+  await chainLog.setAddress(web3.utils.asciiToHex('CHANGELOG'), CHANGELOG);
+  // await chainLog.setAddress(web3.utils.asciiToHex('CLIP_FAB'), CLIP_FAB);
+  await chainLog.setAddress(web3.utils.asciiToHex('CLIPPER_MOM'), CLIPPER_MOM);
+  await chainLog.setAddress(web3.utils.asciiToHex('DSR_MANAGER'), DSR_MANAGER);
+  await chainLog.setAddress(web3.utils.asciiToHex('FAUCET'), FAUCET);
+  // await chainLog.setAddress(web3.utils.asciiToHex('FLIP_FAB'), FLIP_FAB);
+  await chainLog.setAddress(web3.utils.asciiToHex('FLIPPER_MOM'), FLIPPER_MOM);
+  await chainLog.setAddress(web3.utils.asciiToHex('GET_CDPS'), GET_CDPS);
+  await chainLog.setAddress(web3.utils.asciiToHex('GOV_GUARD'), GOV_GUARD);
+  await chainLog.setAddress(web3.utils.asciiToHex('ILK_REGISTRY'), ILK_REGISTRY);
+  await chainLog.setAddress(web3.utils.asciiToHex('LERP_FAB'), LERP_FAB);
+  await chainLog.setAddress(web3.utils.asciiToHex('MCD_ADM'), MCD_ADM);
+  await chainLog.setAddress(web3.utils.asciiToHex('MCD_CAT'), MCD_CAT);
+  await chainLog.setAddress(web3.utils.asciiToHex('MCD_DAI'), MCD_DAI);
+  // await chainLog.setAddress(web3.utils.asciiToHex('MCD_DEPLOY'), MCD_DEPLOY);
+  await chainLog.setAddress(web3.utils.asciiToHex('MCD_DOG'), MCD_DOG);
+  await chainLog.setAddress(web3.utils.asciiToHex('MCD_END'), MCD_END);
+  await chainLog.setAddress(web3.utils.asciiToHex('MCD_ESM'), MCD_ESM);
+  await chainLog.setAddress(web3.utils.asciiToHex('MCD_FLAP'), MCD_FLAP);
+  await chainLog.setAddress(web3.utils.asciiToHex('MCD_FLASH'), MCD_FLASH);
+  await chainLog.setAddress(web3.utils.asciiToHex('MCD_FLOP'), MCD_FLOP);
+  await chainLog.setAddress(web3.utils.asciiToHex('MCD_GOV'), MCD_GOV);
+  await chainLog.setAddress(web3.utils.asciiToHex('MCD_GOV_ACTIONS'), MCD_GOV_ACTIONS);
+  await chainLog.setAddress(web3.utils.asciiToHex('MCD_IAM_AUTO_LINE'), MCD_IAM_AUTO_LINE);
+  await chainLog.setAddress(web3.utils.asciiToHex('MCD_JOIN_DAI'), MCD_JOIN_DAI);
+  await chainLog.setAddress(web3.utils.asciiToHex('MCD_JUG'), MCD_JUG);
+  await chainLog.setAddress(web3.utils.asciiToHex('MCD_PAUSE'), MCD_PAUSE);
+  await chainLog.setAddress(web3.utils.asciiToHex('MCD_PAUSE_PROXY'), MCD_PAUSE_PROXY);
+  await chainLog.setAddress(web3.utils.asciiToHex('MCD_POT'), MCD_POT);
+  await chainLog.setAddress(web3.utils.asciiToHex('MCD_SPOT'), MCD_SPOT);
+  await chainLog.setAddress(web3.utils.asciiToHex('MCD_VAT'), MCD_VAT);
+  await chainLog.setAddress(web3.utils.asciiToHex('MCD_VOW'), MCD_VOW);
+  await chainLog.setAddress(web3.utils.asciiToHex('MULTICALL'), MULTICALL);
+  await chainLog.setAddress(web3.utils.asciiToHex('OSM_MOM'), OSM_MOM);
+  await chainLog.setAddress(web3.utils.asciiToHex('PROXY_ACTIONS'), PROXY_ACTIONS);
+  await chainLog.setAddress(web3.utils.asciiToHex('PROXY_ACTIONS_DSR'), PROXY_ACTIONS_DSR);
+  await chainLog.setAddress(web3.utils.asciiToHex('PROXY_ACTIONS_END'), PROXY_ACTIONS_END);
+  await chainLog.setAddress(web3.utils.asciiToHex('PROXY_DEPLOYER'), PROXY_DEPLOYER);
+  await chainLog.setAddress(web3.utils.asciiToHex('PROXY_FACTORY'), PROXY_FACTORY);
+  await chainLog.setAddress(web3.utils.asciiToHex('PROXY_PAUSE_ACTIONS'), PROXY_PAUSE_ACTIONS);
+  await chainLog.setAddress(web3.utils.asciiToHex('PROXY_REGISTRY'), PROXY_REGISTRY);
+  // await chainLog.setAddress(web3.utils.asciiToHex('VOTE_DELEGATE_PROXY_FACTORY'), VOTE_DELEGATE_PROXY_FACTORY);
+  await chainLog.setAddress(web3.utils.asciiToHex('VOTE_PROXY_FACTORY'), VOTE_PROXY_FACTORY);
+  await chainLog.deny(DEPLOYER);
 
   const finalBalance = await web3.eth.getBalance(DEPLOYER);
   console.log('TOTAL COST:', BigInt(initialBalance) - BigInt(finalBalance));
