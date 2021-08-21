@@ -23,6 +23,35 @@
   "flash_max": "500000000",
   "flash_toll": "0.05",
   "tokens": {
+    "USDC": {
+      "gemDeploy": {
+        "src": "dss-gem-joins/USDC",
+        "params": ["1000000000000000000000000"],
+        "faucetSupply": "990000000000000000000000",
+        "faucetAmount": "50000000000000000000"
+      },
+      "joinDeploy": {
+        "src": "GemJoin5",
+        "extraParams": []
+      },
+      "pipDeploy": {
+        "osmDelay": "0",
+        "type": "value",
+        "price": "1"
+      },
+      "psmDeploy": {
+        "src": "AuthGemJoin5",
+        "extraParams": [],
+        "ilks": {
+          "A": {
+            "lerpDelay": "604800",
+            "lerpStart": "10000000000000000",
+            "lerpEnd": "1000000000000000",
+            "lerpDuration": "604800"
+          }
+        }
+      }
+    },
     "ETH": {
       "gemDeploy": {
         "src": "ds-weth/WETH9_",

@@ -27,6 +27,32 @@
     "faucet": "0x0000000000000000000000000000000000000000"
   },
   "tokens": {
+    "BUSD": {
+      "import": {
+        "gem": "0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56",
+      },
+      "joinDeploy": {
+        "src": "GemJoin",
+        "extraParams": []
+      },
+      "pipDeploy": {
+        "osmDelay": "0",
+        "type": "value",
+        "price": "1"
+      },
+      "psmDeploy": {
+        "src": "AuthGemJoin",
+        "extraParams": [],
+        "ilks": {
+          "A": {
+            "lerpDelay": "604800",
+            "lerpStart": "10000000000000000",
+            "lerpEnd": "1000000000000000",
+            "lerpDuration": "604800"
+          }
+        }
+      }
+    },
     "BNB": {
       "import": {
         "gem": "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c"

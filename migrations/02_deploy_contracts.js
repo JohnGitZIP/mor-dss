@@ -1,23 +1,8 @@
 const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
 
-const NOW = Math.floor(Date.now() / 1000);
-
-const USDC = { // < 18 decimals
-  '1': '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',      // mainnet
-  '3': '0xB37a76e727AD2c2DD09549Cf30ef4433E2ee87a1',      // ropsten
-  '4': '0x6830707Ba5C9632c44Cf78dCbc172c09788b047b',      // rinkeby
-  '42': '0x7079f3762805CFf9C979a5bDC6f5648bCFEE76C8',     // kovan
-  '5': '0x78670902A9fb64d9F82BC9672c5FbF29c08ec29D',      // goerli
-  '56': '0xecA88125a5ADbe82614ffC12D0DB554E2e2867C8',     // bscmain (vUSDC)
-  '97': '0x9780881Bf45B83Ee028c4c1De7e0C168dF8e9eEF',     // bsctest
-  '137': '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174',    // maticmain
-  '80001': '0x6D4dd09982853F08d9966aC3cA4Eb5885F16f2b2',  // matictest
-};
-
-const LERP_START_TIME = NOW + 10 * 24 * 60 * 60;
-const LERP_START = 10000000000000000n;
-const LERP_END = 1000000000000000n;
-const LERP_DURATION = 7 * 24 * 60 * 60;
+const now = new Date();
+const NOW = BigInt(Math.floor(now.getTime() / 1000));
+const NOW_PREFIX = now.toISOString().substr(0, 10).split('-').join('');
 
 function units(coins, decimals) {
   if (typeof coins !== 'string') throw new Error('Invalid amount');
@@ -505,7 +490,7 @@ module.exports = async (deployer, network, [account]) => {
     T_[token_name] = token_import.gem;
     if (token_import.gem === undefined) {
       const src = token_gemDeploy.src;
-      const params = token_gemDeploy.params;
+      const params = token_gemDeploy.params || [];
       let GemToken;
       switch (src) {
       case 'ds-weth/WETH9_': GemToken = artifacts.require('WETH9_'); break;
@@ -545,7 +530,7 @@ module.exports = async (deployer, network, [account]) => {
     MCD_CLIP_CALC_[token_name] = MCD_CLIP_CALC_[token_name] || {};
     {
       const src = token_joinDeploy.src;
-      const extraParams = token_joinDeploy.extraParams;
+      const extraParams = token_joinDeploy.extraParams || [];
       let GemJoin;
       switch (src) {
       case 'GemJoin': GemJoin = artifacts.require('GemJoin'); break;
@@ -1585,40 +1570,75 @@ module.exports = async (deployer, network, [account]) => {
 
   // PSM
 
-  // review PSM deploy
-  console.log('Deploying AuthGemJoin5...');
-  const AuthGemJoin5 = artifacts.require('AuthGemJoin5');
-  const authGemJoin5 = await artifact_deploy(AuthGemJoin5, MCD_VAT, web3.utils.asciiToHex('PSM-USDC-A'), USDC[chainId]);
-  const PSM_USDC = authGemJoin5.address;
-  console.log('PSM_USDC=' + PSM_USDC);
-  await authGemJoin5.rely(MCD_PAUSE_PROXY);
+  console.log('Deploying Lerp Factory...');
+  const LerpFactory = artifacts.require('LerpFactory');
+  const lerpFactory = await artifact_deploy(LerpFactory);
+  const LERP_FAB = lerpFactory.address;
+  console.log('LERP_FAB=' + LERP_FAB);
+  await lerpFactory.rely(MCD_PAUSE_PROXY);
 
-  console.log('Deploying DssPsm...');
-  const DssPsm = artifacts.require('DssPsm');
-  const dssPsm = await artifact_deploy(DssPsm, PSM_USDC, MCD_JOIN_DAI, MCD_VOW);
-  const DSS_PSM = dssPsm.address;
-  console.log('DSS_PSM=' + DSS_PSM);
-  await dssPsm.rely(MCD_PAUSE_PROXY);
-  await authGemJoin5.rely(DSS_PSM);
-  await authGemJoin5.deny(DEPLOYER);
+  const DSS_PSM_JOIN_ = {};
+  const DSS_PSM_ = {};
+  const LERP_ = {};
+  for (const token_name in config_tokens) {
+    const token_config = config_tokens[token_name];
+    const token_psmDeploy = token_config.psmDeploy;
 
-  // console.log('Deploying Lerp Factory...');
-  // const LerpFactory = artifacts.require('LerpFactory');
-  // const lerpFactory = await artifact_deploy(LerpFactory);
-  // const LERP_FAB = lerpFactory.address;
-  // console.log('LERP_FAB=' + LERP_FAB);
-  // await lerpFactory.rely(MCD_PAUSE_PROXY);
-  // await lerpFactory.deny(DEPLOYER);
+    if (token_psmDeploy !== undefined) {
+      DSS_PSM_JOIN_[token_name] = DSS_PSM_JOIN_[token_name] || {};
+      DSS_PSM_[token_name] = DSS_PSM_[token_name] || {};
+      LERP_[token_name] = LERP_[token_name] || {};
 
-  console.log('Deploying Lerp...');
-  const Lerp = artifacts.require('Lerp');
-  const lerp = await artifact_deploy(Lerp, DSS_PSM, web3.utils.asciiToHex('tin'), LERP_START_TIME, LERP_START, LERP_END, LERP_DURATION);
-  const LERP = lerp.address;
-  console.log('LERP=' + LERP);
-  await lerp.rely(MCD_PAUSE_PROXY);
-  await lerp.deny(DEPLOYER);
-  await dssPsm.rely(LERP);
-  await dssPsm.deny(DEPLOYER);
+      const src = token_psmDeploy.src;
+      const extraParams = token_psmDeploy.extraParams || [];
+      const token_ilks = token_psmDeploy.ilks || {};
+      let AuthGemJoin;
+      switch (src) {
+      case 'AuthGemJoin': AuthGemJoin = artifacts.require('AuthGemJoin'); break;
+      case 'AuthGemJoin5': AuthGemJoin = artifacts.require('AuthGemJoin5'); break;
+      default: throw new Error('Unknown auth join: ' + src);
+      }
+
+      for (const ilk in token_ilks) {
+        const ilk_config = token_ilks[ilk];
+        const ilk_lerpDelay = units(ilk_config.lerpDelay, 0);
+        const ilk_lerpStart = units(ilk_config.lerpStart, 0);
+        const ilk_lerpEnd = units(ilk_config.lerpEnd, 0);
+        const ilk_lerpDuration = units(ilk_config.lerpDuration, 0);
+        const ilk_name = web3.utils.asciiToHex('PSM-' + token_name + '-' + ilk);
+        const lerp_name = web3.utils.asciiToHex(NOW_PREFIX + '_PSM_' + token_name + '_' + ilk + '_TIN');
+
+        console.log('Publishing Auth Gem Join...');
+        const authGemJoin = await artifact_deploy(AuthGemJoin, MCD_VAT, ilk_name, T_[token_name], ...extraParams);
+        DSS_PSM_JOIN_[token_name][ilk] = authGemJoin.address;
+        console.log('DSS_PSM_JOIN_' + token_name + '_' + ilk + '=' + DSS_PSM_JOIN_[token_name][ilk]);
+
+        console.log('Deploying Dss Psm...');
+        const DssPsm = artifacts.require('DssPsm');
+        const dssPsm = await artifact_deploy(DssPsm, DSS_PSM_JOIN_[token_name][ilk], MCD_JOIN_DAI, MCD_VOW);
+        DSS_PSM_[token_name][ilk] = dssPsm.address;
+        console.log('DSS_PSM_' + token_name + '_' + ilk + '=' + DSS_PSM_[token_name][ilk]);
+
+        console.log('Deploying Lerp...');
+        await lerpFactory.newLerp(lerp_name, DSS_PSM_[token_name][ilk], web3.utils.asciiToHex('tin'), NOW + ilk_lerpDelay, ilk_lerpStart, ilk_lerpEnd, ilk_lerpDuration);
+        const lerpAddress = await lerpFactory.lerps(lerp_name);
+        const Lerp = artifacts.require('Lerp');
+        const lerp = await artifact_at(Lerp, lerpAddress);
+        LERP_[token_name][ilk] = lerp.address;
+        console.log('LERP_' + token_name + '_' + ilk + '=' + LERP_[token_name][ilk]);
+
+        await authGemJoin.rely(DSS_PSM_[token_name][ilk]);
+        await dssPsm.rely(LERP_[token_name][ilk]);
+
+        await authGemJoin.rely(MCD_PAUSE_PROXY);
+        await dssPsm.rely(MCD_PAUSE_PROXY);
+
+        await authGemJoin.deny(DEPLOYER);
+        await dssPsm.deny(DEPLOYER);
+      }
+    }
+  }
+  await lerpFactory.deny(DEPLOYER);
 
   const finalBalance = await web3.eth.getBalance(DEPLOYER);
   console.log('TOTAL COST:', BigInt(initialBalance) - BigInt(finalBalance));

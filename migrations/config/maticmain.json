@@ -23,6 +23,32 @@
   "flash_max": "100000",
   "flash_toll": "0.1",
   "tokens": {
+    "USDC": {
+      "import": {
+        "gem": "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174",
+      },
+      "joinDeploy": {
+        "src": "GemJoin5",
+        "extraParams": []
+      },
+      "pipDeploy": {
+        "osmDelay": "0",
+        "type": "value",
+        "price": "1"
+      },
+      "psmDeploy": {
+        "src": "AuthGemJoin5",
+        "extraParams": [],
+        "ilks": {
+          "A": {
+            "lerpDelay": "604800",
+            "lerpStart": "10000000000000000",
+            "lerpEnd": "1000000000000000",
+            "lerpDuration": "604800"
+          }
+        }
+      }
+    },
     "MATIC": {
       "import": {
         "gem": "0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270"
@@ -85,7 +111,7 @@
           "autoLine": "1000000",
           "autoLineGap": "30",
           "autoLineTtl": "3600",
-          "dust": "1",
+          "dust": "0.0001",
           "duty": "5",
           "clipDeploy": {
             "chop": "8",
