@@ -13,6 +13,18 @@ function units(coins, decimals) {
   return BigInt(coins.slice(0, i) + s + '0'.repeat(decimals - s.length));
 }
 
+const CONFIG = {
+  '1': 'freshtest',     // mainnet
+  '3': 'freshtest',     // ropsten
+  '4': 'freshtest',     // rinkeby
+  '42': 'freshtest',    // kovan
+  '5': 'freshtest',     // goerli
+  '56': 'bscmain',      // bscmain
+  '97': 'freshtest',    // bsctest
+  '137': 'maticmain',   // maticmain
+  '80001': 'freshtest', // matictest
+};
+
 module.exports = async (deployer, network, [account]) => {
 
   function lift(object) {
@@ -88,7 +100,7 @@ module.exports = async (deployer, network, [account]) => {
 
   const chainId = await web3.eth.net.getId();
 
-  const config = require('./config/freshtest.json');
+  const config = require('./config/' + CONFIG[chainId] + '.json');
   const config_import = config.import || {};
   const config_tokens = config.tokens || {};
 
