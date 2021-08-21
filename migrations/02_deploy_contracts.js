@@ -111,6 +111,7 @@ module.exports = async (deployer, network, [account]) => {
   const DSValue = artifacts.require('DSValue');
   const Median = artifacts.require('Median');
   const LinkOracle = artifacts.require('LinkOracle');
+  const UNIV2LPOracle = artifacts.require('UNIV2LPOracle');
   for (const token_name in config_tokens) {
     const token_config = config_tokens[token_name];
     const token_import = token_config.import || {};
@@ -118,6 +119,16 @@ module.exports = async (deployer, network, [account]) => {
 
     VAL_[token_name] = token_import.pip;
     if (token_import.pip === undefined) {
+      if (token_pipDeploy.type == 'univ2lp') {
+        console.log('Publishing Uniswap V2 LP Oracle...');
+        const src = token_import.gem;
+        const wat = web3.utils.asciiToHex(token_name);
+        const orb0 = VAL_[token_pipDeploy.token0];
+        const orb1 = VAL_[token_pipDeploy.token1];
+        const univ2lpOracle = await artifact_deploy(UNIV2LPOracle, src, wat, orb0, orb1);
+        VAL_[token_name] = univ2lpOracle.address;
+        console.log('VAL_' + token_name + '=' + VAL_[token_name]);
+      }
       if (token_pipDeploy.type == 'chainlink') {
         console.log('Publishing LinkOracle...');
         const linkOracle = await artifact_deploy(LinkOracle, token_pipDeploy.src, token_pipDeploy.dec);
@@ -1451,6 +1462,10 @@ module.exports = async (deployer, network, [account]) => {
         PIP_[token_name] = osm.address;
         console.log('PIP_' + token_name + '=' + PIP_[token_name]);
         await osm.step(osmDelay);
+        if (token_pipDeploy.type == 'univ2lp') {
+          const univ2lpOracle = await artifact_at(UNIV2LPOracle, VAL_[token_name]);
+          await univ2lpOracle.methods['kiss(address)'](PIP_[token_name]);
+        }
         if (token_pipDeploy.type == 'chainlink') {
           const linkOracle = await artifact_at(LinkOracle, VAL_[token_name]);
           await linkOracle.methods['kiss(address)'](PIP_[token_name]);
@@ -1556,6 +1571,11 @@ module.exports = async (deployer, network, [account]) => {
     const token_pipDeploy = token_config.pipDeploy || {};
 
     if (token_import.pip === undefined) {
+      if (token_pipDeploy.type == 'univ2lp') {
+        const univ2lpOracle = await artifact_at(UNIV2LPOracle, VAL_[token_name]);
+        await univ2lpOracle.rely(MCD_PAUSE_PROXY);
+        await univ2lpOracle.deny(DEPLOYER);
+      }
       if (token_pipDeploy.type == 'chainlink') {
         const linkOracle = await artifact_at(LinkOracle, VAL_[token_name]);
         await linkOracle.rely(MCD_PAUSE_PROXY);

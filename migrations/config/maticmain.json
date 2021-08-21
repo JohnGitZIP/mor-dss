@@ -130,6 +130,47 @@
           }
         }
       }
+    },
+    "APEMATICUSDC": {
+      "import": {
+        "gem": "0x019011032a7ac3A87eE885B6c08467AC46ad11CD"
+      },
+      "joinDeploy": {
+        "src": "GemJoin",
+        "extraParams": []
+      },
+      "pipDeploy": {
+        "osmDelay": "0",
+        "type": "univ2lp",
+        "token0": "MATIC",
+        "token1": "USDC"
+      },
+      "ilks": {
+        "A": {
+          "mat": "140",
+          "line": "3000000",
+          "autoLine": "0",
+          "autoLineGap": "0",
+          "autoLineTtl": "0",
+          "dust": "5000",
+          "duty": "4",
+          "clipDeploy": {
+            "chop": "13",
+            "hole": "5000000",
+            "chip": "0.1",
+            "tip": "300",
+            "buf": "115",
+            "tail": "12900",
+            "cusp": "60",
+            "calc": {
+              "type": "StairstepExponentialDecrease",
+              "step": "125",
+              "cut":  "99.5"
+            },
+            "cm_tolerance": "70"
+          }
+        }
+      }
     }
   }
 }
