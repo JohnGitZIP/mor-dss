@@ -483,7 +483,9 @@ module.exports = async (deployer, network, [account]) => {
     const GOV_GUARD = mkrAuthority.address;
     console.log('GOV_GUARD=' + GOV_GUARD);
     govToken.setAuthority(GOV_GUARD);
+    govToken.setOwner(MCD_PAUSE_PROXY);
     mkrAuthority.rely(MCD_FLOP);
+    mkrAuthority.setRoot(MCD_PAUSE_PROXY);
   }
 
   // DEPLOY COLLATERALS
@@ -895,24 +897,19 @@ module.exports = async (deployer, network, [account]) => {
     const VOTE_PROXY_FACTORY = voteProxyFactory.address;
     console.log('VOTE_PROXY_FACTORY=' + VOTE_PROXY_FACTORY);
 
-    // POLL EMITTER
-    console.log('Publishing Poll Emitter...');
+    // POLLING EMITTER
+    console.log('Publishing Polling Emitter...');
     const PollingEmitter = artifacts.require('PollingEmitter');
     const pollingEmitter = await artifact_deploy(PollingEmitter);
-    const BATCH_POLLING = pollingEmitter.address;
-    console.log('BATCH_POLLING=' + BATCH_POLLING);
+    const MCD_POLLING_EMITTER = pollingEmitter.address;
+    console.log('MCD_POLLING_EMITTER=' + MCD_POLLING_EMITTER);
 
+    // VOTE DELEGATE FACTORY
     console.log('Publishing Vote Delegate Factory...');
     const VoteDelegateFactory = artifacts.require('VoteDelegateFactory');
-    const voteDelegateFactory = await artifact_deploy(VoteDelegateFactory, MCD_ADM, BATCH_POLLING);
+    const voteDelegateFactory = await artifact_deploy(VoteDelegateFactory, MCD_ADM, MCD_POLLING_EMITTER);
     const VOTE_DELEGATE_FACTORY = voteDelegateFactory.address;
     console.log('VOTE_DELEGATE_FACTORY=' + VOTE_DELEGATE_FACTORY);
-  }
-
-  // GOV GUARD CONFIG
-
-  if (config_import.gov === undefined) {
-    await mkrAuthority.setRoot(MCD_PAUSE_PROXY);
   }
 
   // AUTO LINE
@@ -1535,6 +1532,48 @@ module.exports = async (deployer, network, [account]) => {
   }
   await clipperMom.setAuthority(MCD_ADM);
   await clipperMom.setOwner(MCD_PAUSE_PROXY);
+
+  // SET PIPS RIGHTS
+  console.log('Configuring PIPs Rights...');
+  for (const token_name in config_tokens) {
+    const token_config = config_tokens[token_name];
+    const token_import = token_config.import || {};
+    const token_pipDeploy = token_config.pipDeploy || {};
+
+    if (token_import.pip === undefined) {
+      if (token_pipDeploy.type == 'chainlink') {
+        const linkOracle = await artifact_at(LinkOracle, VAL_[token_name]);
+        await linkOracle.rely(MCD_PAUSE_PROXY);
+        await linkOracle.deny(DEPLOYER);
+      }
+      if (token_pipDeploy.type == 'median') {
+        const median = await artifact_at(Median, VAL_[token_name]);
+        await median.rely(MCD_PAUSE_PROXY);
+        await median.deny(DEPLOYER);
+      }
+      if (token_pipDeploy.type == 'value') {
+        const dsValue = await artifact_at(DSValue, VAL_[token_name]);
+        await dsValue.setOwner(MCD_PAUSE_PROXY);
+      }
+      if (Number(token_pipDeploy.osmDelay) > 0) {
+        const osm = await artifact_at(OSM, PIP_[token_name]);
+        await osm.rely(MCD_PAUSE_PROXY);
+        await osm.deny(DEPLOYER);
+      }
+    }
+  }
+
+  // SET ILK REGISTRY
+  console.log('Configuring ILK Registry...');
+  for (const token_name in config_tokens) {
+    const token_ilks = token_config.ilks || {};
+
+    for (const ilk in token_ilks) {
+      await ilkRegistry.add(MCD_JOIN_[token_name][ilk]);
+    }
+  }
+  await ilkRegistry.rely(MCD_PAUSE_PROXY);
+  await ilkRegistry.deny(DEPLOYER);
 
   // SET PAUSE AUTH DELAY
 
