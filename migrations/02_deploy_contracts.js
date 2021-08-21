@@ -875,6 +875,7 @@ module.exports = async (deployer, network, [account]) => {
 
   // ADM CHIEF
 
+  let VOTE_DELEGATE_PROXY_FACTORY = ZERO_ADDRESS;
   let VOTE_PROXY_FACTORY = ZERO_ADDRESS;
   let MCD_ADM = config_import.authority;
   if (MCD_ADM === undefined) {
@@ -890,6 +891,8 @@ module.exports = async (deployer, network, [account]) => {
     MCD_ADM = dsChief.address;
     console.log('MCD_ADM=' + MCD_ADM);
     iouToken.setOwner(MCD_ADM);
+
+    // VOTE PROXY FACTORY
 
     console.log('Publishing Vote Proxy Factory...');
     const VoteProxyFactory = artifacts.require('VoteProxyFactory');
@@ -910,8 +913,8 @@ module.exports = async (deployer, network, [account]) => {
     console.log('Publishing Vote Delegate Factory...');
     const VoteDelegateFactory = artifacts.require('VoteDelegateFactory');
     const voteDelegateFactory = await artifact_deploy(VoteDelegateFactory, MCD_ADM, MCD_POLLING_EMITTER);
-    const VOTE_DELEGATE_FACTORY = voteDelegateFactory.address;
-    console.log('VOTE_DELEGATE_FACTORY=' + VOTE_DELEGATE_FACTORY);
+    VOTE_DELEGATE_PROXY_FACTORY = voteDelegateFactory.address;
+    console.log('VOTE_DELEGATE_PROXY_FACTORY=' + VOTE_DELEGATE_PROXY_FACTORY);
   }
 
   // AUTO LINE
@@ -1739,7 +1742,7 @@ module.exports = async (deployer, network, [account]) => {
   await chainLog.setAddress(web3.utils.asciiToHex('PROXY_FACTORY'), PROXY_FACTORY);
   await chainLog.setAddress(web3.utils.asciiToHex('PROXY_PAUSE_ACTIONS'), PROXY_PAUSE_ACTIONS);
   await chainLog.setAddress(web3.utils.asciiToHex('PROXY_REGISTRY'), PROXY_REGISTRY);
-  // await chainLog.setAddress(web3.utils.asciiToHex('VOTE_DELEGATE_PROXY_FACTORY'), VOTE_DELEGATE_PROXY_FACTORY);
+  await chainLog.setAddress(web3.utils.asciiToHex('VOTE_DELEGATE_PROXY_FACTORY'), VOTE_DELEGATE_PROXY_FACTORY);
   await chainLog.setAddress(web3.utils.asciiToHex('VOTE_PROXY_FACTORY'), VOTE_PROXY_FACTORY);
   await chainLog.deny(DEPLOYER);
 
