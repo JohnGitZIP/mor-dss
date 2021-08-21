@@ -14,15 +14,15 @@ function units(coins, decimals) {
 }
 
 const CONFIG = {
-  '1': 'freshtest',     // mainnet
-  '3': 'freshtest',     // ropsten
-  '4': 'freshtest',     // rinkeby
-  '42': 'freshtest',    // kovan
-  '5': 'freshtest',     // goerli
-  '56': 'bscmain',      // bscmain
-  '97': 'freshtest',    // bsctest
-  '137': 'maticmain',   // maticmain
-  '80001': 'freshtest', // matictest
+  '1': 'mainnet',     // mainnet
+  '3': 'testnet',     // ropsten
+  '4': 'testnet',     // rinkeby
+  '42': 'testnet',    // kovan
+  '5': 'testnet',     // goerli
+  '56': 'bscmain',    // bscmain
+  '97': 'testnet',    // bsctest
+  '137': 'maticmain', // maticmain
+  '80001': 'testnet', // matictest
 };
 
 module.exports = async (deployer, network, [account]) => {
