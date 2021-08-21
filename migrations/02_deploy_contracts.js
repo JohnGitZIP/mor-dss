@@ -1591,12 +1591,16 @@ module.exports = async (deployer, network, [account]) => {
   const authGemJoin5 = await artifact_deploy(AuthGemJoin5, MCD_VAT, web3.utils.asciiToHex('PSM-USDC-A'), USDC[chainId]);
   const PSM_USDC = authGemJoin5.address;
   console.log('PSM_USDC=' + PSM_USDC);
+  await authGemJoin5.rely(MCD_PAUSE_PROXY);
 
   console.log('Deploying DssPsm...');
   const DssPsm = artifacts.require('DssPsm');
   const dssPsm = await artifact_deploy(DssPsm, PSM_USDC, MCD_JOIN_DAI, MCD_VOW);
   const DSS_PSM = dssPsm.address;
   console.log('DSS_PSM=' + DSS_PSM);
+  await dssPsm.rely(MCD_PAUSE_PROXY);
+  await authGemJoin5.rely(DSS_PSM);
+  await authGemJoin5.deny(DEPLOYER);
 
   // console.log('Deploying Lerp Factory...');
   // const LerpFactory = artifacts.require('LerpFactory');
@@ -1611,12 +1615,8 @@ module.exports = async (deployer, network, [account]) => {
   const lerp = await artifact_deploy(Lerp, DSS_PSM, web3.utils.asciiToHex('tin'), LERP_START_TIME, LERP_START, LERP_END, LERP_DURATION);
   const LERP = lerp.address;
   console.log('LERP=' + LERP);
-
-  await authGemJoin5.rely(MCD_PAUSE_PROXY);
-  await authGemJoin5.rely(DSS_PSM);
-  await authGemJoin5.deny(DEPLOYER);
-
-  await dssPsm.rely(MCD_PAUSE_PROXY);
+  await lerp.rely(MCD_PAUSE_PROXY);
+  await lerp.deny(DEPLOYER);
   await dssPsm.rely(LERP);
   await dssPsm.deny(DEPLOYER);
 
