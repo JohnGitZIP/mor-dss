@@ -1598,6 +1598,14 @@ module.exports = async (deployer, network, [account]) => {
   const DSS_PSM = dssPsm.address;
   console.log('DSS_PSM=' + DSS_PSM);
 
+  // console.log('Deploying Lerp Factory...');
+  // const LerpFactory = artifacts.require('LerpFactory');
+  // const lerpFactory = await artifact_deploy(LerpFactory);
+  // const LERP_FAB = lerpFactory.address;
+  // console.log('LERP_FAB=' + LERP_FAB);
+  // await lerpFactory.rely(MCD_PAUSE_PROXY);
+  // await lerpFactory.deny(DEPLOYER);
+
   console.log('Deploying Lerp...');
   const Lerp = artifacts.require('Lerp');
   const lerp = await artifact_deploy(Lerp, DSS_PSM, web3.utils.asciiToHex('tin'), LERP_START_TIME, LERP_START, LERP_END, LERP_DURATION);
