@@ -153,15 +153,15 @@ module.exports = async (deployer, network, [account]) => {
   // FAUCET
 
   let FAUCET = config_import.faucet;
+  let restrictedTokenFaucet;
   const RestrictedTokenFaucet = artifacts.require('RestrictedTokenFaucet');
   if (config_import.faucet === undefined) {
     console.log('Publishing Token Faucet...');
-    const restrictedTokenFaucet = await artifact_deploy(RestrictedTokenFaucet);
+    restrictedTokenFaucet = await artifact_deploy(RestrictedTokenFaucet);
     FAUCET = restrictedTokenFaucet.address;
     console.log('FAUCET=' + FAUCET);
     await restrictedTokenFaucet.hope(ZERO_ADDRESS);
   }
-  const restrictedTokenFaucet = await artifact_at(RestrictedTokenFaucet, FAUCET);
 
   // PROXY REGISTRY
 
