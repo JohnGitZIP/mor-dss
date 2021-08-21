@@ -1566,6 +1566,7 @@ module.exports = async (deployer, network, [account]) => {
   // SET ILK REGISTRY
   console.log('Configuring ILK Registry...');
   for (const token_name in config_tokens) {
+    const token_config = config_tokens[token_name];
     const token_ilks = token_config.ilks || {};
 
     for (const ilk in token_ilks) {
