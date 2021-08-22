@@ -37,8 +37,9 @@
       },
       "pipDeploy": {
         "osmDelay": "0",
-        "type": "value",
-        "price": "1"
+        "type": "chainlink",
+        "src": "0xcBb98864Ef56E9042e7d2efef76141f15731B82f",
+        "dec": 8
       },
       "psmDeploy": {
         "src": "AuthGemJoin",
@@ -94,9 +95,9 @@
         }
       }
     },
-    "ETH": {
+    "CAKE": {
       "import": {
-        "gem": "0x2170Ed0880ac9A755fd29B2688956BD959F933F8"
+        "gem": "0x0E09FaBB73Bd3Ade0a17ECC321fD13a19e81cE82"
       },
       "joinDeploy": {
         "src": "GemJoin",
@@ -105,14 +106,14 @@
       "pipDeploy": {
         "osmDelay": "0",
         "type": "chainlink",
-        "src": "0x9ef1B8c0E4F7dc8bF5719Ea496883DC6401d5b2e",
+        "src": "0xcB23da9EA243f53194CBc2380A6d4d9bC046161f",
         "dec": 8
       },
       "ilks": {
         "A": {
           "mat": "115",
           "line": "0",
-          "autoLine": "1000000",
+          "autoLine": "100",
           "autoLineGap": "30",
           "autoLineTtl": "3600",
           "dust": "1",
@@ -131,6 +132,207 @@
               "cut":  "99"
             },
             "cm_tolerance": "50"
+          }
+        }
+      }
+    },
+    "PCSBNBBUSD": {
+      "import": {
+        "gem": "0x58F876857a02D6762E0101bb5C46A8c1ED44Dc16"
+      },
+      "joinDeploy": {
+        "src": "GemJoin",
+        "extraParams": []
+      },
+      "pipDeploy": {
+        "osmDelay": "0",
+        "type": "univ2lp",
+        "token0": "BNB",
+        "token1": "BUSD"
+      },
+      "ilks": {
+        "A": {
+          "mat": "140",
+          "line": "3000000",
+          "autoLine": "0",
+          "autoLineGap": "0",
+          "autoLineTtl": "0",
+          "dust": "5000",
+          "duty": "4",
+          "clipDeploy": {
+            "chop": "13",
+            "hole": "5000000",
+            "chip": "0.1",
+            "tip": "300",
+            "buf": "115",
+            "tail": "12900",
+            "cusp": "60",
+            "calc": {
+              "type": "StairstepExponentialDecrease",
+              "step": "125",
+              "cut":  "99.5"
+            },
+            "cm_tolerance": "70"
+          }
+        }
+      }
+    },
+    "STKCAKE": {
+      "import": {
+        "gem": "0xB50Acf6195F97177D33D132A3E5617b934C351d3"
+      },
+      "joinDeploy": {
+        "src": "GemJoin",
+        "extraParams": []
+      },
+      "pipDeploy": {
+        "osmDelay": "0",
+        "type": "vault",
+        "reserve": "CAKE"
+      },
+      "ilks": {
+        "A": {
+          "mat": "140",
+          "line": "3000000",
+          "autoLine": "0",
+          "autoLineGap": "0",
+          "autoLineTtl": "0",
+          "dust": "5000",
+          "duty": "4",
+          "clipDeploy": {
+            "chop": "13",
+            "hole": "5000000",
+            "chip": "0.1",
+            "tip": "300",
+            "buf": "115",
+            "tail": "12900",
+            "cusp": "60",
+            "calc": {
+              "type": "StairstepExponentialDecrease",
+              "step": "125",
+              "cut":  "99.5"
+            },
+            "cm_tolerance": "70"
+          }
+        }
+      }
+    },
+    "STKPCSBNBBUSD": {
+      "import": {
+        "gem": "0xde8C01eFe59Ac0Ec692D3a3ff36Dd6a91863ccE5"
+      },
+      "joinDeploy": {
+        "src": "GemJoin",
+        "extraParams": []
+      },
+      "pipDeploy": {
+        "osmDelay": "0",
+        "type": "vault",
+        "reserve": "PCSBNBBUSD"
+      },
+      "ilks": {
+        "A": {
+          "mat": "140",
+          "line": "3000000",
+          "autoLine": "0",
+          "autoLineGap": "0",
+          "autoLineTtl": "0",
+          "dust": "5000",
+          "duty": "4",
+          "clipDeploy": {
+            "chop": "13",
+            "hole": "5000000",
+            "chip": "0.1",
+            "tip": "300",
+            "buf": "115",
+            "tail": "12900",
+            "cusp": "60",
+            "calc": {
+              "type": "StairstepExponentialDecrease",
+              "step": "125",
+              "cut":  "99.5"
+            },
+            "cm_tolerance": "70"
+          }
+        }
+      }
+    },
+    "BANANA": {
+      "import": {
+        "gem": "0x603c7f932ED1fc6575303D8Fb018fDCBb0f39a95"
+      },
+      "joinDeploy": {
+        "src": "GemJoin",
+        "extraParams": []
+      },
+      "pipDeploy": {
+        "osmDelay": "0",
+        "type": "value",
+        "price": "1"
+      },
+      "ilks": {
+        "A": {
+          "mat": "115",
+          "line": "0",
+          "autoLine": "100",
+          "autoLineGap": "30",
+          "autoLineTtl": "3600",
+          "dust": "1",
+          "duty": "5",
+          "clipDeploy": {
+            "chop": "8",
+            "hole": "1000",
+            "chip": "0",
+            "tip": "0.01",
+            "buf": "110",
+            "tail": "1320",
+            "cusp": "20",
+            "calc": {
+              "type": "StairstepExponentialDecrease",
+              "step": "60",
+              "cut":  "99"
+            },
+            "cm_tolerance": "50"
+          }
+        }
+      }
+    },
+    "STKBANANA": {
+      "import": {
+        "gem": "0x13e7A6691FE00DE975CF27868386f4aE9aed3cdC"
+      },
+      "joinDeploy": {
+        "src": "GemJoin",
+        "extraParams": []
+      },
+      "pipDeploy": {
+        "osmDelay": "0",
+        "type": "vault",
+        "reserve": "BANANA"
+      },
+      "ilks": {
+        "A": {
+          "mat": "140",
+          "line": "3000000",
+          "autoLine": "0",
+          "autoLineGap": "0",
+          "autoLineTtl": "0",
+          "dust": "5000",
+          "duty": "4",
+          "clipDeploy": {
+            "chop": "13",
+            "hole": "5000000",
+            "chip": "0.1",
+            "tip": "300",
+            "buf": "115",
+            "tail": "12900",
+            "cusp": "60",
+            "calc": {
+              "type": "StairstepExponentialDecrease",
+              "step": "125",
+              "cut":  "99.5"
+            },
+            "cm_tolerance": "70"
           }
         }
       }

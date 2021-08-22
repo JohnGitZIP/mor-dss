@@ -5,7 +5,7 @@ import { LibNote } from "../median/median.sol";
 import { ERC20Like_, OracleLike } from "../univ2-lp-oracle/UNIV2LPOracle.sol";
 
 interface VaultLike {
-    function reserveToken() external view returns (address _reserveToken);
+    // function reserveToken() external view returns (address _reserveToken);
     function totalSupply() external view returns (uint256 _totalSupply);
     function totalReserve() external view returns (uint256 _totalReserve);
 }
@@ -34,7 +34,7 @@ contract VaultOracle is LibNote {
     modifier toll { require(bud[msg.sender] == 1, "VaultOracle/contract-not-whitelisted"); _; }
 
     constructor (address _vault, address _orb) public {
-        require(ERC20Like_(_vault).decimals() == ERC20Like_(VaultLike(_vault).reserveToken()).decimals(), "VaultOracle/token-dec-mismatch");
+        // require(ERC20Like_(_vault).decimals() == ERC20Like_(VaultLike(_vault).reserveToken()).decimals(), "VaultOracle/token-dec-mismatch");
         wards[msg.sender] = 1;
         vault = _vault;
         orb = _orb;
