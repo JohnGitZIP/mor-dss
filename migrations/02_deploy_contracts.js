@@ -112,6 +112,7 @@ module.exports = async (deployer, network, [account]) => {
   const Median = artifacts.require('Median');
   const LinkOracle = artifacts.require('LinkOracle');
   const UNIV2LPOracle = artifacts.require('UNIV2LPOracle');
+  const VaultOracle = artifacts.require('VaultOracle');
   for (const token_name in config_tokens) {
     const token_config = config_tokens[token_name];
     const token_import = token_config.import || {};
@@ -119,6 +120,14 @@ module.exports = async (deployer, network, [account]) => {
 
     VAL_[token_name] = token_import.pip;
     if (token_import.pip === undefined) {
+      if (token_pipDeploy.type == 'vault') {
+        console.log('Publishing Vault Oracle...');
+        const src = token_import.gem;
+        const orb = VAL_[token_pipDeploy.reserve];
+        const vaultOracle = await artifact_deploy(VaultOracle, src, orb);
+        VAL_[token_name] = vaultOracle.address;
+        console.log('VAL_' + token_name + '=' + VAL_[token_name]);
+      }
       if (token_pipDeploy.type == 'univ2lp') {
         console.log('Publishing Uniswap V2 LP Oracle...');
         const src = token_import.gem;
@@ -1462,6 +1471,10 @@ module.exports = async (deployer, network, [account]) => {
         PIP_[token_name] = osm.address;
         console.log('PIP_' + token_name + '=' + PIP_[token_name]);
         await osm.step(osmDelay);
+        if (token_pipDeploy.type == 'vault') {
+          const vaultOracle = await artifact_at(VaultOracle, VAL_[token_name]);
+          await vaultOracle.methods['kiss(address)'](PIP_[token_name]);
+        }
         if (token_pipDeploy.type == 'univ2lp') {
           const univ2lpOracle = await artifact_at(UNIV2LPOracle, VAL_[token_name]);
           await univ2lpOracle.methods['kiss(address)'](PIP_[token_name]);
@@ -1571,6 +1584,11 @@ module.exports = async (deployer, network, [account]) => {
     const token_pipDeploy = token_config.pipDeploy || {};
 
     if (token_import.pip === undefined) {
+      if (token_pipDeploy.type == 'vault') {
+        const vaultOracle = await artifact_at(VaultOracle, VAL_[token_name]);
+        await vaultOracle.rely(MCD_PAUSE_PROXY);
+        await vaultOracle.deny(DEPLOYER);
+      }
       if (token_pipDeploy.type == 'univ2lp') {
         const univ2lpOracle = await artifact_at(UNIV2LPOracle, VAL_[token_name]);
         await univ2lpOracle.rely(MCD_PAUSE_PROXY);
