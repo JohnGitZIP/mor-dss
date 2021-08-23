@@ -30,6 +30,10 @@ interface GemLike {
     function transferFrom(address, address, uint) external;
     function deposit() external payable;
     function withdraw(uint) external;
+
+    function balanceOf(address) external view returns (uint256);
+    function deposit(uint256 _amount, uint256 _minShares, bool _execGulp) external;
+    function withdraw(uint256 _shares, uint256 _minAmount, bool _execGulp) external;
 }
 
 interface ManagerLike {
@@ -207,12 +211,19 @@ contract DssProxyActions is Common {
         GemJoinLike(apt).join(urn, msg.value);
     }
 
-    function gemJoin_join(address apt, address urn, uint amt, bool transferFrom) public {
+    function gemJoin_join(address apt, address urn, uint amt, bool transferFrom, address res) public {
         // Only executes for tokens that have approval/transferFrom implementation
         if (transferFrom) {
             GemLike gem = GemJoinLike(apt).gem();
             // Gets token from the user's wallet
-            gem.transferFrom(msg.sender, address(this), amt);
+            if (res == address(0)) {
+                gem.transferFrom(msg.sender, address(this), amt);
+            } else {
+                GemLike(res).transferFrom(msg.sender, address(this), amt);
+                GemLike(res).approve(address(gem), amt);
+                gem.deposit(amt, 1, true);
+                amt = gem.balanceOf(address(this));
+            }
             // Approves adapter to take the token amount
             gem.approve(apt, amt);
         }
@@ -380,10 +391,11 @@ contract DssProxyActions is Common {
         address gemJoin,
         uint cdp,
         uint amt,
-        bool transferFrom
+        bool transferFrom,
+        address res
     ) public {
         // Takes token amount from user's wallet and joins into the vat
-        gemJoin_join(gemJoin, address(this), amt, transferFrom);
+        gemJoin_join(gemJoin, address(this), amt, transferFrom, res);
         // Locks token amount into the CDP
         Vat(ManagerLike(manager).vat()).frob(
             ManagerLike(manager).ilks(cdp),
@@ -401,10 +413,11 @@ contract DssProxyActions is Common {
         uint cdp,
         uint amt,
         bool transferFrom,
-        address owner
+        address owner,
+        address res
     ) public {
         require(ManagerLike(manager).owns(cdp) == owner, "owner-missmatch");
-        lockGem(manager, gemJoin, cdp, amt, transferFrom);
+        lockGem(manager, gemJoin, cdp, amt, transferFrom, res);
     }
 
     function freeETH(
@@ -429,7 +442,8 @@ contract DssProxyActions is Common {
         address manager,
         address gemJoin,
         uint cdp,
-        uint amt
+        uint amt,
+        address res
     ) public {
         uint wad = convertTo18(gemJoin, amt);
         // Unlocks token amount from the CDP
@@ -437,7 +451,13 @@ contract DssProxyActions is Common {
         // Moves the amount from the CDP urn to proxy's address
         flux(manager, cdp, address(this), wad);
         // Exits token amount to the user's wallet as a token
-        GemJoinLike(gemJoin).exit(msg.sender, amt);
+        if (res == address(0)) {
+            GemJoinLike(gemJoin).exit(msg.sender, amt);
+        } else {
+            GemJoinLike(gemJoin).exit(address(this), amt);
+            GemJoinLike(gemJoin).gem().withdraw(amt, 1, true);
+            GemLike(res).transfer(msg.sender, GemLike(res).balanceOf(address(this)));
+        }
     }
 
     function exitETH(
@@ -461,13 +481,20 @@ contract DssProxyActions is Common {
         address manager,
         address gemJoin,
         uint cdp,
-        uint amt
+        uint amt,
+        address res
     ) public {
         // Moves the amount from the CDP urn to proxy's address
         flux(manager, cdp, address(this), convertTo18(gemJoin, amt));
 
         // Exits token amount to the user's wallet as a token
-        GemJoinLike(gemJoin).exit(msg.sender, amt);
+        if (res == address(0)) {
+            GemJoinLike(gemJoin).exit(msg.sender, amt);
+        } else {
+            GemJoinLike(gemJoin).exit(address(this), amt);
+            GemJoinLike(gemJoin).gem().withdraw(amt, 1, true);
+            GemLike(res).transfer(msg.sender, GemLike(res).balanceOf(address(this)));
+        }
     }
 
     function draw(
@@ -620,15 +647,17 @@ contract DssProxyActions is Common {
         uint cdp,
         uint amtC,
         uint wadD,
-        bool transferFrom
+        bool transferFrom,
+        address res
     ) public {
         address urn = ManagerLike(manager).urns(cdp);
         address vat = ManagerLike(manager).vat();
         bytes32 ilk = ManagerLike(manager).ilks(cdp);
         // Takes token amount from user's wallet and joins into the vat
-        gemJoin_join(gemJoin, urn, amtC, transferFrom);
+        gemJoin_join(gemJoin, urn, amtC, transferFrom, res);
         // Locks token amount into the CDP and generates debt
-        frob(manager, cdp, toInt(convertTo18(gemJoin, amtC)), _getDrawDart(vat, jug, urn, ilk, wadD));
+        int dart = _getDrawDart(vat, jug, urn, ilk, wadD);
+        frob(manager, cdp, toInt(convertTo18(gemJoin, amtC)), dart);
         // Moves the DAI amount (balance in the vat in rad) to proxy's address
         move(manager, cdp, address(this), toRad(wadD));
         // Allows adapter to access to proxy's DAI balance in the vat
@@ -647,10 +676,11 @@ contract DssProxyActions is Common {
         bytes32 ilk,
         uint amtC,
         uint wadD,
-        bool transferFrom
+        bool transferFrom,
+        address res
     ) public returns (uint cdp) {
         cdp = open(manager, ilk, address(this));
-        lockGemAndDraw(manager, jug, gemJoin, daiJoin, cdp, amtC, wadD, transferFrom);
+        lockGemAndDraw(manager, jug, gemJoin, daiJoin, cdp, amtC, wadD, transferFrom, res);
     }
 /*
     function openLockGNTAndDraw(
@@ -737,9 +767,11 @@ contract DssProxyActions is Common {
         address daiJoin,
         uint cdp,
         uint amtC,
-        uint wadD
+        uint wadD,
+        address res
     ) public {
         address urn = ManagerLike(manager).urns(cdp);
+        bytes32 ilk = ManagerLike(manager).ilks(cdp);
         // Joins DAI amount into the vat
         daiJoin_join(daiJoin, urn, wadD);
         uint wadC = convertTo18(gemJoin, amtC);
@@ -748,12 +780,18 @@ contract DssProxyActions is Common {
             manager,
             cdp,
             -toInt(wadC),
-            _getWipeDart(ManagerLike(manager).vat(), Vat(ManagerLike(manager).vat()).dai(urn), urn, ManagerLike(manager).ilks(cdp))
+            _getWipeDart(ManagerLike(manager).vat(), Vat(ManagerLike(manager).vat()).dai(urn), urn, ilk)
         );
         // Moves the amount from the CDP urn to proxy's address
         flux(manager, cdp, address(this), wadC);
         // Exits token amount to the user's wallet as a token
-        GemJoinLike(gemJoin).exit(msg.sender, amtC);
+        if (res == address(0)) {
+            GemJoinLike(gemJoin).exit(msg.sender, amtC);
+        } else {
+            GemJoinLike(gemJoin).exit(address(this), amtC);
+            GemJoinLike(gemJoin).gem().withdraw(amtC, 1, true);
+            GemLike(res).transfer(msg.sender, GemLike(res).balanceOf(address(this)));
+        }
     }
 /*
     function wipeAllAndFreeGem(
@@ -761,7 +799,8 @@ contract DssProxyActions is Common {
         address gemJoin,
         address daiJoin,
         uint cdp,
-        uint amtC
+        uint amtC,
+        address res
     ) public {
         address vat = ManagerLike(manager).vat();
         address urn = ManagerLike(manager).urns(cdp);
@@ -781,7 +820,13 @@ contract DssProxyActions is Common {
         // Moves the amount from the CDP urn to proxy's address
         flux(manager, cdp, address(this), wadC);
         // Exits token amount to the user's wallet as a token
-        GemJoinLike(gemJoin).exit(msg.sender, amtC);
+        if (res == address(0)) {
+            GemJoinLike(gemJoin).exit(msg.sender, amtC);
+        } else {
+            GemJoinLike(gemJoin).exit(address(this), amtC);
+            GemJoinLike(gemJoin).gem().withdraw(amtC, 1, true);
+            GemLike(res).transfer(msg.sender, GemLike(res).balanceOf(address(this)));
+        }
     }
 */
 }
