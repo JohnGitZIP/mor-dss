@@ -318,11 +318,11 @@ module.exports = async (deployer, network, [account]) => {
   let MCD_GOV = config_import.gov;
   const DSToken = artifacts.require('DSToken');
   if (config_import.gov === undefined) {
-    console.log('Publishing Gov Token...');
-    const govToken = await artifact_deploy(DSToken, 'GOV');
+    console.log('Publishing Stock/Gov Token...');
+    const govToken = await artifact_deploy(DSToken, 'STK');
     MCD_GOV = govToken.address;
     console.log('MCD_GOV=' + MCD_GOV);
-    await govToken.setName('Governance');
+    await govToken.setName('Stock');
   }
   const govToken = await artifact_at(DSToken, MCD_GOV);
 
@@ -910,11 +910,12 @@ module.exports = async (deployer, network, [account]) => {
   let VOTE_PROXY_FACTORY = ZERO_ADDRESS;
   let MCD_ADM = config_import.authority;
   if (MCD_ADM === undefined) {
-    console.log('Publishing IOU Token...');
-    const iouToken = await artifact_deploy(DSToken, 'IOU');
+    const symbol = await govToken.symbol();
+    console.log('Publishing gov' + symbol + '/IOU Token...');
+    const iouToken = await artifact_deploy(DSToken, 'gov' + symbol);
     const MCD_IOU = iouToken.address;
     console.log('MCD_IOU=' + MCD_IOU);
-    await iouToken.setName('IOweyoU');
+    await iouToken.setName('governance ' + symbol);
 
     console.log('Publishing DS Chief...');
     const DSChief = artifacts.require('DSChief');
