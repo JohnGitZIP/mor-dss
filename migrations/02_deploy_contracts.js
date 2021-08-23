@@ -113,6 +113,7 @@ module.exports = async (deployer, network, [account]) => {
   const LinkOracle = artifacts.require('LinkOracle');
   const UNIV2LPOracle = artifacts.require('UNIV2LPOracle');
   const VaultOracle = artifacts.require('VaultOracle');
+  const UniV2TwapOracle = artifacts.require('UniV2TwapOracle');
   for (const token_name in config_tokens) {
     const token_config = config_tokens[token_name];
     const token_import = token_config.import || {};
@@ -120,6 +121,15 @@ module.exports = async (deployer, network, [account]) => {
 
     VAL_[token_name] = token_import.pip;
     if (token_import.pip === undefined) {
+      if (token_pipDeploy.type == 'twap') {
+        console.log('Publishing TWAP Oracle...');
+        const twap = token_pipDeploy.twap;
+        const src = token_pipDeploy.src;
+        const token = token_import.gem;
+        const univ2twapOracle = await artifact_deploy(UniV2TwapOracle, twap, src, token);
+        VAL_[token_name] = univ2twapOracle.address;
+        console.log('VAL_' + token_name + '=' + VAL_[token_name]);
+      }
       if (token_pipDeploy.type == 'vault') {
         console.log('Publishing Vault Oracle...');
         const src = token_import.gem;
@@ -140,7 +150,9 @@ module.exports = async (deployer, network, [account]) => {
       }
       if (token_pipDeploy.type == 'chainlink') {
         console.log('Publishing LinkOracle...');
-        const linkOracle = await artifact_deploy(LinkOracle, token_pipDeploy.src, token_pipDeploy.dec);
+        const src = token_pipDeploy.src;
+        const dec = token_pipDeploy.dec;
+        const linkOracle = await artifact_deploy(LinkOracle, src, dec);
         VAL_[token_name] = linkOracle.address;
         console.log('VAL_' + token_name + '=' + VAL_[token_name]);
       }
@@ -1470,6 +1482,10 @@ module.exports = async (deployer, network, [account]) => {
         PIP_[token_name] = osm.address;
         console.log('PIP_' + token_name + '=' + PIP_[token_name]);
         await osm.step(osmDelay);
+        if (token_pipDeploy.type == 'twap') {
+          const univ2twapOracle = await artifact_at(UniV2TwapOracle, VAL_[token_name]);
+          await univ2twapOracle.methods['kiss(address)'](PIP_[token_name]);
+        }
         if (token_pipDeploy.type == 'vault') {
           const vaultOracle = await artifact_at(VaultOracle, VAL_[token_name]);
           await vaultOracle.methods['kiss(address)'](PIP_[token_name]);
@@ -1583,6 +1599,11 @@ module.exports = async (deployer, network, [account]) => {
     const token_pipDeploy = token_config.pipDeploy || {};
 
     if (token_import.pip === undefined) {
+      if (token_pipDeploy.type == 'twap') {
+        const univ2twapOracle = await artifact_at(UniV2TwapOracle, VAL_[token_name]);
+        await univ2twapOracle.rely(MCD_PAUSE_PROXY);
+        await univ2twapOracle.deny(DEPLOYER);
+      }
       if (token_pipDeploy.type == 'vault') {
         const vaultOracle = await artifact_at(VaultOracle, VAL_[token_name]);
         await vaultOracle.rely(MCD_PAUSE_PROXY);
