@@ -340,13 +340,13 @@ contract DssProxyActions is Common {
     ) public {
         ManagerLike(manager).shift(cdpSrc, cdpOrg);
     }
-
+/*
     function makeGemBag(
         address gemJoin
     ) public returns (address bag) {
         bag = GNTJoinLike(gemJoin).make(address(this));
     }
-
+*/
     function lockETH(
         address manager,
         address ethJoin,
@@ -652,7 +652,7 @@ contract DssProxyActions is Common {
         cdp = open(manager, ilk, address(this));
         lockGemAndDraw(manager, jug, gemJoin, daiJoin, cdp, amtC, wadD, transferFrom);
     }
-
+/*
     function openLockGNTAndDraw(
         address manager,
         address jug,
@@ -671,7 +671,7 @@ contract DssProxyActions is Common {
         GemLike(GemJoinLike(gntJoin).gem()).transfer(bag, amtC);
         cdp = openLockGemAndDraw(manager, jug, gntJoin, daiJoin, ilk, amtC, wadD, false);
     }
-
+*/
     function wipeAndFreeETH(
         address manager,
         address ethJoin,
