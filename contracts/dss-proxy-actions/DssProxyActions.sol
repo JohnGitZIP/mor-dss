@@ -880,11 +880,18 @@ contract DssProxyActionsEnd is Common {
         address manager,
         address gemJoin,
         address end,
-        uint cdp
+        uint cdp,
+        address res
     ) public {
         uint amt = _free(manager, end, cdp) / 10 ** (18 - GemJoinLike(gemJoin).dec());
         // Exits token amount to the user's wallet as a token
-        GemJoinLike(gemJoin).exit(msg.sender, amt);
+        if (res == address(0)) {
+            GemJoinLike(gemJoin).exit(msg.sender, amt);
+        } else {
+            GemJoinLike(gemJoin).exit(address(this), amt);
+            GemJoinLike(gemJoin).gem().withdraw(amt, 1, true);
+            GemLike(res).transfer(msg.sender, GemLike(res).balanceOf(address(this)));
+        }
     }
 
     function pack(
@@ -921,12 +928,19 @@ contract DssProxyActionsEnd is Common {
         address gemJoin,
         address end,
         bytes32 ilk,
-        uint wad
+        uint wad,
+        address res
     ) public {
         End(end).cash(ilk, wad);
         // Exits token amount to the user's wallet as a token
         uint amt = _mul(wad, End(end).fix(ilk)) / RAY / 10 ** (18 - GemJoinLike(gemJoin).dec());
-        GemJoinLike(gemJoin).exit(msg.sender, amt);
+        if (res == address(0)) {
+            GemJoinLike(gemJoin).exit(msg.sender, amt);
+        } else {
+            GemJoinLike(gemJoin).exit(address(this), amt);
+            GemJoinLike(gemJoin).gem().withdraw(amt, 1, true);
+            GemLike(res).transfer(msg.sender, GemLike(res).balanceOf(address(this)));
+        }
     }
 }
 
