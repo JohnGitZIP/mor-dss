@@ -170,7 +170,7 @@ contract DssProxyActions is Common {
         // Checks the calculated dart is not higher than urn.art (total debt), otherwise uses its value
         dart = uint(dart) <= art ? - dart : - toInt(art);
     }
-
+/*
     function _getWipeAllWad(
         address vat,
         address usr,
@@ -190,7 +190,7 @@ contract DssProxyActions is Common {
         // If the rad precision has some dust, it will need to request for 1 extra wad wei
         wad = _mul(wad, RAY) < rad ? wad + 1 : wad;
     }
-
+*/
     // Public functions
 
     function transfer(address gem, address dst, uint amt) public {
@@ -533,7 +533,7 @@ contract DssProxyActions is Common {
         require(ManagerLike(manager).owns(cdp) == owner, "owner-missmatch");
         wipe(manager, daiJoin, cdp, wad);
     }
-
+/*
     function wipeAll(
         address manager,
         address daiJoin,
@@ -574,7 +574,7 @@ contract DssProxyActions is Common {
         require(ManagerLike(manager).owns(cdp) == owner, "owner-missmatch");
         wipeAll(manager, daiJoin, cdp);
     }
-
+*/
     function lockETHAndDraw(
         address manager,
         address jug,
@@ -671,7 +671,7 @@ contract DssProxyActions is Common {
         GemLike(GemJoinLike(gntJoin).gem()).transfer(bag, amtC);
         cdp = openLockGemAndDraw(manager, jug, gntJoin, daiJoin, ilk, amtC, wadD, false);
     }
-/*
+
     function wipeAndFreeETH(
         address manager,
         address ethJoin,
@@ -699,7 +699,7 @@ contract DssProxyActions is Common {
         // Sends ETH back to the user's wallet
         msg.sender.transfer(wadC);
     }
-
+/*
     function wipeAllAndFreeETH(
         address manager,
         address ethJoin,
@@ -755,7 +755,7 @@ contract DssProxyActions is Common {
         // Exits token amount to the user's wallet as a token
         GemJoinLike(gemJoin).exit(msg.sender, amtC);
     }
-
+/*
     function wipeAllAndFreeGem(
         address manager,
         address gemJoin,
@@ -783,6 +783,7 @@ contract DssProxyActions is Common {
         // Exits token amount to the user's wallet as a token
         GemJoinLike(gemJoin).exit(msg.sender, amtC);
     }
+*/
 }
 
 contract DssProxyActionsEnd is Common {
