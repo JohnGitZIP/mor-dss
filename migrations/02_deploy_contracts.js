@@ -1542,8 +1542,9 @@ module.exports = async (deployer, network, [account]) => {
   console.log('Configuring OSM Mom...');
   for (const token_name in config_tokens) {
     const token_config = config_tokens[token_name];
-    const token_ilks = token_config.ilks || {};
+    const token_import = token_config.import || {};
     const token_pipDeploy = token_config.pipDeploy || {};
+    const token_ilks = token_config.ilks || {};
 
     if (token_import.pip === undefined) {
       if (Number(token_pipDeploy.osmDelay) > 0) {
