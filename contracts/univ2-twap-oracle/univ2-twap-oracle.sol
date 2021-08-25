@@ -21,40 +21,52 @@ contract UniV2TwapOracle is LibNote {
         _;
     }
 
-    address public immutable twap;    // TWAP implementation
+    address public immutable stwap;   // Short window TWAP implementation
+    address public immutable ltwap;   // Large window TWAP implementation
     address public immutable src;     // Price source (LP)
-    address public immutable token;   // token from the pair (the other must be MOR)
+    address public immutable token;   // Token from the pair (the other must be BUSD)
+    uint256 public immutable cap;     // Price cap
     uint256 public immutable unit;    // Price unit
 
     // --- Whitelisting ---
     mapping (address => uint256) public bud;
     modifier toll { require(bud[msg.sender] == 1, "UniV2TwapOracle/contract-not-whitelisted"); _; }
 
-    constructor (address _twap, address _src, address _token) public {
-        require(_twap  != address(0), "UniV2TwapOracle/invalid-twap-address");
+    constructor (address _stwap, address _ltwap, address _src, address _token, uint256 _cap) public {
+        require(_stwap != address(0), "UniV2TwapOracle/invalid-short-twap-address");
+        require(_ltwap != address(0), "UniV2TwapOracle/invalid-long-twap-address");
         require(_src   != address(0), "UniV2TwapOracle/invalid-src-address");
         require(_token != address(0), "UniV2TwapOracle/invalid-token-address");
         uint8 _dec = ERC20Like_(_token).decimals();
         require(_dec   <=         18, "UniV2TwapOracle/invalid-dec-places");
         wards[msg.sender] = 1;
-        twap = _twap;
+        stwap = _stwap;
+        ltwap = _ltwap;
         src  = _src;
         token = _token;
+        cap = _cap > 0 ? _cap : uint256(-1);
         unit = 10 ** uint256(_dec);
     }
 
     function poke() external {
-        IOracle(twap).updateAveragePrice(src);
+        IOracle(stwap).updateAveragePrice(src);
+        IOracle(ltwap).updateAveragePrice(src);
     }
 
     function read() external view toll returns (uint256) {
-    	uint256 price = IOracle(twap).consultAveragePrice(src, token, unit);
+        uint256 sprice = IOracle(stwap).consultAveragePrice(src, token, unit);
+        uint256 lprice = IOracle(ltwap).consultAveragePrice(src, token, unit);
+        uint256 price = sprice < lprice ? sprice : lprice;
+        if (price > cap) price = cap;
         require(price > 0, "UniV2TwapOracle/invalid-price-feed");
         return price;
     }
 
     function peek() external view toll returns (uint256,bool) {
-    	uint256 price = IOracle(twap).consultAveragePrice(src, token, unit);
+        uint256 sprice = IOracle(stwap).consultAveragePrice(src, token, unit);
+        uint256 lprice = IOracle(ltwap).consultAveragePrice(src, token, unit);
+        uint256 price = sprice < lprice ? sprice : lprice;
+        if (price > cap) price = cap;
         return (price, price > 0);
     }
 

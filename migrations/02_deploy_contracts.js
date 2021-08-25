@@ -136,10 +136,12 @@ module.exports = async (deployer, network, [account]) => {
     if (token_import.pip === undefined) {
       if (token_pipDeploy.type == 'twap') {
         console.log('Publishing TWAP Oracle...');
-        const twap = token_pipDeploy.twap;
+        const stwap = token_pipDeploy.stwap;
+        const ltwap = token_pipDeploy.ltwap;
         const src = token_pipDeploy.src;
         const token = token_import.gem;
-        const univ2twapOracle = await artifact_deploy(UniV2TwapOracle, twap, src, token);
+        const cap = units(token_pipDeploy.cap, 18);
+        const univ2twapOracle = await artifact_deploy(UniV2TwapOracle, stwap, ltwap, src, token, cap);
         VAL_[token_name] = univ2twapOracle.address;
         console.log('VAL_' + token_name + '=' + VAL_[token_name]);
       }
