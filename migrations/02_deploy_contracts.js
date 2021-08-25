@@ -1543,22 +1543,19 @@ module.exports = async (deployer, network, [account]) => {
   for (const token_name in config_tokens) {
     const token_config = config_tokens[token_name];
     const token_ilks = token_config.ilks || {};
+    const token_pipDeploy = token_config.pipDeploy || {};
 
-    const osm = await artifact_at(OSM, PIP_[token_name]);
-    let src;
-    try {
-      src = await osm.src();
-    } catch {
-      src = '';
-    }
-    if (src !== '') {
-      for (const ilk in token_ilks) {
-        const ilk_name = web3.utils.asciiToHex(token_name + '-' + ilk);
+    if (token_import.pip === undefined) {
+      if (Number(token_pipDeploy.osmDelay) > 0) {
+        const osm = await artifact_at(OSM, PIP_[token_name]);
+        for (const ilk in token_ilks) {
+          const ilk_name = web3.utils.asciiToHex(token_name + '-' + ilk);
 
-        await osmMom.setOsm(ilk_name, PIP_[token_name]);
-        const wards = await osm.wards(DEPLOYER);
-        if (Number(wards) === 1) {
-          await osm.rely(OSM_MOM);
+          await osmMom.setOsm(ilk_name, PIP_[token_name]);
+          const wards = await osm.wards(DEPLOYER);
+          if (Number(wards) === 1) {
+            await osm.rely(OSM_MOM);
+          }
         }
       }
     }
