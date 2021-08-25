@@ -221,7 +221,7 @@ contract DssProxyActions is Common {
             } else {
                 GemLike(res).transferFrom(msg.sender, address(this), amt);
                 GemLike(res).approve(address(gem), amt);
-                gem.deposit(amt, 1, true);
+                gem.deposit(amt, 1, false);
                 amt = gem.balanceOf(address(this));
             }
             // Approves adapter to take the token amount
