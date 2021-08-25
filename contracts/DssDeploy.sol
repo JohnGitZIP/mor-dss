@@ -250,6 +250,41 @@ contract DssDeploy is DSAuth {
         return wad * 10 ** 27;
     }
 
+    function updateDeployed(
+        Vat vat_,
+        Jug jug_,
+        Vow vow_,
+        Cat cat_,
+        Dog dog_,
+        Dai dai_,
+        DaiJoin daiJoin_,
+        Flapper flap_,
+        Flopper flop_,
+        Spotter spot_,
+        Pot pot_,
+        End end_,
+        ESM esm_,
+        DSPause pause_
+    ) external auth {
+        require(address(mods.vat) == address(0), "Already deployed");
+        mods.vat = vat_;
+        mods.jug = jug_;
+        mods.vow = vow_;
+        mods.cat = cat_;
+        mods.dog = dog_;
+        mods.dai = dai_;
+        mods.daiJoin = daiJoin_;
+        mods.flap = flap_;
+        mods.flop = flop_;
+        mods.spotter = spot_;
+        mods.pot = pot_;
+        mods.end = end_;
+        mods.esm = esm_;
+        mods.pause = pause_;
+        pauseProxy = pause_.proxy();
+    }
+
+/*
     function deploy1(uint256 chainId, address gov) external auth {
         require(address(mods.vat) == address(0), "Already deployed");
 
@@ -364,6 +399,7 @@ contract DssDeploy is DSAuth {
             mods.esm = esm;
         }
     }
+*/
 
     function deployCollateralFlip(bytes32 ilk, address join, address pip) external auth {
         require(ilk != bytes32(""), "Missing ilk name");

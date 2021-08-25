@@ -477,6 +477,29 @@ module.exports = async (deployer, network, [account]) => {
   await end.rely(MCD_ESM);
   await vat.rely(MCD_ESM);
 
+  await vat.rely(MCD_DEPLOY);
+  await spotter.rely(MCD_DEPLOY);
+  await dai.rely(MCD_DEPLOY);
+  await jug.rely(MCD_DEPLOY);
+  await pot.rely(MCD_DEPLOY);
+  await flap.rely(MCD_DEPLOY);
+  await flop.rely(MCD_DEPLOY);
+  await vow.rely(MCD_DEPLOY);
+  await cat.rely(MCD_DEPLOY);
+  await dog.rely(MCD_DEPLOY);
+  await end.rely(MCD_DEPLOY);
+  await dssDeploy.updateDeployed(MCD_VAT, MCD_JUG, MCD_VOW, MCD_CAT, MCD_DOG, MCD_DAI, MCD_JOIN_DAI, MCD_FLAP, MCD_FLOP, MCD_SPOT, MCD_POT, MCD_END, MCD_ESM, MCD_PAUSE);
+  await vat.deny(DEPLOYER);
+  await spotter.deny(DEPLOYER);
+  await dai.deny(DEPLOYER);
+  await jug.deny(DEPLOYER);
+  await pot.deny(DEPLOYER);
+  await flap.deny(DEPLOYER);
+  await flop.deny(DEPLOYER);
+  await vow.deny(DEPLOYER);
+  await cat.deny(DEPLOYER);
+  await dog.deny(DEPLOYER);
+  await end.deny(DEPLOYER);
   // const mods = await dssDeploy.mods();
   // const MCD_VAT = mods.vat;
   // const MCD_SPOT = mods.spotter;
@@ -615,24 +638,24 @@ module.exports = async (deployer, network, [account]) => {
         console.log('MCD_JOIN_' + token_name + '_' + ilk + '=' + MCD_JOIN_[token_name][ilk]);
 
         if (ilk_config.flipDeploy !== undefined) {
-          // await dssDeploy.deployCollateralFlip(ilk_name, MCD_JOIN_[token_name][ilk], PIP_[token_name]);
-          // const { flip } = await dssDeploy.ilks(ilk_name);
-          // MCD_FLIP_[token_name][ilk] = flip;
-          // console.log('MCD_FLIP_' + token_name + '_' + ilk + '=' + MCD_FLIP_[token_name][ilk]);
-          const Flipper = artifacts.require('Flipper');
-          const flip = await artifact_deploy(Flipper, MCD_VAT, MCD_CAT, ilk_name);
-          MCD_FLIP_[token_name][ilk] = flip.address;
+          await dssDeploy.deployCollateralFlip(ilk_name, MCD_JOIN_[token_name][ilk], PIP_[token_name]);
+          const { flip } = await dssDeploy.ilks(ilk_name);
+          MCD_FLIP_[token_name][ilk] = flip;
           console.log('MCD_FLIP_' + token_name + '_' + ilk + '=' + MCD_FLIP_[token_name][ilk]);
-          await spotter.file(ilk_name, web3.utils.asciiToHex('pip'), PIP_[token_name]);
-          await cat.file(ilk_name, web3.utils.asciiToHex('flip'), MCD_FLIP_[token_name][ilk]);
-          await vat.init(ilk_name);
-          await jug.init(ilk_name);
-          await vat.rely(MCD_JOIN_[token_name][ilk]);
-          await cat.rely(MCD_FLIP_[token_name][ilk]);
-          await flip.rely(MCD_CAT);
-          await flip.rely(MCD_END);
-          await flip.rely(MCD_ESM);
-          await flip.rely(MCD_PAUSE_PROXY);
+          // const Flipper = artifacts.require('Flipper');
+          // const flip = await artifact_deploy(Flipper, MCD_VAT, MCD_CAT, ilk_name);
+          // MCD_FLIP_[token_name][ilk] = flip.address;
+          // console.log('MCD_FLIP_' + token_name + '_' + ilk + '=' + MCD_FLIP_[token_name][ilk]);
+          // await spotter.file(ilk_name, web3.utils.asciiToHex('pip'), PIP_[token_name]);
+          // await cat.file(ilk_name, web3.utils.asciiToHex('flip'), MCD_FLIP_[token_name][ilk]);
+          // await vat.init(ilk_name);
+          // await jug.init(ilk_name);
+          // await vat.rely(MCD_JOIN_[token_name][ilk]);
+          // await cat.rely(MCD_FLIP_[token_name][ilk]);
+          // await flip.rely(MCD_CAT);
+          // await flip.rely(MCD_END);
+          // await flip.rely(MCD_ESM);
+          // await flip.rely(MCD_PAUSE_PROXY);
         }
 
         if (ilk_config.clipDeploy !== undefined) {
@@ -650,27 +673,27 @@ module.exports = async (deployer, network, [account]) => {
           console.log('MCD_CLIP_CALC_' + token_name + '_' + ilk + '=' + MCD_CLIP_CALC_[token_name][ilk]);
           await calc.rely(MCD_PAUSE_PROXY);
           await calc.deny(DEPLOYER);
-          // await dssDeploy.deployCollateralClip(ilk_name, MCD_JOIN_[token_name][ilk], PIP_[token_name], MCD_CLIP_CALC_[token_name][ilk]);
-          // const { clip } = await dssDeploy.ilks(ilk_name);
-          // MCD_CLIP_[token_name][ilk] = clip;
-          // console.log('MCD_CLIP_' + token_name + '_' + ilk + '=' + MCD_CLIP_[token_name][ilk]);
-          const Clipper = artifacts.require('Clipper');
-          const clip = await artifact_deploy(Clipper, MCD_VAT, MCD_SPOT, MCD_DOG, ilk_name);
-          MCD_CLIP_[token_name][ilk] = clip.address;
+          await dssDeploy.deployCollateralClip(ilk_name, MCD_JOIN_[token_name][ilk], PIP_[token_name], MCD_CLIP_CALC_[token_name][ilk]);
+          const { clip } = await dssDeploy.ilks(ilk_name);
+          MCD_CLIP_[token_name][ilk] = clip;
           console.log('MCD_CLIP_' + token_name + '_' + ilk + '=' + MCD_CLIP_[token_name][ilk]);
-          await spotter.file(ilk_name, web3.utils.asciiToHex('pip'), PIP_[token_name]);
-          await dog.file(ilk_name, web3.utils.asciiToHex('clip'), MCD_CLIP_[token_name][ilk]);
-          await clip.file(web3.utils.asciiToHex('vow'), MCD_VOW);
-          await clip.file(web3.utils.asciiToHex('calc'), MCD_CLIP_CALC_[token_name][ilk]);
-          await vat.init(ilk_name);
-          await jug.init(ilk_name);
-          await vat.rely(MCD_JOIN_[token_name][ilk]);
-          await vat.rely(MCD_CLIP_[token_name][ilk]);
-          await dog.rely(MCD_CLIP_[token_name][ilk]);
-          await clip.rely(MCD_DOG);
-          await clip.rely(MCD_END);
-          await clip.rely(MCD_ESM);
-          await clip.rely(MCD_PAUSE_PROXY);
+          // const Clipper = artifacts.require('Clipper');
+          // const clip = await artifact_deploy(Clipper, MCD_VAT, MCD_SPOT, MCD_DOG, ilk_name);
+          // MCD_CLIP_[token_name][ilk] = clip.address;
+          // console.log('MCD_CLIP_' + token_name + '_' + ilk + '=' + MCD_CLIP_[token_name][ilk]);
+          // await spotter.file(ilk_name, web3.utils.asciiToHex('pip'), PIP_[token_name]);
+          // await dog.file(ilk_name, web3.utils.asciiToHex('clip'), MCD_CLIP_[token_name][ilk]);
+          // await clip.file(web3.utils.asciiToHex('vow'), MCD_VOW);
+          // await clip.file(web3.utils.asciiToHex('calc'), MCD_CLIP_CALC_[token_name][ilk]);
+          // await vat.init(ilk_name);
+          // await jug.init(ilk_name);
+          // await vat.rely(MCD_JOIN_[token_name][ilk]);
+          // await vat.rely(MCD_CLIP_[token_name][ilk]);
+          // await dog.rely(MCD_CLIP_[token_name][ilk]);
+          // await clip.rely(MCD_DOG);
+          // await clip.rely(MCD_END);
+          // await clip.rely(MCD_ESM);
+          // await clip.rely(MCD_PAUSE_PROXY);
         }
       }
     }
@@ -754,18 +777,18 @@ module.exports = async (deployer, network, [account]) => {
   // REMOVE AUTH
 
   console.log('Releasing Auth...');
-  // await dssDeploy.releaseAuth();
-  await vat.deny(DEPLOYER);
-  await cat.deny(DEPLOYER);
-  await dog.deny(DEPLOYER);
-  await vow.deny(DEPLOYER);
-  await jug.deny(DEPLOYER);
-  await pot.deny(DEPLOYER);
-  await dai.deny(DEPLOYER);
-  await spotter.deny(DEPLOYER);
-  await flap.deny(DEPLOYER);
-  await flop.deny(DEPLOYER);
-  await end.deny(DEPLOYER);
+  await dssDeploy.releaseAuth();
+  // await vat.deny(DEPLOYER);
+  // await cat.deny(DEPLOYER);
+  // await dog.deny(DEPLOYER);
+  // await vow.deny(DEPLOYER);
+  // await jug.deny(DEPLOYER);
+  // await pot.deny(DEPLOYER);
+  // await dai.deny(DEPLOYER);
+  // await spotter.deny(DEPLOYER);
+  // await flap.deny(DEPLOYER);
+  // await flop.deny(DEPLOYER);
+  // await end.deny(DEPLOYER);
 
   for (const token_name in config_tokens) {
     const token_config = config_tokens[token_name];
@@ -780,16 +803,16 @@ module.exports = async (deployer, network, [account]) => {
       await gemJoin.rely(MCD_PAUSE_PROXY);
       await gemJoin.deny(DEPLOYER);
       if (ilk_config.flipDeploy !== undefined) {
-        // await dssDeploy.releaseAuthFlip(ilk_name);
-        const Flipper = artifacts.require('Flipper');
-        const flip = await artifact_at(Flipper, MCD_FLIP_[token_name][ilk]);
-        await flip.deny(DEPLOYER);
+        await dssDeploy.releaseAuthFlip(ilk_name);
+        // const Flipper = artifacts.require('Flipper');
+        // const flip = await artifact_at(Flipper, MCD_FLIP_[token_name][ilk]);
+        // await flip.deny(DEPLOYER);
       }
       if (ilk_config.clipDeploy !== undefined) {
-        // await dssDeploy.releaseAuthClip(ilk_name);
-        const Clipper = artifacts.require('Clipper');
-        const clip = await artifact_at(Clipper, MCD_CLIP_[token_name][ilk]);
-        await clip.deny(DEPLOYER);
+        await dssDeploy.releaseAuthClip(ilk_name);
+        // const Clipper = artifacts.require('Clipper');
+        // const clip = await artifact_at(Clipper, MCD_CLIP_[token_name][ilk]);
+        // await clip.deny(DEPLOYER);
       }
     }
   }
