@@ -34,6 +34,7 @@ module.exports = async (deployer, network, [account]) => {
         if (typeof func !== 'function') return func;
         let i = 0;
         const liftedFunc = (...args) => {
+          console.log('>> CALL ' + target.address + '.' + property + '(' + args.join(', ') + ')');
           const result = func(...args);
           if (Object.prototype.toString.call(result) !== '[object Promise]') return result;
           return new Promise((resolve, reject) => {
@@ -55,6 +56,7 @@ module.exports = async (deployer, network, [account]) => {
   }
 
   async function artifact_deploy(artifact, ...params) {
+    console.log('>> CREATE ' + artifact._json.contractName + '(' + params.join(', ') + ')');
     for (let i = 0; ; i++) {
       try {
         await deployer.deploy(artifact, ...params);
