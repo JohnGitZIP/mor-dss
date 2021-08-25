@@ -27,26 +27,37 @@ const CONFIG = {
 
 module.exports = async (deployer, network, [account]) => {
 
+  function liftFunc(address, name, func) {
+    let i = 0;
+    const liftedFunc = (...args) => {
+      console.log('>> CALL ' + address + '.' + name + '(' + args.join(', ') + ')');
+      const result = func(...args);
+      if (Object.prototype.toString.call(result) !== '[object Promise]') return result;
+      return new Promise((resolve, reject) => {
+        result.then(resolve, (e) => {
+          if (i >= 3) return reject(e);
+          console.log('! lift.func #' + i + ': ' + e.message);
+          i++;
+          setTimeout(() => liftedFunc(...args).then(resolve, reject), 3000);
+        });
+      });
+    };
+    return liftedFunc;
+  }
+
   function lift(object) {
     return new Proxy(object, {
       'get': (target, property, proxy) => {
+        if (property === 'methods') {
+          const methods = {};
+          for (const sig in target[property]) {
+            methods[sig] = liftFunc(target.address, sig, target[property][sig]);
+          }
+          return methods;
+        }
         const func = target[property];
         if (typeof func !== 'function') return func;
-        let i = 0;
-        const liftedFunc = (...args) => {
-          console.log('>> CALL ' + target.address + '.' + property + '(' + args.join(', ') + ')');
-          const result = func(...args);
-          if (Object.prototype.toString.call(result) !== '[object Promise]') return result;
-          return new Promise((resolve, reject) => {
-            result.then(resolve, (e) => {
-              if (i >= 3) return reject(e);
-              console.log('! lift.func #' + i + ': ' + e.message);
-              i++;
-              setTimeout(() => liftedFunc(...args).then(resolve, reject), 3000);
-            });
-          });
-        };
-        return liftedFunc;
+        return liftFunc(target.address, property, func);
       },
     });
   }
