@@ -1,6 +1,14 @@
-// SPDX-License-Identifier: MIT
+/**
+ *Submitted for verification at Etherscan.io on 2019-11-14
+*/
+
+// hevm: flattened sources of /nix/store/im7ll7dx8gsw2da9k5xwbf8pbjfli2hc-multicall-df1e59d/src/Multicall.sol
 pragma solidity >=0.5.0;
 pragma experimental ABIEncoderV2;
+
+////// /nix/store/im7ll7dx8gsw2da9k5xwbf8pbjfli2hc-multicall-df1e59d/src/Multicall.sol
+/* pragma solidity >=0.5.0; */
+/* pragma experimental ABIEncoderV2; */
 
 /// @title Multicall - Aggregate results from multiple read-only function calls
 /// @author Michael Elliot <mike@makerdao.com>

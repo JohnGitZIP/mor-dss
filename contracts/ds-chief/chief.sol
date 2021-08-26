@@ -1,4 +1,6 @@
-// SPDX-License-Identifier: GPL-3.0-or-later
+/**
+ *Submitted for verification at Etherscan.io on 2020-11-25
+*/
 
 // chief.sol - select an authority by consensus
 
@@ -18,10 +20,6 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 pragma solidity >=0.4.23;
-
-import '../ds-token/token.sol';
-import '../ds-roles/roles.sol';
-import '../ds-thing/thing.sol';
 
 // The right way to use this contract is probably to mix it with some kind
 // of `DSAuthority`, like with `ds-roles`.
@@ -68,7 +66,7 @@ contract DSChiefApprovals is DSThing {
         note
     {
         last[msg.sender] = block.number;
-        GOV.transferFrom(msg.sender, address(this), wad);
+        GOV.pull(msg.sender, wad);
         IOU.mint(msg.sender, wad);
         deposits[msg.sender] = add(deposits[msg.sender], wad);
         addWeight(wad, votes[msg.sender]);
@@ -82,7 +80,7 @@ contract DSChiefApprovals is DSThing {
         deposits[msg.sender] = sub(deposits[msg.sender], wad);
         subWeight(wad, votes[msg.sender]);
         IOU.burn(msg.sender, wad);
-        GOV.transfer(msg.sender, wad);
+        GOV.push(msg.sender, wad);
     }
 
     function etch(address[] memory yays)
@@ -174,32 +172,24 @@ contract DSChief is DSRoles, DSChiefApprovals {
         owner = address(0);
     }
 
-    function setOwner(address owner_) public override {
+    function setOwner(address owner_) public {
         owner_;
         revert();
     }
 
-    function setAuthority(DSAuthority authority_) public override {
+    function setAuthority(DSAuthority authority_) public {
         authority_;
         revert();
     }
 
     function isUserRoot(address who)
-        public view override
+        public view
         returns (bool)
     {
         return (live && who == hat);
     }
-    function setRootUser(address who, bool enabled) public override {
+    function setRootUser(address who, bool enabled) public {
         who; enabled;
         revert();
-    }
-}
-
-contract DSChiefFab {
-    function newChief(DSToken gov, uint MAX_YAYS) public returns (DSChief chief) {
-        DSToken iou = new DSToken('IOU');
-        chief = new DSChief(gov, iou, MAX_YAYS);
-        iou.setOwner(address(chief));
     }
 }

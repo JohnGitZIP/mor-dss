@@ -1,8 +1,12 @@
+/**
+ *Submitted for verification at Etherscan.io on 2021-04-16
+*/
+
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
 /// dog.sol -- Dai liquidation module 2.0
 
-// Copyright (C) 2020-2021 Maker Ecosystem Growth Holdings, INC.
+// Copyright (C) 2020 Maker Ecosystem Growth Holdings, INC.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as published by
@@ -19,9 +23,6 @@
 
 pragma solidity >=0.6.12;
 
-import { Vat } from "./vat.sol";
-import { Vow } from "./vow.sol";
-
 interface ClipperLike {
     function ilk() external view returns (bytes32);
     function kick(
@@ -30,6 +31,27 @@ interface ClipperLike {
         address usr,
         address kpr
     ) external returns (uint256);
+}
+
+interface VatLike {
+    function ilks(bytes32) external view returns (
+        uint256 Art,  // [wad]
+        uint256 rate, // [ray]
+        uint256 spot, // [ray]
+        uint256 line, // [rad]
+        uint256 dust  // [rad]
+    );
+    function urns(bytes32,address) external view returns (
+        uint256 ink,  // [wad]
+        uint256 art   // [wad]
+    );
+    function grab(bytes32,address,address,address,int256,int256) external;
+    function hope(address) external;
+    function nope(address) external;
+}
+
+interface VowLike {
+    function fess(uint256) external;
 }
 
 contract Dog {
@@ -50,11 +72,11 @@ contract Dog {
         uint256 dirt;  // Amt DAI needed to cover debt+fees of active auctions per ilk [rad]
     }
 
-    Vat     immutable public vat;  // CDP Engine
+    VatLike immutable public vat;  // CDP Engine
 
     mapping (bytes32 => Ilk) public ilks;
 
-    Vow     public vow;   // Debt Engine
+    VowLike public vow;   // Debt Engine
     uint256 public live;  // Active Flag
     uint256 public Hole;  // Max DAI needed to cover debt+fees of active auctions [rad]
     uint256 public Dirt;  // Amt DAI needed to cover debt+fees of active auctions [rad]
@@ -82,7 +104,7 @@ contract Dog {
 
     // --- Init ---
     constructor(address vat_) public {
-        vat = Vat(vat_);
+        vat = VatLike(vat_);
         live = 1;
         wards[msg.sender] = 1;
         emit Rely(msg.sender);
@@ -106,7 +128,7 @@ contract Dog {
 
     // --- Administration ---
     function file(bytes32 what, address data) external auth {
-        if (what == "vow") vow = Vow(data);
+        if (what == "vow") vow = VowLike(data);
         else revert("Dog/file-unrecognized-param");
         emit File(what, data);
     }

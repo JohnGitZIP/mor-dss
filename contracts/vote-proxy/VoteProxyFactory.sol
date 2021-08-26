@@ -1,4 +1,6 @@
-// SPDX-License-Identifier: AGPL-3.0-or-later
+/**
+ *Submitted for verification at Etherscan.io on 2020-11-25
+*/
 
 /// VoteProxyFactory.sol
 
@@ -19,8 +21,6 @@
 
 // create and keep record of proxy identities
 pragma solidity >=0.4.24;
-
-import "./VoteProxy.sol";
 
 contract VoteProxyFactory {
     ChiefLike public chief;

@@ -1,4 +1,6 @@
-// SPDX-License-Identifier: AGPL-3.0-or-later
+/**
+ *Submitted for verification at Etherscan.io on 2019-12-13
+*/
 
 /// OsmMom -- governance interface for the OSM
 
@@ -17,10 +19,15 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-pragma solidity >=0.5.12;
+pragma solidity 0.5.12;
 
-import { OSM } from "../osm/osm.sol";
-import { DSAuthority } from "../ds-auth/auth.sol";
+contract OsmLike {
+    function stop() external;
+}
+
+contract AuthorityLike {
+    function canCall(address src, address dst, bytes4 sig) public view returns (bool);
+}
 
 contract OsmMom {
     event LogNote(
@@ -36,14 +43,14 @@ contract OsmMom {
         assembly {
             // log an 'anonymous' event with a constant 6 words of calldata
             // and four indexed topics: selector, caller, arg1 and arg2
-            let mark := msize()                       // end of memory ensures zero
+            let mark := msize                         // end of memory ensures zero
             mstore(0x40, add(mark, 288))              // update free memory pointer
             mstore(mark, 0x20)                        // bytes type data offset
             mstore(add(mark, 0x20), 224)              // bytes size (padded)
             calldatacopy(add(mark, 0x40), 0, 224)     // bytes payload
             log4(mark, 288,                           // calldata
                  shl(224, shr(224, calldataload(0))), // msg.sig
-                 caller(),                            // msg.sender
+                 caller,                              // msg.sender
                  calldataload(4),                     // arg1
                  calldataload(36)                     // arg2
                 )
@@ -66,7 +73,7 @@ contract OsmMom {
         } else if (authority == address(0)) {
             return false;
         } else {
-            return DSAuthority(authority).canCall(src, address(this), sig);
+            return AuthorityLike(authority).canCall(src, address(this), sig);
         }
     }
 
@@ -89,6 +96,6 @@ contract OsmMom {
     }
 
     function stop(bytes32 ilk) external note auth {
-        OSM(osms[ilk]).stop();
+        OsmLike(osms[ilk]).stop();
     }
 }

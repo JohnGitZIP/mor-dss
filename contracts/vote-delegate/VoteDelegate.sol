@@ -1,4 +1,12 @@
+/**
+ *Submitted for verification at Etherscan.io on 2021-07-07
+*/
+
+// hevm: flattened sources of src/VoteDelegateFactory.sol
 // SPDX-License-Identifier: AGPL-3.0-or-later
+pragma solidity =0.6.12;
+
+////// src/VoteDelegate.sol
 
 // Copyright (C) 2021 Dai Foundation
 
@@ -16,10 +24,22 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 // VoteDelegate - delegate your vote
-pragma solidity 0.6.12;
+/* pragma solidity 0.6.12; */
 
-import { DSToken } from "../ds-token/token.sol";
-import { ChiefLike } from "../vote-proxy/VoteProxy.sol";
+interface TokenLike_1 {
+    function approve(address, uint256) external returns (bool);
+    function pull(address, uint256) external;
+    function push(address, uint256) external;
+}
+
+interface ChiefLike_1 {
+    function GOV() external view returns (TokenLike_1);
+    function IOU() external view returns (TokenLike_1);
+    function lock(uint256) external;
+    function free(uint256) external;
+    function vote(address[] calldata) external returns (bytes32);
+    function vote(bytes32) external;
+}
 
 interface PollingLike {
     function withdrawPoll(uint256) external;
@@ -31,9 +51,9 @@ interface PollingLike {
 contract VoteDelegate {
     mapping(address => uint256) public stake;
     address     public immutable delegate;
-    DSToken     public immutable gov;
-    DSToken     public immutable iou;
-    ChiefLike   public immutable chief;
+    TokenLike_1   public immutable gov;
+    TokenLike_1   public immutable iou;
+    ChiefLike_1   public immutable chief;
     PollingLike public immutable polling;
     uint256     public immutable expiration;
 
@@ -41,13 +61,13 @@ contract VoteDelegate {
     event Free(address indexed usr, uint256 wad);
 
     constructor(address _chief, address _polling, address _delegate) public {
-        chief = ChiefLike(_chief);
+        chief = ChiefLike_1(_chief);
         polling = PollingLike(_polling);
         delegate = _delegate;
         expiration = block.timestamp + 365 days;
 
-        DSToken _gov = gov = ChiefLike(_chief).GOV();
-        DSToken _iou = iou = ChiefLike(_chief).IOU();
+        TokenLike_1 _gov = gov = ChiefLike_1(_chief).GOV();
+        TokenLike_1 _iou = iou = ChiefLike_1(_chief).IOU();
 
         _gov.approve(_chief, type(uint256).max);
         _iou.approve(_chief, type(uint256).max);
@@ -69,9 +89,9 @@ contract VoteDelegate {
 
     function lock(uint256 wad) external live {
         stake[msg.sender] = add(stake[msg.sender], wad);
-        gov.transferFrom(msg.sender, address(this), wad);
+        gov.pull(msg.sender, wad);
         chief.lock(wad);
-        iou.transfer(msg.sender, wad);
+        iou.push(msg.sender, wad);
 
         emit Lock(msg.sender, wad);
     }
@@ -80,9 +100,9 @@ contract VoteDelegate {
         require(stake[msg.sender] >= wad, "VoteDelegate/insufficient-stake");
 
         stake[msg.sender] -= wad;
-        iou.transferFrom(msg.sender, address(this), wad);
+        iou.pull(msg.sender, wad);
         chief.free(wad);
-        gov.transfer(msg.sender, wad);
+        gov.push(msg.sender, wad);
 
         emit Free(msg.sender, wad);
     }

@@ -1,4 +1,6 @@
-// SPDX-License-Identifier: AGPL-3.0-or-later
+/**
+ *Submitted for verification at Etherscan.io on 2020-07-22
+*/
 
 /// flap.sol -- Surplus auction
 
@@ -19,12 +21,42 @@
 
 pragma solidity >=0.5.12;
 
-import { Vat } from "./vat.sol";
-import { DSToken } from "../ds-token/token.sol";
+contract LibNote {
+    event LogNote(
+        bytes4   indexed  sig,
+        address  indexed  usr,
+        bytes32  indexed  arg1,
+        bytes32  indexed  arg2,
+        bytes             data
+    ) anonymous;
 
-// FIXME: This contract was altered compared to the production version.
-// It doesn't use LibNote anymore.
-// New deployments of this contract will need to include custom events (TO DO).
+    modifier note {
+        _;
+        assembly {
+            // log an 'anonymous' event with a constant 6 words of calldata
+            // and four indexed topics: selector, caller, arg1 and arg2
+            let mark := msize()                       // end of memory ensures zero
+            mstore(0x40, add(mark, 288))              // update free memory pointer
+            mstore(mark, 0x20)                        // bytes type data offset
+            mstore(add(mark, 0x20), 224)              // bytes size (padded)
+            calldatacopy(add(mark, 0x40), 0, 224)     // bytes payload
+            log4(mark, 288,                           // calldata
+                 shl(224, shr(224, calldataload(0))), // msg.sig
+                 caller(),                            // msg.sender
+                 calldataload(4),                     // arg1
+                 calldataload(36)                     // arg2
+                )
+        }
+    }
+}
+
+interface VatLike {
+    function move(address,address,uint) external;
+}
+interface GemLike {
+    function move(address,address,uint) external;
+    function burn(address,uint) external;
+}
 
 /*
    This thing lets you sell some dai in return for gems.
@@ -36,11 +68,11 @@ import { DSToken } from "../ds-token/token.sol";
  - `end` max auction duration
 */
 
-contract Flapper {
+contract Flapper is LibNote {
     // --- Auth ---
     mapping (address => uint) public wards;
-    function rely(address usr) external auth { wards[usr] = 1; }
-    function deny(address usr) external auth { wards[usr] = 0; }
+    function rely(address usr) external note auth { wards[usr] = 1; }
+    function deny(address usr) external note auth { wards[usr] = 0; }
     modifier auth {
         require(wards[msg.sender] == 1, "Flapper/not-authorized");
         _;
@@ -57,8 +89,8 @@ contract Flapper {
 
     mapping (uint => Bid) public bids;
 
-    Vat      public   vat;  // CDP Engine
-    DSToken  public   gem;
+    VatLike  public   vat;  // CDP Engine
+    GemLike  public   gem;
 
     uint256  constant ONE = 1.00E18;
     uint256  public   beg = 1.05E18;  // 5% minimum bid increase
@@ -77,8 +109,8 @@ contract Flapper {
     // --- Init ---
     constructor(address vat_, address gem_) public {
         wards[msg.sender] = 1;
-        vat = Vat(vat_);
-        gem = DSToken(gem_);
+        vat = VatLike(vat_);
+        gem = GemLike(gem_);
         live = 1;
     }
 
@@ -91,7 +123,7 @@ contract Flapper {
     }
 
     // --- Admin ---
-    function file(bytes32 what, uint data) external auth {
+    function file(bytes32 what, uint data) external note auth {
         if (what == "beg") beg = data;
         else if (what == "ttl") ttl = uint48(data);
         else if (what == "tau") tau = uint48(data);
@@ -113,12 +145,12 @@ contract Flapper {
 
         emit Kick(id, lot, bid);
     }
-    function tick(uint id) external {
+    function tick(uint id) external note {
         require(bids[id].end < now, "Flapper/not-finished");
         require(bids[id].tic == 0, "Flapper/bid-already-placed");
         bids[id].end = add(uint48(now), tau);
     }
-    function tend(uint id, uint lot, uint bid) external {
+    function tend(uint id, uint lot, uint bid) external note {
         require(live == 1, "Flapper/not-live");
         require(bids[id].guy != address(0), "Flapper/guy-not-set");
         require(bids[id].tic > now || bids[id].tic == 0, "Flapper/already-finished-tic");
@@ -129,31 +161,30 @@ contract Flapper {
         require(mul(bid, ONE) >= mul(beg, bids[id].bid), "Flapper/insufficient-increase");
 
         if (msg.sender != bids[id].guy) {
-            gem.transferFrom(msg.sender, bids[id].guy, bids[id].bid);
+            gem.move(msg.sender, bids[id].guy, bids[id].bid);
             bids[id].guy = msg.sender;
         }
-        gem.transferFrom(msg.sender, address(this), bid - bids[id].bid);
+        gem.move(msg.sender, address(this), bid - bids[id].bid);
 
         bids[id].bid = bid;
         bids[id].tic = add(uint48(now), ttl);
     }
-    function deal(uint id) external {
+    function deal(uint id) external note {
         require(live == 1, "Flapper/not-live");
         require(bids[id].tic != 0 && (bids[id].tic < now || bids[id].end < now), "Flapper/not-finished");
         vat.move(address(this), bids[id].guy, bids[id].lot);
-        uint256 bid = bids[id].bid;
-        try gem.burn(bid) {} catch { gem.transfer(address(0xdead), bid); }
+        gem.burn(address(this), bids[id].bid);
         delete bids[id];
     }
 
-    function cage(uint rad) external auth {
+    function cage(uint rad) external note auth {
        live = 0;
        vat.move(address(this), msg.sender, rad);
     }
-    function yank(uint id) external {
+    function yank(uint id) external note {
         require(live == 0, "Flapper/still-live");
         require(bids[id].guy != address(0), "Flapper/guy-not-set");
-        gem.transferFrom(address(this), bids[id].guy, bids[id].bid);
+        gem.move(address(this), bids[id].guy, bids[id].bid);
         delete bids[id];
     }
 }

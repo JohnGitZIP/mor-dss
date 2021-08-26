@@ -1,4 +1,6 @@
-// SPDX-License-Identifier: AGPL-3.0-or-later
+/**
+ *Submitted for verification at Etherscan.io on 2020-05-18
+*/
 
 // DsrManager.sol
 // Copyright (C) 2020 Maker Ecosystem Growth Holdings, INC.
@@ -16,21 +18,36 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-pragma solidity >=0.5.12;
+pragma solidity ^0.5.12;
 
-import { Vat } from "../dss/vat.sol";
-import { Pot } from "../dss/pot.sol";
-import { DaiJoin } from "../dss/join.sol";
+contract VatLike {
+    function hope(address) external;
+}
 
-interface DsrGemLike {
+contract PotLike {
+    function vat() external view returns (address);
+    function chi() external view returns (uint256);
+    function rho() external view returns (uint256);
+    function drip() external returns (uint256);
+    function join(uint256) external;
+    function exit(uint256) external;
+}
+
+contract JoinLike {
+    function dai() external view returns (address);
+    function join(address, uint256) external;
+    function exit(address, uint256) external;
+}
+
+contract GemLike {
     function transferFrom(address,address,uint256) external returns (bool);
     function approve(address,uint256) external returns (bool);
 }
 
 contract DsrManager {
-    Pot      public pot;
-    DsrGemLike  public dai;
-    DaiJoin  public daiJoin;
+    PotLike  public pot;
+    GemLike  public dai;
+    JoinLike public daiJoin;
 
     uint256 public supply;
 
@@ -63,11 +80,11 @@ contract DsrManager {
     }
 
     constructor(address pot_, address daiJoin_) public {
-        pot = Pot(pot_);
-        daiJoin = DaiJoin(daiJoin_);
-        dai = DsrGemLike(address(daiJoin.dai())); // REVIEW forced type cast
+        pot = PotLike(pot_);
+        daiJoin = JoinLike(daiJoin_);
+        dai = GemLike(daiJoin.dai());
 
-        Vat vat = Vat(pot.vat());
+        VatLike vat = VatLike(pot.vat());
         vat.hope(address(daiJoin));
         vat.hope(address(pot));
         dai.approve(address(daiJoin), uint256(-1));

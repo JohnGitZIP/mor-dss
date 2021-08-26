@@ -1,4 +1,10 @@
+/**
+ *Submitted for verification at Etherscan.io on 2021-07-07
+*/
+
+// hevm: flattened sources of src/VoteDelegateFactory.sol
 // SPDX-License-Identifier: AGPL-3.0-or-later
+pragma solidity =0.6.12;
 
 // Copyright (C) 2021 Dai Foundation
 
@@ -16,9 +22,9 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 // VoteDelegateFactory - create and keep record of delegats
-pragma solidity 0.6.12;
+/* pragma solidity 0.6.12; */
 
-import "./VoteDelegate.sol";
+/* import "./VoteDelegate.sol"; */
 
 contract VoteDelegateFactory {
     address public immutable chief;

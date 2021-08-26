@@ -1,4 +1,12 @@
+/**
+ *Submitted for verification at Etherscan.io on 2021-06-17
+*/
+
+// hevm: flattened sources of src/flash.sol
 // SPDX-License-Identifier: AGPL-3.0-or-later
+pragma solidity =0.6.12 >=0.6.12;
+
+////// src/interface/IERC3156FlashBorrower.sol
 // Copyright (C) 2021 Dai Foundation
 //
 // This program is free software: you can redistribute it and/or modify
@@ -14,19 +22,198 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-pragma solidity 0.6.12;
+/* pragma solidity >=0.6.12; */
 
-import { Vat } from "../dss/vat.sol";
-import { DaiJoin } from "../dss/join.sol";
+interface IERC3156FlashBorrower {
 
-import "./interface/IERC3156FlashLender.sol";
-import "./interface/IERC3156FlashBorrower.sol";
-import "./interface/IVatDaiFlashLender.sol";
+    /**
+     * @dev Receive a flash loan.
+     * @param initiator The initiator of the loan.
+     * @param token The loan currency.
+     * @param amount The amount of tokens lent.
+     * @param fee The additional amount of tokens to repay.
+     * @param data Arbitrary data structure, intended to contain user-defined parameters.
+     * @return The keccak256 hash of "ERC3156FlashBorrower.onFlashLoan"
+     */
+    function onFlashLoan(
+        address initiator,
+        address token,
+        uint256 amount,
+        uint256 fee,
+        bytes calldata data
+    ) external returns (bytes32);
+}
+
+////// src/interface/IERC3156FlashLender.sol
+// Copyright (C) 2021 Dai Foundation
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Affero General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Affero General Public License for more details.
+//
+// You should have received a copy of the GNU Affero General Public License
+// along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+/* pragma solidity >=0.6.12; */
+
+/* import "./IERC3156FlashBorrower.sol"; */
+
+interface IERC3156FlashLender {
+
+    /**
+     * @dev The amount of currency available to be lent.
+     * @param token The loan currency.
+     * @return The amount of `token` that can be borrowed.
+     */
+    function maxFlashLoan(
+        address token
+    ) external view returns (uint256);
+
+    /**
+     * @dev The fee to be charged for a given loan.
+     * @param token The loan currency.
+     * @param amount The amount of tokens lent.
+     * @return The amount of `token` to be charged for the loan, on top of the returned principal.
+     */
+    function flashFee(
+        address token,
+        uint256 amount
+    ) external view returns (uint256);
+
+    /**
+     * @dev Initiate a flash loan.
+     * @param receiver The receiver of the tokens in the loan, and the receiver of the callback.
+     * @param token The loan currency.
+     * @param amount The amount of tokens lent.
+     * @param data Arbitrary data structure, intended to contain user-defined parameters.
+     */
+    function flashLoan(
+        IERC3156FlashBorrower receiver,
+        address token,
+        uint256 amount,
+        bytes calldata data
+    ) external returns (bool);
+}
+
+////// src/interface/IVatDaiFlashBorrower.sol
+// Copyright (C) 2021 Dai Foundation
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Affero General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Affero General Public License for more details.
+//
+// You should have received a copy of the GNU Affero General Public License
+// along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+/* pragma solidity >=0.6.12; */
+
+interface IVatDaiFlashBorrower {
+
+    /**
+     * @dev Receive a flash loan.
+     * @param initiator The initiator of the loan.
+     * @param amount The amount of tokens lent. [rad]
+     * @param fee The additional amount of tokens to repay. [rad]
+     * @param data Arbitrary data structure, intended to contain user-defined parameters.
+     * @return The keccak256 hash of "IVatDaiFlashLoanReceiver.onVatDaiFlashLoan"
+     */
+    function onVatDaiFlashLoan(
+        address initiator,
+        uint256 amount,
+        uint256 fee,
+        bytes calldata data
+    ) external returns (bytes32);
+
+}
+
+////// src/interface/IVatDaiFlashLender.sol
+// Copyright (C) 2021 Dai Foundation
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Affero General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Affero General Public License for more details.
+//
+// You should have received a copy of the GNU Affero General Public License
+// along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+/* pragma solidity >=0.6.12; */
+
+/* import "./IVatDaiFlashBorrower.sol"; */
+
+interface IVatDaiFlashLender {
+
+    /**
+     * @dev Initiate a flash loan.
+     * @param receiver The receiver of the tokens in the loan, and the receiver of the callback.
+     * @param amount The amount of tokens lent. [rad]
+     * @param data Arbitrary data structure, intended to contain user-defined parameters.
+     */
+    function vatDaiFlashLoan(
+        IVatDaiFlashBorrower receiver,
+        uint256 amount,
+        bytes calldata data
+    ) external returns (bool);
+}
+
+////// src/flash.sol
+// Copyright (C) 2021 Dai Foundation
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Affero General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Affero General Public License for more details.
+//
+// You should have received a copy of the GNU Affero General Public License
+// along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+/* pragma solidity 0.6.12; */
+
+/* import "./interface/IERC3156FlashLender.sol"; */
+/* import "./interface/IERC3156FlashBorrower.sol"; */
+/* import "./interface/IVatDaiFlashLender.sol"; */
 
 interface DaiLike {
     function balanceOf(address) external returns (uint256);
     function transferFrom(address, address, uint256) external returns (bool);
     function approve(address, uint256) external returns (bool);
+}
+
+interface DaiJoinLike {
+    function dai() external view returns (address);
+    function vat() external view returns (address);
+    function join(address, uint256) external;
+    function exit(address, uint256) external;
+}
+
+interface VatLike_4 {
+    function hope(address) external;
+    function dai(address) external view returns (uint256);
+    function move(address, address, uint256) external;
+    function heal(uint256) external;
+    function suck(address, address, uint256) external;
 }
 
 contract DssFlash is IERC3156FlashLender, IVatDaiFlashLender {
@@ -41,8 +228,8 @@ contract DssFlash is IERC3156FlashLender, IVatDaiFlashLender {
     }
 
     // --- Data ---
-    Vat         public immutable vat;
-    DaiJoin     public immutable daiJoin;
+    VatLike_4     public immutable vat;
+    DaiJoinLike public immutable daiJoin;
     DaiLike     public immutable dai;
     address     public immutable vow;       // vow intentionally set immutable to save gas
 
@@ -72,9 +259,9 @@ contract DssFlash is IERC3156FlashLender, IVatDaiFlashLender {
         wards[msg.sender] = 1;
         emit Rely(msg.sender);
 
-        Vat vat_ = vat = Vat(DaiJoin(daiJoin_).vat());
-        daiJoin = DaiJoin(daiJoin_);
-        DaiLike dai_ = dai = DaiLike(address(DaiJoin(daiJoin_).dai())); // REVIEW forced type cast
+        VatLike_4 vat_ = vat = VatLike_4(DaiJoinLike(daiJoin_).vat());
+        daiJoin = DaiJoinLike(daiJoin_);
+        DaiLike dai_ = dai = DaiLike(DaiJoinLike(daiJoin_).dai());
         vow = vow_;
 
         vat_.hope(daiJoin_);

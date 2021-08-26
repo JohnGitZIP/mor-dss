@@ -1,3 +1,7 @@
+/**
+ *Submitted for verification at Etherscan.io on 2021-04-19
+*/
+
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
 /// ESM.sol
@@ -19,16 +23,26 @@
 
 pragma solidity >=0.6.12;
 
-import { End } from "../dss/end.sol";
-import { DSToken } from "../ds-token/token.sol";
+interface GemLike {
+    function balanceOf(address) external view returns (uint256);
+    function burn(uint256) external;
+    function transfer(address, uint256) external returns (bool);
+    function transferFrom(address, address, uint256) external returns (bool);
+}
+
+interface EndLike {
+    function live() external view returns (uint256);
+    function vat()  external view returns (address);
+    function cage() external;
+}
 
 interface DenyLike {
     function deny(address) external;
 }
 
 contract ESM {
-    DSToken public immutable gem;   // collateral (MKR token)
-    End     public immutable end;   // cage module
+    GemLike public immutable gem;   // collateral (MKR token)
+    EndLike public immutable end;   // cage module
     address public immutable proxy; // Pause proxy
     uint256 public immutable min;   // minimum activation threshold [wad]
 
@@ -39,8 +53,8 @@ contract ESM {
     event Join(address indexed usr, uint256 wad);
 
     constructor(address gem_, address end_, address proxy_, uint256 min_) public {
-        gem = DSToken(gem_);
-        end = End(end_);
+        gem = GemLike(gem_);
+        end = EndLike(end_);
         proxy = proxy_;
         min = min_;
     }
@@ -59,7 +73,7 @@ contract ESM {
         require(Sum >= min,  "ESM/min-not-reached");
 
         if (proxy != address(0)) {
-            DenyLike(address(end.vat())).deny(proxy); // REVIEW forced type cast
+            DenyLike(end.vat()).deny(proxy);
         }
         end.cage();
 
@@ -83,7 +97,6 @@ contract ESM {
     }
 
     function burn() external {
-        uint256 balance = gem.balanceOf(address(this));
-        try gem.burn(balance) {} catch { gem.transfer(address(0xdead), balance); }
+        gem.burn(gem.balanceOf(address(this)));
     }
 }

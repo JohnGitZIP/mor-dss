@@ -1,4 +1,6 @@
-// SPDX-License-Identifier: AGPL-3.0-or-later
+/**
+ *Submitted for verification at Etherscan.io on 2020-03-15
+*/
 
 /// FlipperMom -- governance interface for the Flipper
 
@@ -17,10 +19,17 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-pragma solidity >=0.5.12;
+pragma solidity ^0.5.12;
 
-import { Flipper } from "../dss/flip.sol";
-import { DSAuthority } from "../ds-auth/auth.sol";
+contract FlipLike {
+    function wards(address) public returns (uint);
+    function rely(address) external;
+    function deny(address) external;
+}
+
+contract AuthorityLike {
+    function canCall(address src, address dst, bytes4 sig) public view returns (bool);
+}
 
 contract FlipperMom {
     address public owner;
@@ -39,7 +48,7 @@ contract FlipperMom {
         } else if (authority == address(0)) {
             return false;
         } else {
-            return DSAuthority(authority).canCall(src, address(this), sig);
+            return AuthorityLike(authority).canCall(src, address(this), sig);
         }
     }
 
@@ -66,12 +75,12 @@ contract FlipperMom {
     event Rely(address flip, address usr);
     function rely(address flip) external auth {
         emit Rely(flip, cat);
-        Flipper(flip).rely(cat);
+        FlipLike(flip).rely(cat);
     }
 
     event Deny(address flip, address cat);
     function deny(address flip) external auth {
         emit Deny(flip, cat);
-        Flipper(flip).deny(cat);
+        FlipLike(flip).deny(cat);
     }
 }

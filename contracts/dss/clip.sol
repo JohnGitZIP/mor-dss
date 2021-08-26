@@ -1,3 +1,7 @@
+/**
+ *Submitted for verification at Etherscan.io on 2021-05-02
+*/
+
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
 /// clip.sol -- Dai auction module 2.0
@@ -19,9 +23,26 @@
 
 pragma solidity >=0.6.12;
 
-import { Vat } from "./vat.sol";
-import { Dog } from "./dog.sol";
-import { Spotter, PipLike } from "./spot.sol";
+interface VatLike {
+    function move(address,address,uint256) external;
+    function flux(bytes32,address,address,uint256) external;
+    function ilks(bytes32) external returns (uint256, uint256, uint256, uint256, uint256);
+    function suck(address,address,uint256) external;
+}
+
+interface PipLike {
+    function peek() external returns (bytes32, bool);
+}
+
+interface SpotterLike {
+    function par() external returns (uint256);
+    function ilks(bytes32) external returns (PipLike, uint256);
+}
+
+interface DogLike {
+    function chop(bytes32) external returns (uint256);
+    function digs(bytes32, uint256) external;
+}
 
 interface ClipperCallee {
     function clipperCall(address, uint256, uint256, bytes calldata) external;
@@ -43,11 +64,11 @@ contract Clipper {
 
     // --- Data ---
     bytes32  immutable public ilk;   // Collateral type of this Clipper
-    Vat      immutable public vat;   // Core CDP Engine
+    VatLike  immutable public vat;   // Core CDP Engine
 
-    Dog         public dog;      // Liquidation module
+    DogLike     public dog;      // Liquidation module
     address     public vow;      // Recipient of dai raised in auctions
-    Spotter     public spotter;  // Collateral price module
+    SpotterLike public spotter;  // Collateral price module
     AbacusLike  public calc;     // Current price calculator
 
     uint256 public buf;    // Multiplicative factor to increase starting price                  [ray]
@@ -118,9 +139,9 @@ contract Clipper {
 
     // --- Init ---
     constructor(address vat_, address spotter_, address dog_, bytes32 ilk_) public {
-        vat     = Vat(vat_);
-        spotter = Spotter(spotter_);
-        dog     = Dog(dog_);
+        vat     = VatLike(vat_);
+        spotter = SpotterLike(spotter_);
+        dog     = DogLike(dog_);
         ilk     = ilk_;
         buf     = RAY;
         wards[msg.sender] = 1;
@@ -152,8 +173,8 @@ contract Clipper {
         emit File(what, data);
     }
     function file(bytes32 what, address data) external auth lock {
-        if (what == "spotter") spotter = Spotter(data);
-        else if (what == "dog")    dog = Dog(data);
+        if (what == "spotter") spotter = SpotterLike(data);
+        else if (what == "dog")    dog = DogLike(data);
         else if (what == "vow")    vow = data;
         else if (what == "calc")  calc = AbacusLike(data);
         else revert("Clipper/file-unrecognized-param");
@@ -373,7 +394,7 @@ contract Clipper {
             // Do external call (if data is defined) but to be
             // extremely careful we don't allow to do it to the two
             // contracts which the Clipper needs to be authorized
-            Dog dog_ = dog;
+            DogLike dog_ = dog;
             if (data.length > 0 && who != address(vat) && who != address(dog_)) {
                 ClipperCallee(who).clipperCall(msg.sender, owe, slice, data);
             }
@@ -441,7 +462,7 @@ contract Clipper {
 
     // Public function to update the cached dust*chop value.
     function upchost() external {
-        (,,,, uint256 _dust) = Vat(vat).ilks(ilk);
+        (,,,, uint256 _dust) = VatLike(vat).ilks(ilk);
         chost = wmul(_dust, dog.chop(ilk));
     }
 

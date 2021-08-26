@@ -1,3 +1,7 @@
+/**
+ *Submitted for verification at Etherscan.io on 2020-12-10
+*/
+
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
 /// DssAutoLine.sol
@@ -19,7 +23,12 @@
 
 pragma solidity ^0.6.11;
 
-import { Vat } from "../dss/vat.sol";
+interface VatLike {
+    function ilks(bytes32) external view returns (uint256, uint256, uint256, uint256, uint256);
+    function Line() external view returns (uint256);
+    function file(bytes32, uint256) external;
+    function file(bytes32, bytes32, uint256) external;
+}
 
 contract DssAutoLine {
     /*** Data ***/
@@ -34,7 +43,7 @@ contract DssAutoLine {
     mapping (bytes32 => Ilk)     public ilks;
     mapping (address => uint256) public wards;
 
-    Vat     immutable public vat;
+    VatLike immutable public vat;
 
     /*** Events ***/
     event Rely(address indexed usr);
@@ -45,7 +54,7 @@ contract DssAutoLine {
 
     /*** Init ***/
     constructor(address vat_) public {
-        vat = Vat(vat_);
+        vat = VatLike(vat_);
         wards[msg.sender] = 1;
         emit Rely(msg.sender);
     }

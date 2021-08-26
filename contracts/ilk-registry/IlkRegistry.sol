@@ -1,3 +1,7 @@
+/**
+ *Submitted for verification at Etherscan.io on 2021-04-16
+*/
+
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
 /// IlkRegistry.sol -- Publicly updatable ilk registry
@@ -16,36 +20,75 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 pragma solidity ^0.6.12;
 
-import { Vat } from "../dss/vat.sol";
-import { Cat } from "../dss/cat.sol";
-import { Dog } from "../dss/dog.sol";
-import { Spotter, PipLike } from "../dss/spot.sol";
-import { GemJoin } from "../dss/join.sol";
-import { DSToken } from "../ds-token/token.sol";
+interface JoinLike {
+  function vat()          external view returns (address);
+  function ilk()          external view returns (bytes32);
+  function gem()          external view returns (address);
+  function dec()          external view returns (uint256);
+  function live()         external view returns (uint256);
+}
+
+interface VatLike {
+  function wards(address) external view returns (uint256);
+  function live()         external view returns (uint256);
+}
+
+interface DogLike {
+  function vat()          external view returns (address);
+  function live()         external view returns (uint256);
+  function ilks(bytes32)  external view returns (address, uint256, uint256, uint256);
+}
+
+interface CatLike {
+  function vat()          external view returns (address);
+  function live()         external view returns (uint256);
+  function ilks(bytes32)  external view returns (address, uint256, uint256);
+}
+
+interface FlipLike {
+  function vat()          external view returns (address);
+  function cat()          external view returns (address);
+}
+
+interface ClipLike {
+  function vat()          external view returns (address);
+  function dog()          external view returns (address);
+}
+
+interface SpotLike {
+  function live()         external view returns (uint256);
+  function vat()          external view returns (address);
+  function ilks(bytes32)  external view returns (address, uint256);
+}
+
+interface TokenLike {
+    function name()       external view returns (string memory);
+    function symbol()     external view returns (string memory);
+}
 
 contract GemInfo {
     function name(address token) external view returns (string memory) {
-        return DSToken(token).name();
+        return TokenLike(token).name();
     }
 
     function symbol(address token) external view returns (string memory) {
-        return DSToken(token).symbol();
+        return TokenLike(token).symbol();
     }
 }
 
 contract IlkRegistry {
 
-    event Rely(address indexed usr);
-    event Deny(address indexed usr);
-    event File(bytes32 indexed what, address data);
-    event File(bytes32 indexed ilk, bytes32 indexed what, address data);
-    event File(bytes32 indexed ilk, bytes32 indexed what, uint256 data);
-    event File(bytes32 indexed ilk, bytes32 indexed what, string data);
-    event AddIlk(bytes32 indexed ilk);
-    event RemoveIlk(bytes32 indexed ilk);
-    event UpdateIlk(bytes32 indexed ilk);
-    event NameError(bytes32 indexed ilk);
-    event SymbolError(bytes32 indexed ilk);
+    event Rely(address usr);
+    event Deny(address usr);
+    event File(bytes32 what, address data);
+    event File(bytes32 ilk, bytes32 what, address data);
+    event File(bytes32 ilk, bytes32 what, uint256 data);
+    event File(bytes32 ilk, bytes32 what, string data);
+    event AddIlk(bytes32 ilk);
+    event RemoveIlk(bytes32 ilk);
+    event UpdateIlk(bytes32 ilk);
+    event NameError(bytes32 ilk);
+    event SymbolError(bytes32 ilk);
 
     // --- Auth ---
     mapping (address => uint) public wards;
@@ -56,12 +99,12 @@ contract IlkRegistry {
         _;
     }
 
-    Vat      public  immutable vat;
+    VatLike  public  immutable vat;
     GemInfo  private immutable gemInfo;
 
-    Dog      public dog;
-    Cat      public cat;
-    Spotter  public spot;
+    DogLike  public dog;
+    CatLike  public cat;
+    SpotLike public spot;
 
     struct Ilk {
         uint96  pos;     // Index in ilks array
@@ -81,14 +124,14 @@ contract IlkRegistry {
     // Initialize the registry
     constructor(address vat_, address dog_, address cat_, address spot_) public {
 
-        Vat _vat = vat = Vat(vat_);
-        dog = Dog(dog_);
-        cat = Cat(cat_);
-        spot = Spotter(spot_);
+        VatLike _vat = vat = VatLike(vat_);
+        dog = DogLike(dog_);
+        cat = CatLike(cat_);
+        spot = SpotLike(spot_);
 
-        require(address(dog.vat()) == vat_,      "IlkRegistry/invalid-dog-vat"); // REVIEW forced type cast
-        require(address(cat.vat()) == vat_,      "IlkRegistry/invalid-cat-vat"); // REVIEW forced type cast
-        require(address(spot.vat()) == vat_,     "IlkRegistry/invalid-spotter-vat"); // REVIEW forced type cast
+        require(dog.vat() == vat_,      "IlkRegistry/invalid-dog-vat");
+        require(cat.vat() == vat_,      "IlkRegistry/invalid-cat-vat");
+        require(spot.vat() == vat_,     "IlkRegistry/invalid-spotter-vat");
         require(_vat.wards(cat_) == 1,  "IlkRegistry/cat-not-authorized");
         require(_vat.wards(spot_) == 1, "IlkRegistry/spot-not-authorized");
         require(_vat.live() == 1,       "IlkRegistry/vat-not-live");
@@ -102,10 +145,10 @@ contract IlkRegistry {
 
     // Pass an active join adapter to the registry to add it to the set
     function add(address adapter) external {
-        GemJoin _join = GemJoin(adapter);
+        JoinLike _join = JoinLike(adapter);
 
         // Validate adapter
-        require(address(_join.vat()) == address(vat),    "IlkRegistry/invalid-join-adapter-vat"); // REVIEW forced type cast
+        require(_join.vat() == address(vat),    "IlkRegistry/invalid-join-adapter-vat");
         require(vat.wards(address(_join)) == 1, "IlkRegistry/adapter-not-authorized");
 
         // Validate ilk
@@ -113,8 +156,8 @@ contract IlkRegistry {
         require(_ilk != 0, "IlkRegistry/ilk-adapter-invalid");
         require(ilkData[_ilk].join == address(0), "IlkRegistry/ilk-already-exists");
 
-        (PipLike _pip,) = spot.ilks(_ilk);
-        require(address(_pip) != address(0), "IlkRegistry/pip-invalid");
+        (address _pip,) = spot.ilks(_ilk);
+        require(_pip != address(0), "IlkRegistry/pip-invalid");
 
         (address _xlip,,,) = dog.ilks(_ilk);
 
@@ -126,7 +169,7 @@ contract IlkRegistry {
         }
 
         string memory name = bytes32ToStr(_ilk);
-        try gemInfo.name(address(_join.gem())) returns (string memory _name) { // REVIEW forced type cast
+        try gemInfo.name(_join.gem()) returns (string memory _name) {
             if (bytes(_name).length != 0) {
                 name = _name;
             }
@@ -135,7 +178,7 @@ contract IlkRegistry {
         }
 
         string memory symbol = bytes32ToStr(_ilk);
-        try gemInfo.symbol(address(_join.gem())) returns (string memory _symbol) { // REVIEW forced type cast
+        try gemInfo.symbol(_join.gem()) returns (string memory _symbol) {
             if (bytes(_symbol).length != 0) {
                 symbol = _symbol;
             }
@@ -148,10 +191,10 @@ contract IlkRegistry {
         ilkData[ilks[ilks.length - 1]] = Ilk({
             pos: uint96(ilks.length - 1),
             join: address(_join),
-            gem: address(_join.gem()), // REVIEW forced type cast
+            gem: _join.gem(),
             dec: uint8(_join.dec()),
             class: _class,
-            pip: address(_pip), // REVIEW forced type cast
+            pip: _pip,
             xlip: _xlip,
             name: name,
             symbol: symbol
@@ -162,7 +205,7 @@ contract IlkRegistry {
 
     // Anyone can remove an ilk if the adapter has been caged
     function remove(bytes32 ilk) external {
-        GemJoin _join = GemJoin(ilkData[ilk].join);
+        JoinLike _join = JoinLike(ilkData[ilk].join);
         require(address(_join) != address(0), "IlkRegistry/invalid-ilk");
         uint96 _class = ilkData[ilk].class;
         require(_class == 1 || _class == 2, "IlkRegistry/invalid-class");
@@ -179,9 +222,9 @@ contract IlkRegistry {
 
     // Authed edit function
     function file(bytes32 what, address data) external auth {
-        if      (what == "dog")  dog  = Dog(data);
-        else if (what == "cat")  cat  = Cat(data);
-        else if (what == "spot") spot = Spotter(data);
+        if      (what == "dog")  dog  = DogLike(data);
+        else if (what == "cat")  cat  = CatLike(data);
+        else if (what == "spot") spot = SpotLike(data);
         else revert("IlkRegistry/file-unrecognized-param-address");
         emit File(what, data);
     }
@@ -287,8 +330,8 @@ contract IlkRegistry {
     }
 
     // The classification code of the ilk
-    //  1  - Clipper
-    //  2  - Flipper
+    //  1  - Flipper
+    //  2  - Clipper
     //  3+ - RWA or custom adapter
     function class(bytes32 ilk) external view returns (uint256) {
         return ilkData[ilk].class;
@@ -331,15 +374,15 @@ contract IlkRegistry {
 
     // Public function to update an ilk's pip and flip if the ilk has been updated.
     function update(bytes32 ilk) external {
-        require(GemJoin(ilkData[ilk].join).vat() == vat, "IlkRegistry/invalid-ilk");
-        require(GemJoin(ilkData[ilk].join).live() == 1, "IlkRegistry/ilk-not-live-use-remove-instead");
+        require(JoinLike(ilkData[ilk].join).vat() == address(vat), "IlkRegistry/invalid-ilk");
+        require(JoinLike(ilkData[ilk].join).live() == 1, "IlkRegistry/ilk-not-live-use-remove-instead");
         uint96 _class = ilkData[ilk].class;
         require(_class == 1 || _class == 2, "IlkRegistry/invalid-class");
 
-        (PipLike _pip,) = spot.ilks(ilk);
-        require(address(_pip) != address(0), "IlkRegistry/pip-invalid");
+        (address _pip,) = spot.ilks(ilk);
+        require(_pip != address(0), "IlkRegistry/pip-invalid");
 
-        ilkData[ilk].pip    = address(_pip); // REVIEW forced type cast
+        ilkData[ilk].pip    = _pip;
         emit UpdateIlk(ilk);
     }
 

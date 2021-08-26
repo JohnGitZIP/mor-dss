@@ -1,4 +1,10 @@
-// SPDX-License-Identifier: AGPL-3.0-or-later
+/**
+ *Submitted for verification at Etherscan.io on 2020-12-18
+*/
+
+/**
+ *Submitted for verification at Etherscan.io on 2020-08-28
+*/
 
 /// value.sol - a value is a simple thing, it can be get and set
 
@@ -18,8 +24,6 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 pragma solidity >=0.4.23;
-
-import '../ds-thing/thing.sol';
 
 contract DSValue is DSThing {
     bool    has;

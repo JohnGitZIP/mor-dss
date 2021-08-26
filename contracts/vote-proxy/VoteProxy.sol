@@ -1,6 +1,8 @@
-// SPDX-License-Identifier: AGPL-3.0-or-later
+/**
+ *Submitted for verification at Etherscan.io on 2020-11-25
+*/
 
-/// VoteProxy.sol
+/// VoteProxyFactory.sol
 
 // Copyright (C) 2018-2020 Maker Ecosystem Growth Holdings, INC.
 
@@ -17,14 +19,19 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-// vote w/ a hot or cold wallet using a proxy identity
+// create and keep record of proxy identities
 pragma solidity >=0.4.24;
 
-import { DSToken } from "../ds-token/token.sol";
+interface TokenLike {
+    function balanceOf(address) external view returns (uint256);
+    function approve(address, uint256) external;
+    function pull(address, uint256) external;
+    function push(address, uint256) external;
+}
 
 interface ChiefLike {
-    function GOV() external view returns (DSToken);
-    function IOU() external view returns (DSToken);
+    function GOV() external view returns (TokenLike);
+    function IOU() external view returns (TokenLike);
     function deposits(address) external view returns (uint256);
     function lock(uint256) external;
     function free(uint256) external;
@@ -35,8 +42,8 @@ interface ChiefLike {
 contract VoteProxy {
     address   public cold;
     address   public hot;
-    DSToken   public gov;
-    DSToken   public iou;
+    TokenLike public gov;
+    TokenLike public iou;
     ChiefLike public chief;
 
     constructor(address _chief, address _cold, address _hot) public {
@@ -56,18 +63,18 @@ contract VoteProxy {
     }
 
     function lock(uint256 wad) public auth {
-        gov.transferFrom(cold, address(this), wad);   // mkr from cold
+        gov.pull(cold, wad);   // mkr from cold
         chief.lock(wad);       // mkr out, ious in
     }
 
     function free(uint256 wad) public auth {
         chief.free(wad);       // ious out, mkr in
-        gov.transfer(cold, wad);   // mkr to cold
+        gov.push(cold, wad);   // mkr to cold
     }
 
     function freeAll() public auth {
         chief.free(chief.deposits(address(this)));
-        gov.transfer(cold, gov.balanceOf(address(this)));
+        gov.push(cold, gov.balanceOf(address(this)));
     }
 
     function vote(address[] memory yays) public auth returns (bytes32) {

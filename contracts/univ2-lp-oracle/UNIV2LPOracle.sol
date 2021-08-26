@@ -1,3 +1,7 @@
+/**
+ *Submitted for verification at Etherscan.io on 2021-05-14
+*/
+
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 /// UNIV2LPOracle.sol
@@ -68,7 +72,7 @@
 
 pragma solidity =0.6.12;
 
-interface ERC20Like_ {
+interface ERC20Like {
     function decimals()         external view returns (uint8);
     function balanceOf(address) external view returns (uint256);
     function totalSupply()      external view returns (uint256);
@@ -82,7 +86,6 @@ interface UniswapV2PairLike {
 }
 
 interface OracleLike {
-    function peek() external view returns (uint256,bool);
     function read() external view returns (uint256);
 }
 
@@ -154,13 +157,13 @@ contract UNIV2LPOracle {
     // --- Math ---
     uint256 constant WAD = 10 ** 18;
 
-    function _add(uint256 _x, uint256 _y) internal pure returns (uint256 z) {
+    function add(uint256 _x, uint256 _y) internal pure returns (uint256 z) {
         require((z = _x + _y) >= _x, "UNIV2LPOracle/add-overflow");
     }
-    function _sub(uint256 _x, uint256 _y) internal pure returns (uint256 z) {
+    function sub(uint256 _x, uint256 _y) internal pure returns (uint256 z) {
         require((z = _x - _y) <= _x, "UNIV2LPOracle/sub-underflow");
     }
-    function _mul(uint256 _x, uint256 _y) internal pure returns (uint256 z) {
+    function mul(uint256 _x, uint256 _y) internal pure returns (uint256 z) {
         require(_y == 0 || (z = _x * _y) / _y == _x, "UNIV2LPOracle/mul-overflow");
     }
 
@@ -208,10 +211,10 @@ contract UNIV2LPOracle {
         emit Rely(msg.sender);
         src  = _src;
         wat  = _wat;
-        uint256 dec0 = uint256(ERC20Like_(UniswapV2PairLike(_src).token0()).decimals());
+        uint256 dec0 = uint256(ERC20Like(UniswapV2PairLike(_src).token0()).decimals());
         require(dec0 <= 18, "UNIV2LPOracle/token0-dec-gt-18");
         UNIT_0 = 10 ** dec0;
-        uint256 dec1 = uint256(ERC20Like_(UniswapV2PairLike(_src).token1()).decimals());
+        uint256 dec1 = uint256(ERC20Like(UniswapV2PairLike(_src).token1()).decimals());
         require(dec1 <= 18, "UNIV2LPOracle/token1-dec-gt-18");
         UNIT_1 = 10 ** dec1;
         orb0 = _orb0;
@@ -252,7 +255,7 @@ contract UNIV2LPOracle {
     // For consistency with other oracles.
     function zzz() external view returns (uint256) {
         if (zph == 0) return 0;  // backwards compatibility
-        return _sub(zph, hop);
+        return sub(zph, hop);
     }
 
     function pass() external view returns (bool) {
@@ -274,14 +277,14 @@ contract UNIV2LPOracle {
         require(p1 != 0, "UNIV2LPOracle/invalid-oracle-1-price");
 
         // Get LP token supply
-        uint256 supply = ERC20Like_(src).totalSupply();
+        uint256 supply = ERC20Like(src).totalSupply();
 
         // This calculation should be overflow-resistant even for tokens with very high or very
         // low prices, as the dollar value of each reserve should lie in a fairly controlled range
         // regardless of the token prices.
-        uint256 value0 = _mul(p0, uint256(r0)) / UNIT_0;  // WAD
-        uint256 value1 = _mul(p1, uint256(r1)) / UNIT_1;  // WAD
-        uint256 preq = _mul(2 * WAD, sqrt(_mul(value0, value1))) / supply;  // Will revert if supply == 0
+        uint256 value0 = mul(p0, uint256(r0)) / UNIT_0;  // WAD
+        uint256 value1 = mul(p1, uint256(r1)) / UNIT_1;  // WAD
+        uint256 preq = mul(2 * WAD, sqrt(mul(value0, value1))) / supply;  // Will revert if supply == 0
         require(preq < 2 ** 128, "UNIV2LPOracle/quote-overflow");
         quote = uint128(preq);  // WAD
     }

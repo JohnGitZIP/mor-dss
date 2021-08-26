@@ -1,4 +1,6 @@
-// SPDX-License-Identifier: AGPL-3.0-or-later
+/**
+ *Submitted for verification at Etherscan.io on 2020-08-27
+*/
 
 /// cat.sol -- Dai liquidation module
 
@@ -19,23 +21,66 @@
 
 pragma solidity >=0.5.12;
 
-import { Vat } from "./vat.sol";
-import { Vow } from "./vow.sol";
+contract LibNote {
+    event LogNote(
+        bytes4   indexed  sig,
+        address  indexed  usr,
+        bytes32  indexed  arg1,
+        bytes32  indexed  arg2,
+        bytes             data
+    ) anonymous;
 
-// FIXME: This contract was altered compared to the production version.
-// It doesn't use LibNote anymore.
-// New deployments of this contract will need to include custom events (TO DO).
+    modifier note {
+        _;
+        assembly {
+            // log an 'anonymous' event with a constant 6 words of calldata
+            // and four indexed topics: selector, caller, arg1 and arg2
+            let mark := msize()                       // end of memory ensures zero
+            mstore(0x40, add(mark, 288))              // update free memory pointer
+            mstore(mark, 0x20)                        // bytes type data offset
+            mstore(add(mark, 0x20), 224)              // bytes size (padded)
+            calldatacopy(add(mark, 0x40), 0, 224)     // bytes payload
+            log4(mark, 288,                           // calldata
+                 shl(224, shr(224, calldataload(0))), // msg.sig
+                 caller(),                            // msg.sender
+                 calldataload(4),                     // arg1
+                 calldataload(36)                     // arg2
+                )
+        }
+    }
+}
 
 interface Kicker {
     function kick(address urn, address gal, uint256 tab, uint256 lot, uint256 bid)
         external returns (uint256);
 }
 
-contract Cat {
+interface VatLike {
+    function ilks(bytes32) external view returns (
+        uint256 Art,  // [wad]
+        uint256 rate, // [ray]
+        uint256 spot, // [ray]
+        uint256 line, // [rad]
+        uint256 dust  // [rad]
+    );
+    function urns(bytes32,address) external view returns (
+        uint256 ink,  // [wad]
+        uint256 art   // [wad]
+    );
+    function grab(bytes32,address,address,address,int256,int256) external;
+    function hope(address) external;
+    function nope(address) external;
+}
+
+interface VowLike {
+    function fess(uint256) external;
+}
+
+contract Cat is LibNote {
     // --- Auth ---
     mapping (address => uint256) public wards;
-    function rely(address usr) external auth { wards[usr] = 1; }
-    function deny(address usr) external auth { wards[usr] = 0; }
+    function rely(address usr) external note auth { wards[usr] = 1; }
+    function deny(address usr) external note auth { wards[usr] = 0; }
     modifier auth {
         require(wards[msg.sender] == 1, "Cat/not-authorized");
         _;
@@ -51,8 +96,8 @@ contract Cat {
     mapping (bytes32 => Ilk) public ilks;
 
     uint256 public live;   // Active Flag
-    Vat     public vat;    // CDP Engine
-    Vow     public vow;    // Debt Engine
+    VatLike public vat;    // CDP Engine
+    VowLike public vow;    // Debt Engine
     uint256 public box;    // Max Dai out for liquidation        [rad]
     uint256 public litter; // Balance of Dai out for liquidation [rad]
 
@@ -70,7 +115,7 @@ contract Cat {
     // --- Init ---
     constructor(address vat_) public {
         wards[msg.sender] = 1;
-        vat = Vat(vat_);
+        vat = VatLike(vat_);
         live = 1;
     }
 
@@ -91,20 +136,20 @@ contract Cat {
     }
 
     // --- Administration ---
-    function file(bytes32 what, address data) external auth {
-        if (what == "vow") vow = Vow(data);
+    function file(bytes32 what, address data) external note auth {
+        if (what == "vow") vow = VowLike(data);
         else revert("Cat/file-unrecognized-param");
     }
-    function file(bytes32 what, uint256 data) external auth {
+    function file(bytes32 what, uint256 data) external note auth {
         if (what == "box") box = data;
         else revert("Cat/file-unrecognized-param");
     }
-    function file(bytes32 ilk, bytes32 what, uint256 data) external auth {
+    function file(bytes32 ilk, bytes32 what, uint256 data) external note auth {
         if (what == "chop") ilks[ilk].chop = data;
         else if (what == "dunk") ilks[ilk].dunk = data;
         else revert("Cat/file-unrecognized-param");
     }
-    function file(bytes32 ilk, bytes32 what, address flip) external auth {
+    function file(bytes32 ilk, bytes32 what, address flip) external note auth {
         if (what == "flip") {
             vat.nope(ilks[ilk].flip);
             ilks[ilk].flip = flip;
@@ -161,11 +206,11 @@ contract Cat {
         emit Bite(ilk, urn, dink, dart, mul(dart, rate), milk.flip, id);
     }
 
-    function claw(uint256 rad) external auth {
+    function claw(uint256 rad) external note auth {
         litter = sub(litter, rad);
     }
 
-    function cage() external auth {
+    function cage() external note auth {
         live = 0;
     }
 }

@@ -1,4 +1,11 @@
-// SPDX-License-Identifier: AGPL-3.0-or-later
+/**
+ *Submitted for verification at Etherscan.io on 2021-04-22
+*/
+
+// hevm: flattened sources of src/LerpFactory.sol
+pragma solidity >=0.6.12 <0.7.0;
+
+////// src/Lerp.sol
 //
 /// Lerp.sol -- Linear Interpolation module
 //
@@ -15,9 +22,11 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-pragma solidity ^0.6.12;
+/* pragma solidity ^0.6.12; */
 
-import { DenyLike } from "../esm/ESM.sol";
+interface DenyLike {
+    function deny(address) external;
+}
 
 interface FileLike {
     function file(bytes32, uint256) external;

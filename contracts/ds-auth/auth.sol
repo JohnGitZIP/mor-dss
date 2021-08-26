@@ -36,7 +36,6 @@ contract DSAuth is DSAuthEvents {
 
     function setOwner(address owner_)
         public
-        virtual
         auth
     {
         owner = owner_;
@@ -45,7 +44,6 @@ contract DSAuth is DSAuthEvents {
 
     function setAuthority(DSAuthority authority_)
         public
-        virtual
         auth
     {
         authority = authority_;
@@ -62,7 +60,7 @@ contract DSAuth is DSAuthEvents {
             return true;
         } else if (src == owner) {
             return true;
-        } else if (authority == DSAuthority(address(0))) {
+        } else if (authority == DSAuthority(0)) {
             return false;
         } else {
             return authority.canCall(src, address(this), sig);

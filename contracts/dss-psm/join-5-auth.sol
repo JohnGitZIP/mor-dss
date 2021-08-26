@@ -1,3 +1,58 @@
+/**
+ *Submitted for verification at Etherscan.io on 2020-12-18
+*/
+
+// hevm: flattened sources of src/join-5-auth.sol
+pragma solidity >=0.5.12 >=0.6.7 <0.7.0;
+
+////// lib/dss/src/lib.sol
+// SPDX-License-Identifier: AGPL-3.0-or-later
+
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+/* pragma solidity >=0.5.12; */
+
+contract LibNote {
+    event LogNote(
+        bytes4   indexed  sig,
+        address  indexed  usr,
+        bytes32  indexed  arg1,
+        bytes32  indexed  arg2,
+        bytes             data
+    ) anonymous;
+
+    modifier note {
+        _;
+        assembly {
+            // log an 'anonymous' event with a constant 6 words of calldata
+            // and four indexed topics: selector, caller, arg1 and arg2
+            let mark := msize()                       // end of memory ensures zero
+            mstore(0x40, add(mark, 288))              // update free memory pointer
+            mstore(mark, 0x20)                        // bytes type data offset
+            mstore(add(mark, 0x20), 224)              // bytes size (padded)
+            calldatacopy(add(mark, 0x40), 0, 224)     // bytes payload
+            log4(mark, 288,                           // calldata
+                 shl(224, shr(224, calldataload(0))), // msg.sig
+                 caller(),                            // msg.sender
+                 calldataload(4),                     // arg1
+                 calldataload(36)                     // arg2
+                )
+        }
+    }
+}
+
+////// src/join-5-auth.sol
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
 /// join-5-auth.sol -- Non-standard token adapters
@@ -18,14 +73,15 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-pragma solidity ^0.6.7;
+/* pragma solidity ^0.6.7; */
 
-// import "dss/lib.sol";
-import { LibNote } from "../median/median.sol";
+/* import "dss/lib.sol"; */
 
-import { Vat } from "../dss/vat.sol";
+interface VatLike_4 {
+    function slip(bytes32, address, int256) external;
+}
 
-interface AuthGemLike5 {
+interface GemLike_2 {
     function decimals() external view returns (uint8);
     function transfer(address, uint256) external returns (bool);
     function transferFrom(address, address, uint256) external returns (bool);
@@ -40,19 +96,19 @@ contract AuthGemJoin5 is LibNote {
     function deny(address usr) external note auth { wards[usr] = 0; }
     modifier auth { require(wards[msg.sender] == 1); _; }
 
-    Vat     public vat;
+    VatLike_4 public vat;
     bytes32 public ilk;
-    AuthGemLike5 public gem;
+    GemLike_2 public gem;
     uint256 public dec;
     uint256 public live;  // Access Flag
 
     constructor(address vat_, bytes32 ilk_, address gem_) public {
-        gem = AuthGemLike5(gem_);
+        gem = GemLike_2(gem_);
         dec = gem.decimals();
         require(dec < 18, "GemJoin5/decimals-18-or-higher");
         wards[msg.sender] = 1;
         live = 1;
-        vat = Vat(vat_);
+        vat = VatLike_4(vat_);
         ilk = ilk_;
     }
 
