@@ -1703,16 +1703,16 @@ module.exports = async (deployer, network, [account]) => {
   console.log('LERP_FAB=' + LERP_FAB);
   await lerpFactory.rely(MCD_PAUSE_PROXY);
 
-  const DSS_PSM_JOIN_ = {};
-  const DSS_PSM_ = {};
+  const MCD_JOIN_PSM_ = {};
+  const MCD_PSM_ = {};
   const LERP_ = {};
   for (const token_name in config_tokens) {
     const token_config = config_tokens[token_name];
     const token_psmDeploy = token_config.psmDeploy;
 
     if (token_psmDeploy !== undefined) {
-      DSS_PSM_JOIN_[token_name] = DSS_PSM_JOIN_[token_name] || {};
-      DSS_PSM_[token_name] = DSS_PSM_[token_name] || {};
+      MCD_JOIN_PSM_[token_name] = MCD_JOIN_PSM_[token_name] || {};
+      MCD_PSM_[token_name] = MCD_PSM_[token_name] || {};
       LERP_[token_name] = LERP_[token_name] || {};
 
       const src = token_psmDeploy.src;
@@ -1736,24 +1736,24 @@ module.exports = async (deployer, network, [account]) => {
 
         console.log('Publishing Auth Gem Join...');
         const authGemJoin = await artifact_deploy(AuthGemJoin, MCD_VAT, ilk_name, T_[token_name], ...extraParams);
-        DSS_PSM_JOIN_[token_name][ilk] = authGemJoin.address;
-        console.log('DSS_PSM_JOIN_' + token_name + '_' + ilk + '=' + DSS_PSM_JOIN_[token_name][ilk]);
+        MCD_JOIN_PSM_[token_name][ilk] = authGemJoin.address;
+        console.log('MCD_JOIN_PSM_' + token_name + '_' + ilk + '=' + MCD_JOIN_PSM_[token_name][ilk]);
 
         console.log('Deploying Dss Psm...');
         const DssPsm = artifacts.require('DssPsm');
-        const dssPsm = await artifact_deploy(DssPsm, DSS_PSM_JOIN_[token_name][ilk], MCD_JOIN_DAI, MCD_VOW);
-        DSS_PSM_[token_name][ilk] = dssPsm.address;
-        console.log('DSS_PSM_' + token_name + '_' + ilk + '=' + DSS_PSM_[token_name][ilk]);
+        const dssPsm = await artifact_deploy(DssPsm, MCD_JOIN_PSM_[token_name][ilk], MCD_JOIN_DAI, MCD_VOW);
+        MCD_PSM_[token_name][ilk] = dssPsm.address;
+        console.log('MCD_PSM_' + token_name + '_' + ilk + '=' + MCD_PSM_[token_name][ilk]);
 
         console.log('Deploying Lerp...');
-        await lerpFactory.newLerp(lerp_name, DSS_PSM_[token_name][ilk], web3.utils.asciiToHex('tin'), NOW + ilk_lerpDelay, ilk_lerpStart, ilk_lerpEnd, ilk_lerpDuration);
+        await lerpFactory.newLerp(lerp_name, MCD_PSM_[token_name][ilk], web3.utils.asciiToHex('tin'), NOW + ilk_lerpDelay, ilk_lerpStart, ilk_lerpEnd, ilk_lerpDuration);
         const lerpAddress = await lerpFactory.lerps(lerp_name);
         const Lerp = artifacts.require('Lerp');
         const lerp = await artifact_at(Lerp, lerpAddress);
         LERP_[token_name][ilk] = lerp.address;
         console.log('LERP_' + token_name + '_' + ilk + '=' + LERP_[token_name][ilk]);
 
-        await authGemJoin.rely(DSS_PSM_[token_name][ilk]);
+        await authGemJoin.rely(MCD_PSM_[token_name][ilk]);
         await dssPsm.rely(LERP_[token_name][ilk]);
 
         await authGemJoin.rely(MCD_PAUSE_PROXY);
@@ -1793,6 +1793,16 @@ module.exports = async (deployer, network, [account]) => {
   for (const token_name in MCD_CLIP_CALC_) {
     for (const ilk in MCD_CLIP_CALC_[token_name]) {
       await chainLog.setAddress(web3.utils.asciiToHex('MCD_CLIP_CALC_' + token_name + '_' + ilk), MCD_CLIP_CALC_[token_name][ilk]);
+    }
+  }
+  for (const token_name in MCD_PSM_) {
+    for (const ilk in MCD_PSM_[token_name]) {
+      await chainLog.setAddress(web3.utils.asciiToHex('MCD_PSM_' + token_name + '_' + ilk), MCD_PSM_[token_name][ilk]);
+    }
+  }
+  for (const token_name in MCD_JOIN_PSM_) {
+    for (const ilk in MCD_JOIN_PSM_[token_name]) {
+      await chainLog.setAddress(web3.utils.asciiToHex('MCD_JOIN_PSM_' + token_name + '_' + ilk), MCD_JOIN_PSM_[token_name][ilk]);
     }
   }
   await chainLog.setAddress(web3.utils.asciiToHex('CDP_MANAGER'), CDP_MANAGER);
