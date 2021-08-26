@@ -489,17 +489,6 @@ module.exports = async (deployer, network, [account]) => {
   await dog.rely(MCD_DEPLOY);
   await end.rely(MCD_DEPLOY);
   await dssDeploy.updateDeployed(MCD_VAT, MCD_JUG, MCD_VOW, MCD_CAT, MCD_DOG, MCD_DAI, MCD_JOIN_DAI, MCD_FLAP, MCD_FLOP, MCD_SPOT, MCD_POT, MCD_END, MCD_ESM, MCD_PAUSE);
-  await vat.deny(DEPLOYER);
-  await spotter.deny(DEPLOYER);
-  await dai.deny(DEPLOYER);
-  await jug.deny(DEPLOYER);
-  await pot.deny(DEPLOYER);
-  await flap.deny(DEPLOYER);
-  await flop.deny(DEPLOYER);
-  await vow.deny(DEPLOYER);
-  await cat.deny(DEPLOYER);
-  await dog.deny(DEPLOYER);
-  await end.deny(DEPLOYER);
   // const mods = await dssDeploy.mods();
   // const MCD_VAT = mods.vat;
   // const MCD_SPOT = mods.spotter;
@@ -778,17 +767,17 @@ module.exports = async (deployer, network, [account]) => {
 
   console.log('Releasing Auth...');
   await dssDeploy.releaseAuth();
-  // await vat.deny(DEPLOYER);
-  // await cat.deny(DEPLOYER);
-  // await dog.deny(DEPLOYER);
-  // await vow.deny(DEPLOYER);
-  // await jug.deny(DEPLOYER);
-  // await pot.deny(DEPLOYER);
-  // await dai.deny(DEPLOYER);
-  // await spotter.deny(DEPLOYER);
-  // await flap.deny(DEPLOYER);
-  // await flop.deny(DEPLOYER);
-  // await end.deny(DEPLOYER);
+  await vat.deny(DEPLOYER);
+  await cat.deny(DEPLOYER);
+  await dog.deny(DEPLOYER);
+  await vow.deny(DEPLOYER);
+  await jug.deny(DEPLOYER);
+  await pot.deny(DEPLOYER);
+  await dai.deny(DEPLOYER);
+  await spotter.deny(DEPLOYER);
+  await flap.deny(DEPLOYER);
+  await flop.deny(DEPLOYER);
+  await end.deny(DEPLOYER);
 
   for (const token_name in config_tokens) {
     const token_config = config_tokens[token_name];
