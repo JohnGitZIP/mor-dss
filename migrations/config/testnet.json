@@ -30,10 +30,6 @@
         "faucetSupply": "990000000000000000000000",
         "faucetAmount": "50000000000000000000"
       },
-      "joinDeploy": {
-        "src": "GemJoin5",
-        "extraParams": []
-      },
       "pipDeploy": {
         "osmDelay": "0",
         "type": "value",
