@@ -27,6 +27,19 @@
     "faucet": "0x0000000000000000000000000000000000000000"
   },
   "tokens": {
+    "MOR": {
+      "import": {
+        "gem": "internal"
+      },
+      "pipDeploy": {
+        "osmDelay": "0",
+        "type": "twap",
+        "stwap": "0x8E3C2dE1DD90367e48fA94ED2A80B491C3E67480",
+        "ltwap": "0x8E3C2dE1DD90367e48fA94ED2A80B491C3E67480",
+        "src": "0x0000000000000000000000000000000000000001",
+        "cap": "1"
+      }
+    },
     "BUSD": {
       "import": {
         "gem": "0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56"
@@ -50,129 +63,207 @@
         }
       }
     },
+    "USDC": {
+      "import": {
+        "gem": "0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d"
+      },
+      "pipDeploy": {
+        "osmDelay": "0",
+        "type": "chainlink",
+        "src": "0x51597f405303C4377E36123cBc172b13269EA163",
+        "dec": 8
+      }
+    },
+    "USDT": {
+      "import": {
+        "gem": "0x55d398326f99059fF775485246999027B3197955"
+      },
+      "pipDeploy": {
+        "osmDelay": "0",
+        "type": "chainlink",
+        "src": "0xB97Ad0E74fa7d920791E90258A6E2085088b4320",
+        "dec": 8
+      }
+    },
     "BNB": {
       "import": {
         "gem": "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c"
-      },
-      "joinDeploy": {
-        "src": "GemJoin",
-        "extraParams": []
       },
       "pipDeploy": {
         "osmDelay": "0",
         "type": "chainlink",
         "src": "0x0567F2323251f0Aab15c8dFb1967E4e8A7D42aeE",
         "dec": 8
+      }
+    },
+    "ETH": {
+      "import": {
+        "gem": "0x2170Ed0880ac9A755fd29B2688956BD959F933F8"
       },
-      "ilks": {
-        "A": {
-          "mat": "115",
-          "line": "0",
-          "autoLine": "100",
-          "autoLineGap": "30",
-          "autoLineTtl": "3600",
-          "dust": "1",
-          "duty": "5",
-          "clipDeploy": {
-            "chop": "8",
-            "hole": "1000",
-            "chip": "0",
-            "tip": "0.01",
-            "buf": "110",
-            "tail": "1320",
-            "cusp": "20",
-            "calc": {
-              "type": "StairstepExponentialDecrease",
-              "step": "60",
-              "cut":  "99"
-            },
-            "cm_tolerance": "50"
-          }
-        }
+      "pipDeploy": {
+        "osmDelay": "0",
+        "type": "chainlink",
+        "src": "0x9ef1B8c0E4F7dc8bF5719Ea496883DC6401d5b2e",
+        "dec": 8
+      }
+    },
+    "BTCB": {
+      "import": {
+        "gem": "0x7130d2A12B9BCbFAe4f2634d864A1Ee1Ce3Ead9c"
+      },
+      "pipDeploy": {
+        "osmDelay": "0",
+        "type": "chainlink",
+        "src": "0x264990fbd0A4796A3E3d8E37C4d5F87a3aCa5Ebf",
+        "dec": 8
       }
     },
     "CAKE": {
       "import": {
         "gem": "0x0E09FaBB73Bd3Ade0a17ECC321fD13a19e81cE82"
       },
-      "joinDeploy": {
-        "src": "GemJoin",
-        "extraParams": []
-      },
       "pipDeploy": {
         "osmDelay": "0",
         "type": "chainlink",
         "src": "0xcB23da9EA243f53194CBc2380A6d4d9bC046161f",
         "dec": 8
+      }
+    },
+    "BANANA": {
+      "import": {
+        "gem": "0x603c7f932ED1fc6575303D8Fb018fDCBb0f39a95"
       },
-      "ilks": {
-        "A": {
-          "mat": "115",
-          "line": "0",
-          "autoLine": "100",
-          "autoLineGap": "30",
-          "autoLineTtl": "3600",
-          "dust": "1",
-          "duty": "5",
-          "clipDeploy": {
-            "chop": "8",
-            "hole": "1000",
-            "chip": "0",
-            "tip": "0.01",
-            "buf": "110",
-            "tail": "1320",
-            "cusp": "20",
-            "calc": {
-              "type": "StairstepExponentialDecrease",
-              "step": "60",
-              "cut":  "99"
-            },
-            "cm_tolerance": "50"
-          }
-        }
+      "pipDeploy": {
+        "osmDelay": "0",
+        "type": "twap",
+        "stwap": "0x8E3C2dE1DD90367e48fA94ED2A80B491C3E67480",
+        "ltwap": "0x8E3C2dE1DD90367e48fA94ED2A80B491C3E67480",
+        "src": "0x7Bd46f6Da97312AC2DBD1749f82E202764C0B914",
+        "cap": "0"
+      }
+    },
+    "PCSBNBCAKE": {
+      "import": {
+        "gem": "0x0eD7e52944161450477ee417DE9Cd3a859b14fD0"
+      },
+      "pipDeploy": {
+        "osmDelay": "0",
+        "type": "univ2lp",
+        "token0": "CAKE",
+        "token1": "BNB"
       }
     },
     "PCSBNBBUSD": {
       "import": {
         "gem": "0x58F876857a02D6762E0101bb5C46A8c1ED44Dc16"
       },
-      "joinDeploy": {
-        "src": "GemJoin",
-        "extraParams": []
-      },
       "pipDeploy": {
         "osmDelay": "0",
         "type": "univ2lp",
         "token0": "BNB",
         "token1": "BUSD"
-      },
-      "ilks": {
-        "A": {
-          "mat": "140",
-          "line": "3000000",
-          "autoLine": "0",
-          "autoLineGap": "0",
-          "autoLineTtl": "0",
-          "dust": "5000",
-          "duty": "4",
-          "clipDeploy": {
-            "chop": "13",
-            "hole": "5000000",
-            "chip": "0.1",
-            "tip": "300",
-            "buf": "115",
-            "tail": "12900",
-            "cusp": "60",
-            "calc": {
-              "type": "StairstepExponentialDecrease",
-              "step": "125",
-              "cut":  "99.5"
-            },
-            "cm_tolerance": "70"
-          }
-        }
       }
     },
+    "PCSBNBETH": {
+      "import": {
+        "gem": "0x74E4716E431f45807DCF19f284c7aA99F18a4fbc"
+      },
+      "pipDeploy": {
+        "osmDelay": "0",
+        "type": "univ2lp",
+        "token0": "ETH",
+        "token1": "BNB"
+      }
+    },
+    "PCSBNBBTCB": {
+      "import": {
+        "gem": "0x61EB789d75A95CAa3fF50ed7E47b96c132fEc082"
+      },
+      "pipDeploy": {
+        "osmDelay": "0",
+        "type": "univ2lp",
+        "token0": "BTCB",
+        "token1": "BNB"
+      }
+    },
+    "PCSBNBUSDT": {
+      "import": {
+        "gem": "0x16b9a82891338f9bA80E2D6970FddA79D1eb0daE"
+      },
+      "pipDeploy": {
+        "osmDelay": "0",
+        "type": "univ2lp",
+        "token0": "USDT",
+        "token1": "BNB"
+      }
+    },
+    "PCSBUSDUSDC": {
+      "import": {
+        "gem": "0x2354ef4DF11afacb85a5C7f98B624072ECcddbB1"
+      },
+      "pipDeploy": {
+        "osmDelay": "0",
+        "type": "univ2lp",
+        "token0": "USDC",
+        "token1": "BUSD"
+      }
+    },
+    "PCSBUSDBTCB": {
+      "import": {
+        "gem": "0xF45cd219aEF8618A92BAa7aD848364a158a24F33"
+      },
+      "pipDeploy": {
+        "osmDelay": "0",
+        "type": "univ2lp",
+        "token0": "BTCB",
+        "token1": "BUSD"
+      }
+    },
+    "PCSBUSDCAKE": {
+      "import": {
+        "gem": "0x804678fa97d91B974ec2af3c843270886528a9E6"
+      },
+      "pipDeploy": {
+        "osmDelay": "0",
+        "type": "univ2lp",
+        "token0": "CAKE",
+        "token1": "BUSD"
+      }
+    },
+    "PCSETHBTCB": {
+      "import": {
+        "gem": "0xD171B26E4484402de70e3Ea256bE5A2630d7e88D"
+      },
+      "pipDeploy": {
+        "osmDelay": "0",
+        "type": "univ2lp",
+        "token0": "ETH",
+        "token1": "BTCB"
+      }
+    },
+    "PCSETHUSDC": {
+      "import": {
+        "gem": "0xEa26B78255Df2bBC31C1eBf60010D78670185bD0"
+      },
+      "pipDeploy": {
+        "osmDelay": "0",
+        "type": "univ2lp",
+        "token0": "ETH",
+        "token1": "USDC"
+      }
+    },
+    "PCSUSDTCAKE": {
+      "import": {
+        "gem": "0xA39Af17CE4a8eb807E076805Da1e2B8EA7D0755b"
+      },
+      "pipDeploy": {
+        "osmDelay": "0",
+        "type": "univ2lp",
+        "token0": "CAKE",
+        "token1": "USDT"
+      }
+    },
+
     "STKCAKE": {
       "import": {
         "gem": "0xB50Acf6195F97177D33D132A3E5617b934C351d3"
@@ -213,9 +304,9 @@
         }
       }
     },
-    "STKPCSBNBBUSD": {
+    "STKBANANA": {
       "import": {
-        "gem": "0xde8C01eFe59Ac0Ec692D3a3ff36Dd6a91863ccE5"
+        "gem": "0x13e7A6691FE00DE975CF27868386f4aE9aed3cdC"
       },
       "joinDeploy": {
         "src": "GemJoin",
@@ -224,7 +315,7 @@
       "pipDeploy": {
         "osmDelay": "0",
         "type": "vault",
-        "reserve": "PCSBNBBUSD"
+        "reserve": "BANANA"
       },
       "ilks": {
         "A": {
@@ -253,52 +344,9 @@
         }
       }
     },
-    "BANANA": {
+    "STKPCSBNBBUSD": {
       "import": {
-        "gem": "0x603c7f932ED1fc6575303D8Fb018fDCBb0f39a95"
-      },
-      "joinDeploy": {
-        "src": "GemJoin",
-        "extraParams": []
-      },
-      "pipDeploy": {
-        "osmDelay": "0",
-        "type": "twap",
-        "stwap": "0x8E3C2dE1DD90367e48fA94ED2A80B491C3E67480",
-        "ltwap": "0x8E3C2dE1DD90367e48fA94ED2A80B491C3E67480",
-        "src": "0x7Bd46f6Da97312AC2DBD1749f82E202764C0B914",
-        "cap": "0"
-      },
-      "ilks": {
-        "A": {
-          "mat": "115",
-          "line": "0",
-          "autoLine": "100",
-          "autoLineGap": "30",
-          "autoLineTtl": "3600",
-          "dust": "1",
-          "duty": "5",
-          "clipDeploy": {
-            "chop": "8",
-            "hole": "1000",
-            "chip": "0",
-            "tip": "0.01",
-            "buf": "110",
-            "tail": "1320",
-            "cusp": "20",
-            "calc": {
-              "type": "StairstepExponentialDecrease",
-              "step": "60",
-              "cut":  "99"
-            },
-            "cm_tolerance": "50"
-          }
-        }
-      }
-    },
-    "STKBANANA": {
-      "import": {
-        "gem": "0x13e7A6691FE00DE975CF27868386f4aE9aed3cdC"
+        "gem": "0xde8C01eFe59Ac0Ec692D3a3ff36Dd6a91863ccE5"
       },
       "joinDeploy": {
         "src": "GemJoin",
@@ -307,7 +355,7 @@
       "pipDeploy": {
         "osmDelay": "0",
         "type": "vault",
-        "reserve": "BANANA"
+        "reserve": "PCSBNBBUSD"
       },
       "ilks": {
         "A": {
