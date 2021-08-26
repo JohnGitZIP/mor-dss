@@ -279,7 +279,7 @@
       },
       "ilks": {
         "A": {
-          "mat": "140",
+          "mat": "175",
           "line": "3000000",
           "autoLine": "0",
           "autoLineGap": "0",
@@ -287,7 +287,7 @@
           "dust": "5000",
           "duty": "4",
           "clipDeploy": {
-            "chop": "13",
+            "chop": "15",
             "hole": "5000000",
             "chip": "0.1",
             "tip": "300",
@@ -319,7 +319,7 @@
       },
       "ilks": {
         "A": {
-          "mat": "140",
+          "mat": "175",
           "line": "3000000",
           "autoLine": "0",
           "autoLineGap": "0",
@@ -327,7 +327,47 @@
           "dust": "5000",
           "duty": "4",
           "clipDeploy": {
-            "chop": "13",
+            "chop": "15",
+            "hole": "5000000",
+            "chip": "0.1",
+            "tip": "300",
+            "buf": "115",
+            "tail": "12900",
+            "cusp": "60",
+            "calc": {
+              "type": "StairstepExponentialDecrease",
+              "step": "125",
+              "cut":  "99.5"
+            },
+            "cm_tolerance": "70"
+          }
+        }
+      }
+    },
+    "STKPCSBNBCAKE": {
+      "import": {
+        "gem": "0xd8C76eF0de11f9cc9708EB966A87e25a7E6C7949"
+      },
+      "joinDeploy": {
+        "src": "GemJoin",
+        "extraParams": []
+      },
+      "pipDeploy": {
+        "osmDelay": "0",
+        "type": "vault",
+        "reserve": "PCSBNBCAKE"
+      },
+      "ilks": {
+        "A": {
+          "mat": "175",
+          "line": "3000000",
+          "autoLine": "0",
+          "autoLineGap": "0",
+          "autoLineTtl": "0",
+          "dust": "5000",
+          "duty": "4",
+          "clipDeploy": {
+            "chop": "15",
             "hole": "5000000",
             "chip": "0.1",
             "tip": "300",
@@ -346,7 +386,7 @@
     },
     "STKPCSBNBBUSD": {
       "import": {
-        "gem": "0xde8C01eFe59Ac0Ec692D3a3ff36Dd6a91863ccE5"
+        "gem": "0x0170D4C58AD9A9D8ab031c0270353d7034B87f6F"
       },
       "joinDeploy": {
         "src": "GemJoin",
@@ -359,7 +399,7 @@
       },
       "ilks": {
         "A": {
-          "mat": "140",
+          "mat": "150",
           "line": "3000000",
           "autoLine": "0",
           "autoLineGap": "0",
@@ -367,7 +407,367 @@
           "dust": "5000",
           "duty": "4",
           "clipDeploy": {
-            "chop": "13",
+            "chop": "15",
+            "hole": "5000000",
+            "chip": "0.1",
+            "tip": "300",
+            "buf": "115",
+            "tail": "12900",
+            "cusp": "60",
+            "calc": {
+              "type": "StairstepExponentialDecrease",
+              "step": "125",
+              "cut":  "99.5"
+            },
+            "cm_tolerance": "70"
+          }
+        }
+      }
+    },
+    "STKPCSBNBETH": {
+      "import": {
+        "gem": "0xE487a3780D56F2ECD142201907dF16350bb09946"
+      },
+      "joinDeploy": {
+        "src": "GemJoin",
+        "extraParams": []
+      },
+      "pipDeploy": {
+        "osmDelay": "0",
+        "type": "vault",
+        "reserve": "PCSBNBETH"
+      },
+      "ilks": {
+        "A": {
+          "mat": "175",
+          "line": "3000000",
+          "autoLine": "0",
+          "autoLineGap": "0",
+          "autoLineTtl": "0",
+          "dust": "5000",
+          "duty": "4",
+          "clipDeploy": {
+            "chop": "15",
+            "hole": "5000000",
+            "chip": "0.1",
+            "tip": "300",
+            "buf": "115",
+            "tail": "12900",
+            "cusp": "60",
+            "calc": {
+              "type": "StairstepExponentialDecrease",
+              "step": "125",
+              "cut":  "99.5"
+            },
+            "cm_tolerance": "70"
+          }
+        }
+      }
+    },
+    "STKPCSBNBBTCB": {
+      "import": {
+        "gem": "0x9Df7B409925cc93dE1BB4ADDfA9Aed2bcE913F08"
+      },
+      "joinDeploy": {
+        "src": "GemJoin",
+        "extraParams": []
+      },
+      "pipDeploy": {
+        "osmDelay": "0",
+        "type": "vault",
+        "reserve": "PCSBNBBTCB"
+      },
+      "ilks": {
+        "A": {
+          "mat": "175",
+          "line": "3000000",
+          "autoLine": "0",
+          "autoLineGap": "0",
+          "autoLineTtl": "0",
+          "dust": "5000",
+          "duty": "4",
+          "clipDeploy": {
+            "chop": "15",
+            "hole": "5000000",
+            "chip": "0.1",
+            "tip": "300",
+            "buf": "115",
+            "tail": "12900",
+            "cusp": "60",
+            "calc": {
+              "type": "StairstepExponentialDecrease",
+              "step": "125",
+              "cut":  "99.5"
+            },
+            "cm_tolerance": "70"
+          }
+        }
+      }
+    },
+    "STKPCSBNBUSDT": {
+      "import": {
+        "gem": "0x839289A22604857A9BdB3231d37Af569ACD8A3fe"
+      },
+      "joinDeploy": {
+        "src": "GemJoin",
+        "extraParams": []
+      },
+      "pipDeploy": {
+        "osmDelay": "0",
+        "type": "vault",
+        "reserve": "PCSBNBUSDT"
+      },
+      "ilks": {
+        "A": {
+          "mat": "150",
+          "line": "3000000",
+          "autoLine": "0",
+          "autoLineGap": "0",
+          "autoLineTtl": "0",
+          "dust": "5000",
+          "duty": "4",
+          "clipDeploy": {
+            "chop": "15",
+            "hole": "5000000",
+            "chip": "0.1",
+            "tip": "300",
+            "buf": "115",
+            "tail": "12900",
+            "cusp": "60",
+            "calc": {
+              "type": "StairstepExponentialDecrease",
+              "step": "125",
+              "cut":  "99.5"
+            },
+            "cm_tolerance": "70"
+          }
+        }
+      }
+    },
+    "STKPCSBUSDUSDC": {
+      "import": {
+        "gem": "0x60CD286AF05A3e096C8Ace193950CffA5E8e3CE0"
+      },
+      "joinDeploy": {
+        "src": "GemJoin",
+        "extraParams": []
+      },
+      "pipDeploy": {
+        "osmDelay": "0",
+        "type": "vault",
+        "reserve": "PCSBUSDUSDC"
+      },
+      "ilks": {
+        "A": {
+          "mat": "102",
+          "line": "3000000",
+          "autoLine": "0",
+          "autoLineGap": "0",
+          "autoLineTtl": "0",
+          "dust": "5000",
+          "duty": "4",
+          "clipDeploy": {
+            "chop": "1.5",
+            "hole": "5000000",
+            "chip": "0.1",
+            "tip": "300",
+            "buf": "115",
+            "tail": "12900",
+            "cusp": "60",
+            "calc": {
+              "type": "StairstepExponentialDecrease",
+              "step": "125",
+              "cut":  "99.5"
+            },
+            "cm_tolerance": "70"
+          }
+        }
+      }
+    },
+    "STKPCSBUSDBTCB": {
+      "import": {
+        "gem": "0x26E0701F5881161043d56eb3Ddfde0b8c6772060"
+      },
+      "joinDeploy": {
+        "src": "GemJoin",
+        "extraParams": []
+      },
+      "pipDeploy": {
+        "osmDelay": "0",
+        "type": "vault",
+        "reserve": "PCSBUSDBTCB"
+      },
+      "ilks": {
+        "A": {
+          "mat": "150",
+          "line": "3000000",
+          "autoLine": "0",
+          "autoLineGap": "0",
+          "autoLineTtl": "0",
+          "dust": "5000",
+          "duty": "4",
+          "clipDeploy": {
+            "chop": "15",
+            "hole": "5000000",
+            "chip": "0.1",
+            "tip": "300",
+            "buf": "115",
+            "tail": "12900",
+            "cusp": "60",
+            "calc": {
+              "type": "StairstepExponentialDecrease",
+              "step": "125",
+              "cut":  "99.5"
+            },
+            "cm_tolerance": "70"
+          }
+        }
+      }
+    },
+    "STKPCSBUSDCAKE": {
+      "import": {
+        "gem": "0xFA6388B7980126C2d7d0c5FC02949a2fF40F95DE"
+      },
+      "joinDeploy": {
+        "src": "GemJoin",
+        "extraParams": []
+      },
+      "pipDeploy": {
+        "osmDelay": "0",
+        "type": "vault",
+        "reserve": "PCSBUSDCAKE"
+      },
+      "ilks": {
+        "A": {
+          "mat": "150",
+          "line": "3000000",
+          "autoLine": "0",
+          "autoLineGap": "0",
+          "autoLineTtl": "0",
+          "dust": "5000",
+          "duty": "4",
+          "clipDeploy": {
+            "chop": "15",
+            "hole": "5000000",
+            "chip": "0.1",
+            "tip": "300",
+            "buf": "115",
+            "tail": "12900",
+            "cusp": "60",
+            "calc": {
+              "type": "StairstepExponentialDecrease",
+              "step": "125",
+              "cut":  "99.5"
+            },
+            "cm_tolerance": "70"
+          }
+        }
+      }
+    },
+    "STKPCSETHBTCB": {
+      "import": {
+        "gem": "0x9FDD69a473d2216c5D232510DDF2328272bC6847"
+      },
+      "joinDeploy": {
+        "src": "GemJoin",
+        "extraParams": []
+      },
+      "pipDeploy": {
+        "osmDelay": "0",
+        "type": "vault",
+        "reserve": "PCSETHBTCB"
+      },
+      "ilks": {
+        "A": {
+          "mat": "175",
+          "line": "3000000",
+          "autoLine": "0",
+          "autoLineGap": "0",
+          "autoLineTtl": "0",
+          "dust": "5000",
+          "duty": "4",
+          "clipDeploy": {
+            "chop": "15",
+            "hole": "5000000",
+            "chip": "0.1",
+            "tip": "300",
+            "buf": "115",
+            "tail": "12900",
+            "cusp": "60",
+            "calc": {
+              "type": "StairstepExponentialDecrease",
+              "step": "125",
+              "cut":  "99.5"
+            },
+            "cm_tolerance": "70"
+          }
+        }
+      }
+    },
+    "STKPCSETHUSDC": {
+      "import": {
+        "gem": "0xcAD2E1b2257795f0D580d49520741E93654fAaB5"
+      },
+      "joinDeploy": {
+        "src": "GemJoin",
+        "extraParams": []
+      },
+      "pipDeploy": {
+        "osmDelay": "0",
+        "type": "vault",
+        "reserve": "PCSETHUSDC"
+      },
+      "ilks": {
+        "A": {
+          "mat": "150",
+          "line": "3000000",
+          "autoLine": "0",
+          "autoLineGap": "0",
+          "autoLineTtl": "0",
+          "dust": "5000",
+          "duty": "4",
+          "clipDeploy": {
+            "chop": "15",
+            "hole": "5000000",
+            "chip": "0.1",
+            "tip": "300",
+            "buf": "115",
+            "tail": "12900",
+            "cusp": "60",
+            "calc": {
+              "type": "StairstepExponentialDecrease",
+              "step": "125",
+              "cut":  "99.5"
+            },
+            "cm_tolerance": "70"
+          }
+        }
+      }
+    },
+    "STKPCSUSDTCAKE": {
+      "import": {
+        "gem": "0xC0c8C554069d85166B834b2Cb3541d66f53DC4f5"
+      },
+      "joinDeploy": {
+        "src": "GemJoin",
+        "extraParams": []
+      },
+      "pipDeploy": {
+        "osmDelay": "0",
+        "type": "vault",
+        "reserve": "PCSUSDTCAKE"
+      },
+      "ilks": {
+        "A": {
+          "mat": "150",
+          "line": "3000000",
+          "autoLine": "0",
+          "autoLineGap": "0",
+          "autoLineTtl": "0",
+          "dust": "5000",
+          "duty": "4",
+          "clipDeploy": {
+            "chop": "15",
             "hole": "5000000",
             "chip": "0.1",
             "tip": "300",
