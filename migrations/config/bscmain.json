@@ -35,7 +35,7 @@
         "osmDelay": "0",
         "type": "twap",
         "stwap": "0x8E3C2dE1DD90367e48fA94ED2A80B491C3E67480",
-        "ltwap": "0x8E3C2dE1DD90367e48fA94ED2A80B491C3E67480",
+        "ltwap": "0xA518DF59453d53bff35526c42A5C2d33438e75E5",
         "src": "0x0000000000000000000000000000000000000001",
         "cap": "1"
       }
@@ -137,7 +137,7 @@
         "osmDelay": "0",
         "type": "twap",
         "stwap": "0x8E3C2dE1DD90367e48fA94ED2A80B491C3E67480",
-        "ltwap": "0x8E3C2dE1DD90367e48fA94ED2A80B491C3E67480",
+        "ltwap": "0xA518DF59453d53bff35526c42A5C2d33438e75E5",
         "src": "0x7Bd46f6Da97312AC2DBD1749f82E202764C0B914",
         "cap": "0"
       }
