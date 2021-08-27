@@ -86,9 +86,9 @@ contract IlkRegistry {
         cat = Cat(cat_);
         spot = Spotter(spot_);
 
-        require(address(dog.vat()) == vat_,      "IlkRegistry/invalid-dog-vat"); // REVIEW forced type cast
-        require(address(cat.vat()) == vat_,      "IlkRegistry/invalid-cat-vat"); // REVIEW forced type cast
-        require(address(spot.vat()) == vat_,     "IlkRegistry/invalid-spotter-vat"); // REVIEW forced type cast
+        require(address(dog.vat()) == vat_,      "IlkRegistry/invalid-dog-vat");
+        require(address(cat.vat()) == vat_,      "IlkRegistry/invalid-cat-vat");
+        require(address(spot.vat()) == vat_,     "IlkRegistry/invalid-spotter-vat");
         require(_vat.wards(cat_) == 1,  "IlkRegistry/cat-not-authorized");
         require(_vat.wards(spot_) == 1, "IlkRegistry/spot-not-authorized");
         require(_vat.live() == 1,       "IlkRegistry/vat-not-live");
@@ -105,7 +105,7 @@ contract IlkRegistry {
         GemJoin _join = GemJoin(adapter);
 
         // Validate adapter
-        require(address(_join.vat()) == address(vat),    "IlkRegistry/invalid-join-adapter-vat"); // REVIEW forced type cast
+        require(_join.vat() == vat,    "IlkRegistry/invalid-join-adapter-vat");
         require(vat.wards(address(_join)) == 1, "IlkRegistry/adapter-not-authorized");
 
         // Validate ilk
@@ -126,7 +126,7 @@ contract IlkRegistry {
         }
 
         string memory name = bytes32ToStr(_ilk);
-        try gemInfo.name(address(_join.gem())) returns (string memory _name) { // REVIEW forced type cast
+        try gemInfo.name(address(_join.gem())) returns (string memory _name) {
             if (bytes(_name).length != 0) {
                 name = _name;
             }
@@ -135,7 +135,7 @@ contract IlkRegistry {
         }
 
         string memory symbol = bytes32ToStr(_ilk);
-        try gemInfo.symbol(address(_join.gem())) returns (string memory _symbol) { // REVIEW forced type cast
+        try gemInfo.symbol(address(_join.gem())) returns (string memory _symbol) {
             if (bytes(_symbol).length != 0) {
                 symbol = _symbol;
             }
@@ -148,10 +148,10 @@ contract IlkRegistry {
         ilkData[ilks[ilks.length - 1]] = Ilk({
             pos: uint96(ilks.length - 1),
             join: address(_join),
-            gem: address(_join.gem()), // REVIEW forced type cast
+            gem: address(_join.gem()),
             dec: uint8(_join.dec()),
             class: _class,
-            pip: address(_pip), // REVIEW forced type cast
+            pip: address(_pip),
             xlip: _xlip,
             name: name,
             symbol: symbol
@@ -339,7 +339,7 @@ contract IlkRegistry {
         (PipLike _pip,) = spot.ilks(ilk);
         require(address(_pip) != address(0), "IlkRegistry/pip-invalid");
 
-        ilkData[ilk].pip    = address(_pip); // REVIEW forced type cast
+        ilkData[ilk].pip    = address(_pip);
         emit UpdateIlk(ilk);
     }
 

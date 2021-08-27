@@ -4,7 +4,7 @@ pragma solidity ^0.6.0;
 
 import { DSNote } from "../ds-note/note.sol";
 import { DSToken } from "../ds-token/token.sol";
-import { OracleLike } from "../univ2-lp-oracle/UNIV2LPOracle.sol";
+import { PipLike } from "../dss/spot.sol";
 
 interface VaultLike {
     // function reserveToken() external view returns (address _reserveToken);
@@ -12,7 +12,7 @@ interface VaultLike {
     function totalReserve() external view returns (uint256 _totalReserve);
 }
 
-contract VaultOracle is DSNote {
+contract VaultOracle is DSNote, PipLike {
 
     // --- Auth ---
     mapping (address => uint256) public wards;
@@ -42,8 +42,8 @@ contract VaultOracle is DSNote {
         orb = _orb;
     }
 
-    function read() external view toll returns (uint256) {
-        uint256 reservePrice = OracleLike(orb).read();
+    function read() external view override toll returns (bytes32) {
+        uint256 reservePrice = uint256(PipLike(orb).read());
         require(reservePrice != 0, "VaultOracle/invalid-oracle-price");
 
         uint256 reserve = VaultLike(vault).totalReserve();
@@ -53,11 +53,12 @@ contract VaultOracle is DSNote {
         uint256 sharePrice = mul(reservePrice, reserve) / supply;
         require(sharePrice > 0, "VaultOracle/invalid-price-feed");
 
-        return sharePrice;
+        return bytes32(sharePrice);
     }
 
-    function peek() external view toll returns (uint256,bool) {
-        (uint256 reservePrice, bool valid) = OracleLike(orb).peek();
+    function peek() external view override toll returns (bytes32,bool) {
+        (bytes32 _reservePrice, bool valid) = PipLike(orb).peek();
+	uint256 reservePrice = uint256(_reservePrice);
         if (valid) valid = reservePrice != 0;
 
         uint256 reserve = VaultLike(vault).totalReserve();
@@ -67,7 +68,7 @@ contract VaultOracle is DSNote {
         uint256 sharePrice = supply > 0 ? mul(reservePrice, reserve) / supply : 0;
         if (valid) valid = sharePrice > 0;
 
-        return (sharePrice, valid);
+        return (bytes32(sharePrice), valid);
     }
 
     function kiss(address a) external note auth {

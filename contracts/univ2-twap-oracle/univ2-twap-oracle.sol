@@ -4,6 +4,7 @@ pragma solidity ^0.6.0;
 
 import { DSNote } from "../ds-note/note.sol";
 import { DSToken } from "../ds-token/token.sol";
+import { PipLike } from "../dss/spot.sol";
 
 interface IOracle
 {
@@ -11,7 +12,7 @@ interface IOracle
     function updateAveragePrice(address _pair) external;
 }
 
-contract UniV2TwapOracle is DSNote {
+contract UniV2TwapOracle is DSNote, PipLike {
 
     // --- Auth ---
     mapping (address => uint256) public wards;
@@ -54,21 +55,21 @@ contract UniV2TwapOracle is DSNote {
         IOracle(ltwap).updateAveragePrice(src);
     }
 
-    function read() external view toll returns (uint256) {
+    function read() external view override toll returns (bytes32) {
         uint256 sprice = IOracle(stwap).consultAveragePrice(src, token, unit);
         uint256 lprice = IOracle(ltwap).consultAveragePrice(src, token, unit);
         uint256 price = sprice < lprice ? sprice : lprice;
         if (price > cap) price = cap;
         require(price > 0, "UniV2TwapOracle/invalid-price-feed");
-        return price;
+        return bytes32(price);
     }
 
-    function peek() external view toll returns (uint256,bool) {
+    function peek() external view override toll returns (bytes32,bool) {
         uint256 sprice = IOracle(stwap).consultAveragePrice(src, token, unit);
         uint256 lprice = IOracle(ltwap).consultAveragePrice(src, token, unit);
         uint256 price = sprice < lprice ? sprice : lprice;
         if (price > cap) price = cap;
-        return (price, price > 0);
+        return (bytes32(price), price > 0);
     }
 
     function kiss(address a) external note auth {

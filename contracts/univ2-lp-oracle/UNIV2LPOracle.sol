@@ -69,17 +69,13 @@
 pragma solidity =0.6.12;
 
 import { DSToken } from "../ds-token/token.sol";
+import { PipLike } from "../dss/spot.sol";
 
 interface UniswapV2PairLike {
     function sync()        external;
     function token0()      external view returns (address);
     function token1()      external view returns (address);
     function getReserves() external view returns (uint112,uint112,uint32);  // reserve0, reserve1, blockTimestampLast
-}
-
-interface OracleLike {
-    function peek() external view returns (uint256,bool);
-    function read() external view returns (uint256);
 }
 
 // Factory for creating Uniswap V2 LP Token Oracle instances
@@ -107,7 +103,7 @@ contract UNIV2LPOracleFactory {
     }
 }
 
-contract UNIV2LPOracle {
+contract UNIV2LPOracle is PipLike {
 
     // --- Auth ---
     mapping (address => uint256) public wards;                                       // Addresses with admin authority
@@ -264,9 +260,9 @@ contract UNIV2LPOracle {
         require(r0 > 0 && r1 > 0, "UNIV2LPOracle/invalid-reserves");
 
         // All Oracle prices are priced with 18 decimals against USD
-        uint256 p0 = OracleLike(orb0).read();  // Query token0 price from oracle (WAD)
+        uint256 p0 = uint256(PipLike(orb0).read());  // Query token0 price from oracle (WAD)
         require(p0 != 0, "UNIV2LPOracle/invalid-oracle-0-price");
-        uint256 p1 = OracleLike(orb1).read();  // Query token1 price from oracle (WAD)
+        uint256 p1 = uint256(PipLike(orb1).read());  // Query token1 price from oracle (WAD)
         require(p1 != 0, "UNIV2LPOracle/invalid-oracle-1-price");
 
         // Get LP token supply
@@ -345,7 +341,7 @@ contract UNIV2LPOracle {
         }
     }
 
-    function peek() external view toll returns (bytes32,bool) {
+    function peek() external view override toll returns (bytes32,bool) {
         return (bytes32(uint256(cur.val)), cur.has == 1);
     }
 
@@ -353,7 +349,7 @@ contract UNIV2LPOracle {
         return (bytes32(uint256(nxt.val)), nxt.has == 1);
     }
 
-    function read() external view toll returns (bytes32) {
+    function read() external view override toll returns (bytes32) {
         require(cur.has == 1, "UNIV2LPOracle/no-current-value");
         return (bytes32(uint256(cur.val)));
     }

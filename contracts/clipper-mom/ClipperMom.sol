@@ -80,15 +80,15 @@ contract ClipperMom {
 
     function getPrices(address clip) internal view returns (uint256 cur, uint256 nxt) {
         (PipLike _osm, ) = spotter.ilks(Clipper(clip).ilk());
-        OSM osm = OSM(address(_osm)); // REVIEW forced type cast
+        OSM osm = OSM(address(_osm));
         bool has;
         bytes32 _cur;
         bytes32 _nxt;
         (_cur, has) = osm.peek();
-        cur = uint256(_cur); // REVIEW forced type cast
+        cur = uint256(_cur);
         require(has, "ClipperMom/invalid-cur-price");
         (_nxt, has) = osm.peep();
-        nxt = uint256(_nxt); // REVIEW forced type cast
+        nxt = uint256(_nxt);
         require(has, "ClipperMom/invalid-nxt-price");
     }
 

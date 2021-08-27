@@ -80,7 +80,7 @@ contract GovActions {
     }
 
     function setAuthority(address pause, address newAuthority) public {
-        DSPause(pause).setAuthority(DSAuthority(newAuthority)); // REVIEW forced type cast
+        DSPause(pause).setAuthority(DSAuthority(newAuthority));
     }
 
     function setDelay(address pause, uint newDelay) public {
@@ -88,7 +88,7 @@ contract GovActions {
     }
 
     function setAuthorityAndDelay(address pause, address newAuthority, uint newDelay) public {
-        DSPause(pause).setAuthority(DSAuthority(newAuthority)); // REVIEW forced type cast
+        DSPause(pause).setAuthority(DSAuthority(newAuthority));
         DSPause(pause).setDelay(newDelay);
     }
 }

@@ -2,13 +2,14 @@
 pragma solidity ^0.6.0;
 
 import { DSNote } from "../ds-note/note.sol";
+import { PipLike } from "../dss/spot.sol";
 
 // https://github.com/smartcontractkit/chainlink/blob/master/contracts/src/v0.6/interfaces/AggregatorV3Interface.sol
 interface AggregatorV3Interface {
     function latestRoundData() external view returns (uint80 _roundId, int256 _answer, uint256 _startedAt, uint256 _updatedAt, uint80 _answeredInRound);
 }
 
-contract LinkOracle is DSNote {
+contract LinkOracle is DSNote, PipLike {
 
     // --- Auth ---
     mapping (address => uint256) public wards;
@@ -39,15 +40,15 @@ contract LinkOracle is DSNote {
         factor = 10 ** (18 - uint256(_dec));
     }
 
-    function read() external view toll returns (uint256) {
+    function read() external view override toll returns (bytes32) {
         (,int256 price,,,) = AggregatorV3Interface(src).latestRoundData();
         require(price > 0, "LinkOracle/invalid-price-feed");
-        return mul(uint256(price), factor);
+        return bytes32(mul(uint256(price), factor));
     }
 
-    function peek() external view toll returns (uint256,bool) {
+    function peek() external view override toll returns (bytes32,bool) {
         (,int256 price,,,) = AggregatorV3Interface(src).latestRoundData();
-        return (mul(uint256(price), factor), price > 0);
+        return (bytes32(mul(uint256(price), factor)), price > 0);
     }
 
     function kiss(address a) external note auth {

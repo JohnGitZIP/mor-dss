@@ -21,8 +21,9 @@ pragma solidity >=0.5.10;
 
 import { DSNote } from "../ds-note/note.sol";
 import { DSValue } from "../ds-value/value.sol";
+import { PipLike } from "../dss/spot.sol";
 
-contract OSM is DSNote {
+contract OSM is DSNote, PipLike {
 
     // --- Auth ---
     mapping (address => uint) public wards;
@@ -113,7 +114,7 @@ contract OSM is DSNote {
         }
     }
 
-    function peek() external view toll returns (bytes32,bool) {
+    function peek() external view override toll returns (bytes32,bool) {
         return (bytes32(uint(cur.val)), cur.has == 1);
     }
 
@@ -121,7 +122,7 @@ contract OSM is DSNote {
         return (bytes32(uint(nxt.val)), nxt.has == 1);
     }
 
-    function read() external view toll returns (bytes32) {
+    function read() external view override toll returns (bytes32) {
         require(cur.has == 1, "OSM/no-current-value");
         return (bytes32(uint(cur.val)));
     }

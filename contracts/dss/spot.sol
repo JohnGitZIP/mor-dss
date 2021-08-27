@@ -24,7 +24,7 @@ import { Vat } from "./vat.sol";
 // New deployments of this contract will need to include custom events (TO DO).
 
 interface PipLike {
-    function peek() external returns (bytes32, bool);
+    function peek() external view returns (bytes32, bool);
     function read() external view returns (bytes32);
 }
 
