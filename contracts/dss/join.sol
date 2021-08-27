@@ -22,10 +22,7 @@ pragma solidity >=0.5.12;
 import { Vat } from "./vat.sol";
 import { Dai } from "./dai.sol";
 import { DSToken } from "../ds-token/token.sol";
-
-// FIXME: This contract was altered compared to the production version.
-// It doesn't use LibNote anymore.
-// New deployments of this contract will need to include custom events (TO DO).
+import { DSNote } from "../ds-note/note.sol";
 
 /*
     Here we provide *adapters* to connect the Vat to arbitrary external
@@ -51,11 +48,11 @@ import { DSToken } from "../ds-token/token.sol";
 
 */
 
-contract GemJoin {
+contract GemJoin is DSNote {
     // --- Auth ---
     mapping (address => uint) public wards;
-    function rely(address usr) external auth { wards[usr] = 1; }
-    function deny(address usr) external auth { wards[usr] = 0; }
+    function rely(address usr) external note auth { wards[usr] = 1; }
+    function deny(address usr) external note auth { wards[usr] = 0; }
     modifier auth {
         require(wards[msg.sender] == 1, "GemJoin/not-authorized");
         _;
@@ -75,35 +72,35 @@ contract GemJoin {
         gem = DSToken(gem_);
         dec = gem.decimals();
     }
-    function cage() external auth {
+    function cage() external note auth {
         live = 0;
     }
-    function join(address usr, uint wad) external {
+    function join(address usr, uint wad) external note {
         require(live == 1, "GemJoin/not-live");
         require(int(wad) >= 0, "GemJoin/overflow");
         vat.slip(ilk, usr, int(wad));
         require(gem.transferFrom(msg.sender, address(this), wad), "GemJoin/failed-transfer");
     }
-    function exit(address usr, uint wad) external {
+    function exit(address usr, uint wad) external note {
         require(wad <= 2 ** 255, "GemJoin/overflow");
         vat.slip(ilk, msg.sender, -int(wad));
         require(gem.transfer(usr, wad), "GemJoin/failed-transfer");
     }
 }
 
-contract DaiJoin {
+contract DaiJoin is DSNote {
     // --- Auth ---
     mapping (address => uint) public wards;
-    function rely(address usr) external auth { wards[usr] = 1; }
-    function deny(address usr) external auth { wards[usr] = 0; }
+    function rely(address usr) external note auth { wards[usr] = 1; }
+    function deny(address usr) external note auth { wards[usr] = 0; }
     modifier auth {
         require(wards[msg.sender] == 1, "DaiJoin/not-authorized");
         _;
     }
 
-    Vat         public vat;  // CDP Engine
-    Dai         public dai;  // Stablecoin Token
-    uint    public live;     // Active Flag
+    Vat     public vat;  // CDP Engine
+    Dai     public dai;  // Stablecoin Token
+    uint    public live; // Active Flag
 
     constructor(address vat_, address dai_) public {
         wards[msg.sender] = 1;
@@ -111,18 +108,18 @@ contract DaiJoin {
         vat = Vat(vat_);
         dai = Dai(dai_);
     }
-    function cage() external auth {
+    function cage() external note auth {
         live = 0;
     }
     uint constant ONE = 10 ** 27;
     function mul(uint x, uint y) internal pure returns (uint z) {
         require(y == 0 || (z = x * y) / y == x);
     }
-    function join(address usr, uint wad) external {
+    function join(address usr, uint wad) external note {
         vat.move(address(this), usr, mul(ONE, wad));
         dai.burn(msg.sender, wad);
     }
-    function exit(address usr, uint wad) external {
+    function exit(address usr, uint wad) external note {
         require(live == 1, "DaiJoin/not-live");
         vat.move(msg.sender, address(this), mul(ONE, wad));
         dai.mint(usr, wad);
