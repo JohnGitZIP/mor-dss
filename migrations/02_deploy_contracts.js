@@ -1116,6 +1116,10 @@ module.exports = async (deployer, network, [account]) => {
     const token_pipDeploy = token_config.pipDeploy || {};
 
     if (token_import.pip === undefined) {
+      if (token_pipDeploy.type === 'twap') {
+        const univ2twapOracle = await artifact_at(UniV2TwapOracle, VAL_[token_name]);
+        await univ2twapOracle.poke();
+      }
       if (token_pipDeploy.type === 'value') {
         const price = units(token_pipDeploy.price, 18);
         const dsValue = await artifact_at(DSValue, VAL_[token_name]);
@@ -1146,6 +1150,16 @@ module.exports = async (deployer, network, [account]) => {
             osm.methods['kiss(address)'](MCD_CLIP_[token_name][ilk]);
             osm.methods['kiss(address)'](CLIPPER_MOM);
           }
+        }
+        if (token_pipDeploy.type === 'vault') {
+          const osmReserve = await artifact_at(OSM, VAL_[token_pipDeploy.reserve]);
+          osmReserve.methods['kiss(address)'](PIP_[token_name]);
+        }
+        if (token_pipDeploy.type === 'univ2lp') {
+          const osmToken0 = await artifact_at(OSM, VAL_[token_pipDeploy.token0]);
+          osmToken0.methods['kiss(address)'](PIP_[token_name]);
+          const osmToken1 = await artifact_at(OSM, VAL_[token_pipDeploy.token1]);
+          osmToken1.methods['kiss(address)'](PIP_[token_name]);
         }
       }
     }
@@ -1241,7 +1255,7 @@ module.exports = async (deployer, network, [account]) => {
         for (const ilk in token_ilks) {
           const ilk_name = web3.utils.asciiToHex(token_name + '-' + ilk);
 
-          // await spotter.poke(ilk_name);
+          await spotter.poke(ilk_name);
         }
       }
     }
