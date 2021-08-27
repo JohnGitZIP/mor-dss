@@ -20,6 +20,7 @@
 pragma solidity >=0.5.12;
 
 import { Vat } from "./vat.sol";
+import { Dai } from "./dai.sol";
 
 // FIXME: This contract was altered compared to the production version.
 // It doesn't use LibNote anymore.
@@ -29,11 +30,6 @@ interface Gem {
     function decimals() external view returns (uint);
     function transfer(address,uint) external returns (bool);
     function transferFrom(address,address,uint) external returns (bool);
-}
-
-interface DSTokenLike {
-    function mint(address,uint) external;
-    function burn(address,uint) external;
 }
 
 /*
@@ -111,14 +107,14 @@ contract DaiJoin {
     }
 
     Vat         public vat;  // CDP Engine
-    DSTokenLike public dai;  // Stablecoin Token
+    Dai         public dai;  // Stablecoin Token
     uint    public live;     // Active Flag
 
     constructor(address vat_, address dai_) public {
         wards[msg.sender] = 1;
         live = 1;
         vat = Vat(vat_);
-        dai = DSTokenLike(dai_);
+        dai = Dai(dai_);
     }
     function cage() external auth {
         live = 0;

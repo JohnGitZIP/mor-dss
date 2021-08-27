@@ -16,7 +16,7 @@
 
 pragma solidity >=0.6.12;
 
-import "./IVatDaiFlashBorrower.sol";
+import { IVatDaiFlashBorrower } from "./IVatDaiFlashBorrower.sol";
 
 interface IVatDaiFlashLender {
 

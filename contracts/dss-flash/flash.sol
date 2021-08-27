@@ -17,17 +17,13 @@
 pragma solidity 0.6.12;
 
 import { Vat } from "../dss/vat.sol";
+import { Dai } from "../dss/dai.sol";
 import { DaiJoin } from "../dss/join.sol";
 
-import "./interface/IERC3156FlashLender.sol";
-import "./interface/IERC3156FlashBorrower.sol";
-import "./interface/IVatDaiFlashLender.sol";
-
-interface DaiLike {
-    function balanceOf(address) external returns (uint256);
-    function transferFrom(address, address, uint256) external returns (bool);
-    function approve(address, uint256) external returns (bool);
-}
+import { IERC3156FlashLender } from "./interface/IERC3156FlashLender.sol";
+import { IERC3156FlashBorrower } from "./interface/IERC3156FlashBorrower.sol";
+import { IVatDaiFlashLender } from "./interface/IVatDaiFlashLender.sol";
+import { IVatDaiFlashBorrower } from "./interface/IVatDaiFlashBorrower.sol";
 
 contract DssFlash is IERC3156FlashLender, IVatDaiFlashLender {
 
@@ -43,7 +39,7 @@ contract DssFlash is IERC3156FlashLender, IVatDaiFlashLender {
     // --- Data ---
     Vat         public immutable vat;
     DaiJoin     public immutable daiJoin;
-    DaiLike     public immutable dai;
+    Dai         public immutable dai;
     address     public immutable vow;       // vow intentionally set immutable to save gas
 
     uint256     public  max;     // Maximum borrowable Dai  [wad]
@@ -74,7 +70,7 @@ contract DssFlash is IERC3156FlashLender, IVatDaiFlashLender {
 
         Vat vat_ = vat = Vat(DaiJoin(daiJoin_).vat());
         daiJoin = DaiJoin(daiJoin_);
-        DaiLike dai_ = dai = DaiLike(address(DaiJoin(daiJoin_).dai())); // REVIEW forced type cast
+        Dai dai_ = dai = DaiJoin(daiJoin_).dai();
         vow = vow_;
 
         vat_.hope(daiJoin_);

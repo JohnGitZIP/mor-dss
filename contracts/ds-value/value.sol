@@ -19,7 +19,7 @@
 
 pragma solidity >=0.4.23;
 
-import '../ds-thing/thing.sol';
+import { DSThing } from "../ds-thing/thing.sol";
 
 contract DSValue is DSThing {
     bool    has;

@@ -19,9 +19,9 @@
 
 pragma solidity >=0.4.23;
 
-import '../ds-auth/auth.sol';
-import '../ds-note/note.sol';
-import '../ds-math/math.sol';
+import { DSAuth } from "../ds-auth/auth.sol";
+import { DSNote } from "../ds-note/note.sol";
+import { DSMath } from "../ds-math/math.sol";
 
 contract DSThing is DSAuth, DSNote, DSMath {
     function S(string memory s) internal pure returns (bytes4) {

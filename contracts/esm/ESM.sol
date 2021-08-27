@@ -59,7 +59,7 @@ contract ESM {
         require(Sum >= min,  "ESM/min-not-reached");
 
         if (proxy != address(0)) {
-            DenyLike(address(end.vat())).deny(proxy); // REVIEW forced type cast
+            end.vat().deny(proxy);
         }
         end.cage();
 

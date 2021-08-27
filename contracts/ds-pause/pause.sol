@@ -18,8 +18,8 @@
 pragma solidity >=0.4.23;
 // pragma solidity >=0.5.0 <0.6.0;
 
-import {DSNote} from "../ds-note/note.sol";
-import {DSAuth, DSAuthority} from "../ds-auth/auth.sol";
+import { DSNote } from "../ds-note/note.sol";
+import { DSAuth, DSAuthority } from "../ds-auth/auth.sol";
 
 contract DSPause is DSAuth, DSNote {
 

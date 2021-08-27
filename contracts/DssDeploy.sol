@@ -19,24 +19,24 @@
 
 pragma solidity >=0.5.12;
 
-import {DSAuth, DSAuthority} from "./ds-auth/auth.sol";
-import {DSPause, DSPauseProxy} from "./ds-pause/pause.sol";
+import { DSAuth, DSAuthority } from "./ds-auth/auth.sol";
+import { DSPause, DSPauseProxy } from "./ds-pause/pause.sol";
 
-import {Vat} from "./dss/vat.sol";
-import {Jug} from "./dss/jug.sol";
-import {Vow} from "./dss/vow.sol";
-import {Cat} from "./dss/cat.sol";
-import {Dog} from "./dss/dog.sol";
-import {DaiJoin} from "./dss/join.sol";
-import {Flapper} from "./dss/flap.sol";
-import {Flopper} from "./dss/flop.sol";
-import {Flipper} from "./dss/flip.sol";
-import {Clipper} from "./dss/clip.sol";
-import {Dai} from "./dss/dai.sol";
-import {End} from "./dss/end.sol";
-import {ESM} from "./esm/ESM.sol";
-import {Pot} from "./dss/pot.sol";
-import {Spotter} from "./dss/spot.sol";
+import { Vat } from "./dss/vat.sol";
+import { Jug } from "./dss/jug.sol";
+import { Vow } from "./dss/vow.sol";
+import { Cat } from "./dss/cat.sol";
+import { Dog } from "./dss/dog.sol";
+import { DaiJoin } from "./dss/join.sol";
+import { Flapper } from "./dss/flap.sol";
+import { Flopper } from "./dss/flop.sol";
+import { Flipper } from "./dss/flip.sol";
+import { Clipper } from "./dss/clip.sol";
+import { Dai } from "./dss/dai.sol";
+import { End } from "./dss/end.sol";
+import { ESM } from "./esm/ESM.sol";
+import { Pot } from "./dss/pot.sol";
+import { Spotter } from "./dss/spot.sol";
 
 contract VatFab {
     function newVat(address owner) public returns (Vat vat) {

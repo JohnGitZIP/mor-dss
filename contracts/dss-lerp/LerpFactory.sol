@@ -16,7 +16,7 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 pragma solidity ^0.6.12;
 
-import "./Lerp.sol";
+import { BaseLerp, Lerp, IlkLerp } from "./Lerp.sol";
 
 contract LerpFactory {
 
