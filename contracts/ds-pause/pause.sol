@@ -16,7 +16,6 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 pragma solidity >=0.4.23;
-// pragma solidity >=0.5.0 <0.6.0;
 
 import { DSNote } from "../ds-note/note.sol";
 import { DSAuth, DSAuthority } from "../ds-auth/auth.sol";

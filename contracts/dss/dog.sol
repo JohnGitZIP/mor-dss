@@ -21,16 +21,7 @@ pragma solidity >=0.6.12;
 
 import { Vat } from "./vat.sol";
 import { Vow } from "./vow.sol";
-
-interface ClipperLike {
-    function ilk() external view returns (bytes32);
-    function kick(
-        uint256 tab,
-        uint256 lot,
-        address usr,
-        address kpr
-    ) external returns (uint256);
-}
+import { Clipper } from "./clip.sol";
 
 contract Dog {
     // --- Auth ---
@@ -125,7 +116,7 @@ contract Dog {
     }
     function file(bytes32 ilk, bytes32 what, address clip) external auth {
         if (what == "clip") {
-            require(ilk == ClipperLike(clip).ilk(), "Dog/file-ilk-neq-clip.ilk");
+            require(ilk == Clipper(clip).ilk(), "Dog/file-ilk-neq-clip.ilk");
             ilks[ilk].clip = clip;
         } else revert("Dog/file-unrecognized-param");
         emit File(ilk, what, clip);
@@ -207,7 +198,7 @@ contract Dog {
             Dirt = add(Dirt, tab);
             ilks[ilk].dirt = add(milk.dirt, tab);
 
-            id = ClipperLike(milk.clip).kick({
+            id = Clipper(milk.clip).kick({
                 tab: tab,
                 lot: dink,
                 usr: urn,

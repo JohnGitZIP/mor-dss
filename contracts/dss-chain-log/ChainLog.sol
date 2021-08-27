@@ -1,4 +1,3 @@
-
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
 /// ChainLog.sol - An on-chain governance-managed contract registry

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
-//
+
 /// Lerp.sol -- Linear Interpolation module
 //
 // This program is free software: you can redistribute it and/or modify

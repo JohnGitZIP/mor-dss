@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
+
 pragma solidity ^0.6.0;
 
 import { DSNote } from "../ds-note/note.sol";
@@ -6,8 +7,8 @@ import { DSToken } from "../ds-token/token.sol";
 
 interface IOracle
 {
-	function consultAveragePrice(address _pair, address _token, uint256 _amountIn) external view returns (uint256 _amountOut);
-	function updateAveragePrice(address _pair) external;
+    function consultAveragePrice(address _pair, address _token, uint256 _amountIn) external view returns (uint256 _amountOut);
+    function updateAveragePrice(address _pair) external;
 }
 
 contract UniV2TwapOracle is DSNote {

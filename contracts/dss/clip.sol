@@ -22,13 +22,10 @@ pragma solidity >=0.6.12;
 import { Vat } from "./vat.sol";
 import { Dog } from "./dog.sol";
 import { Spotter, PipLike } from "./spot.sol";
+import { Abacus } from "./abaci.sol";
 
 interface ClipperCallee {
     function clipperCall(address, uint256, uint256, bytes calldata) external;
-}
-
-interface AbacusLike {
-    function price(uint256, uint256) external view returns (uint256);
 }
 
 contract Clipper {
@@ -48,7 +45,7 @@ contract Clipper {
     Dog         public dog;      // Liquidation module
     address     public vow;      // Recipient of dai raised in auctions
     Spotter     public spotter;  // Collateral price module
-    AbacusLike  public calc;     // Current price calculator
+    Abacus      public calc;     // Current price calculator
 
     uint256 public buf;    // Multiplicative factor to increase starting price                  [ray]
     uint256 public tail;   // Time elapsed before auction reset                                 [seconds]
@@ -155,7 +152,7 @@ contract Clipper {
         if (what == "spotter") spotter = Spotter(data);
         else if (what == "dog")    dog = Dog(data);
         else if (what == "vow")    vow = data;
-        else if (what == "calc")  calc = AbacusLike(data);
+        else if (what == "calc")  calc = Abacus(data);
         else revert("Clipper/file-unrecognized-param");
         emit File(what, data);
     }
