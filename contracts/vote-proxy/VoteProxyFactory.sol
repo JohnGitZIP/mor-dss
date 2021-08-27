@@ -20,7 +20,8 @@
 // create and keep record of proxy identities
 pragma solidity >=0.4.24;
 
-import "./VoteProxy.sol";
+import { DSChief } from "../ds-chief/chief.sol";
+import { VoteProxy } from "./VoteProxy.sol";
 
 contract VoteProxyFactory {
     DSChief public chief;

@@ -20,13 +20,7 @@ pragma solidity 0.6.12;
 
 import { DSToken } from "../ds-token/token.sol";
 import { DSChief } from "../ds-chief/chief.sol";
-
-interface PollingLike {
-    function withdrawPoll(uint256) external;
-    function vote(uint256, uint256) external;
-    function withdrawPoll(uint256[] calldata) external;
-    function vote(uint256[] calldata, uint256[] calldata) external;
-}
+import { PollingEmitter } from "../symbolic-voting/polling.sol";
 
 contract VoteDelegate {
     mapping(address => uint256) public stake;
@@ -34,7 +28,7 @@ contract VoteDelegate {
     DSToken     public immutable gov;
     DSToken     public immutable iou;
     DSChief     public immutable chief;
-    PollingLike public immutable polling;
+    PollingEmitter public immutable polling;
     uint256     public immutable expiration;
 
     event Lock(address indexed usr, uint256 wad);
@@ -42,7 +36,7 @@ contract VoteDelegate {
 
     constructor(address _chief, address _polling, address _delegate) public {
         chief = DSChief(_chief);
-        polling = PollingLike(_polling);
+        polling = PollingEmitter(_polling);
         delegate = _delegate;
         expiration = block.timestamp + 365 days;
 

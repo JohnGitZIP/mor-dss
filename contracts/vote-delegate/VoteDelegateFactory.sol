@@ -18,7 +18,7 @@
 // VoteDelegateFactory - create and keep record of delegats
 pragma solidity 0.6.12;
 
-import "./VoteDelegate.sol";
+import { VoteDelegate } from "./VoteDelegate.sol";
 
 contract VoteDelegateFactory {
     address public immutable chief;
