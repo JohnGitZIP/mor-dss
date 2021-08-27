@@ -16,9 +16,9 @@
 
 pragma solidity ^0.6.7;
 
-import { DaiJoinAbstract } from "../dss-interfaces/dss/DaiJoinAbstract.sol";
-import { DaiAbstract } from "../dss-interfaces/dss/DaiAbstract.sol";
-import { VatAbstract } from "../dss-interfaces/dss/VatAbstract.sol";
+import { DaiJoin } from "../dss/join.sol";
+import { Dai } from "../dss/dai.sol";
+import { Vat } from "../dss/vat.sol";
 import { AuthGemJoin5 } from "./join-5-auth.sol";
 
 // Peg Stability Module
@@ -33,10 +33,10 @@ contract DssPsm {
     function deny(address usr) external auth { wards[usr] = 0; emit Deny(usr); }
     modifier auth { require(wards[msg.sender] == 1); _; }
 
-    VatAbstract immutable public vat;
+    Vat immutable public vat;
     AuthGemJoin5 immutable public gemJoin;
-    DaiAbstract immutable public dai;
-    DaiJoinAbstract immutable public daiJoin;
+    Dai immutable public dai;
+    DaiJoin immutable public daiJoin;
     bytes32 immutable public ilk;
     address immutable public vow;
 
@@ -57,9 +57,9 @@ contract DssPsm {
         wards[msg.sender] = 1;
         emit Rely(msg.sender);
         AuthGemJoin5 gemJoin__ = gemJoin = AuthGemJoin5(gemJoin_);
-        DaiJoinAbstract daiJoin__ = daiJoin = DaiJoinAbstract(daiJoin_);
-        VatAbstract vat__ = vat = VatAbstract(address(gemJoin__.vat()));
-        DaiAbstract dai__ = dai = DaiAbstract(address(daiJoin__.dai()));
+        DaiJoin daiJoin__ = daiJoin = DaiJoin(daiJoin_);
+        Vat vat__ = vat = gemJoin__.vat();
+        Dai dai__ = dai = daiJoin__.dai();
         ilk = gemJoin__.ilk();
         vow = vow_;
         to18ConversionFactor = 10 ** (18 - gemJoin__.dec());

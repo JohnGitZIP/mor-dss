@@ -24,12 +24,7 @@ pragma solidity ^0.6.7;
 import { LibNote } from "../median/median.sol";
 
 import { Vat } from "../dss/vat.sol";
-
-interface AuthGemLike5 {
-    function decimals() external view returns (uint8);
-    function transfer(address, uint256) external returns (bool);
-    function transferFrom(address, address, uint256) external returns (bool);
-}
+import { DSToken } from "../ds-token/token.sol";
 
 // Authed GemJoin for a token that has a lower precision than 18 and it has decimals (like USDC)
 
@@ -42,12 +37,12 @@ contract AuthGemJoin5 is LibNote {
 
     Vat     public vat;
     bytes32 public ilk;
-    AuthGemLike5 public gem;
+    DSToken public gem;
     uint256 public dec;
     uint256 public live;  // Access Flag
 
     constructor(address vat_, bytes32 ilk_, address gem_) public {
-        gem = AuthGemLike5(gem_);
+        gem = DSToken(gem_);
         dec = gem.decimals();
         require(dec < 18, "GemJoin5/decimals-18-or-higher");
         wards[msg.sender] = 1;
