@@ -58,7 +58,7 @@ contract VaultOracle is DSNote, PipLike {
 
     function peek() external view override toll returns (bytes32,bool) {
         (bytes32 _reservePrice, bool valid) = PipLike(orb).peek();
-	uint256 reservePrice = uint256(_reservePrice);
+        uint256 reservePrice = uint256(_reservePrice);
         if (valid) valid = reservePrice != 0;
 
         uint256 reserve = VaultLike(vault).totalReserve();

@@ -22,12 +22,7 @@ pragma solidity >=0.5.12;
 
 import { DSNote } from "../ds-note/note.sol";
 import { Vat } from "../dss/vat.sol";
-
-interface GemLike5 {
-    function decimals() external view returns (uint8);
-    function transfer(address, uint256) external returns (bool);
-    function transferFrom(address, address, uint256) external returns (bool);
-}
+import { DSToken } from "../ds-token/token.sol";
 
 // For a token that has a lower precision than 18 and it has decimals (like USDC)
 
@@ -40,12 +35,12 @@ contract GemJoin5 is DSNote {
 
     Vat     public vat;
     bytes32 public ilk;
-    GemLike5 public gem;
+    DSToken public gem;
     uint256 public dec;
     uint256 public live;  // Access Flag
 
     constructor(address vat_, bytes32 ilk_, address gem_) public {
-        gem = GemLike5(gem_);
+        gem = DSToken(gem_);
         dec = gem.decimals();
         require(dec < 18, "GemJoin5/decimals-18-or-higher");
         wards[msg.sender] = 1;

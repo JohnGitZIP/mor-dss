@@ -22,12 +22,7 @@ pragma solidity >=0.5.12;
 
 import { DSNote } from "../ds-note/note.sol";
 import { Vat } from "../dss/vat.sol";
-
-interface GemLike4 {
-    function decimals() external view returns (uint256);
-    function balanceOf(address) external returns (uint256);
-    function transfer(address, uint256) external returns (bool);
-}
+import { DSToken } from "../ds-token/token.sol";
 
 // For tokens that do not implement transferFrom (like GNT), meaning the usual adapter
 // approach won't work: the adapter cannot call transferFrom and therefore
@@ -43,12 +38,12 @@ interface GemLike4 {
 contract GemBag {
     address public ada;
     address public lad;
-    GemLike4 public gem;
+    DSToken public gem;
 
     constructor(address lad_, address gem_) public {
         ada = msg.sender;
         lad = lad_;
-        gem = GemLike4(gem_);
+        gem = DSToken(gem_);
     }
 
     function exit(address usr, uint256 wad) external {
@@ -66,7 +61,7 @@ contract GemJoin4 is DSNote {
 
     Vat     public vat;
     bytes32 public ilk;
-    GemLike4 public gem;
+    DSToken public gem;
     uint256 public dec;
     uint256 public live;  // Access Flag
 
@@ -77,7 +72,7 @@ contract GemJoin4 is DSNote {
         live = 1;
         vat = Vat(vat_);
         ilk = ilk_;
-        gem = GemLike4(gem_);
+        gem = DSToken(gem_);
         dec = gem.decimals();
     }
 

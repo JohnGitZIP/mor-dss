@@ -22,15 +22,12 @@ pragma solidity >=0.5.12;
 
 import { DSNote } from "../ds-note/note.sol";
 import { Vat } from "../dss/vat.sol";
+import { DSToken } from "../ds-token/token.sol";
 
-interface GemLike7 {
-    function decimals() external view returns (uint256);
-    function transfer(address, uint256) external;
-    function transferFrom(address, address, uint256) external;
-    function balanceOf(address) external view returns (uint256);
-    function upgradedAddress() external view returns (address);
-    function setImplementation(address, uint256) external;
-    function adjustFee(uint256) external;
+abstract contract DSToken7 is DSToken {
+    function upgradedAddress() external view virtual returns (address);
+    function setImplementation(address, uint256) external virtual;
+    function adjustFee(uint256) external virtual;
 }
 
 // GemJoin7
@@ -46,14 +43,14 @@ contract GemJoin7 is DSNote {
 
     Vat     public vat;
     bytes32 public ilk;
-    GemLike7 public gem;
+    DSToken7 public gem;
     uint256 public dec;
     uint256 public live; // Access flag
 
     mapping (address => uint256) public implementations;
 
     constructor(address vat_, bytes32 ilk_, address gem_) public {
-        gem = GemLike7(gem_);
+        gem = DSToken7(gem_);
         dec = gem.decimals();
         require(dec < 18, "GemJoin7/decimals-18-or-higher");
         wards[msg.sender] = 1;

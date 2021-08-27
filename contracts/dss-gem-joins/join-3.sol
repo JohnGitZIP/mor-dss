@@ -22,11 +22,7 @@ pragma solidity >=0.5.12;
 
 import { DSNote } from "../ds-note/note.sol";
 import { Vat } from "../dss/vat.sol";
-
-interface GemLike3 {
-    function transfer(address, uint256) external returns (bool);
-    function transferFrom(address, address, uint256) external returns (bool);
-}
+import { DSToken } from "../ds-token/token.sol";
 
 // For a token that has a lower precision than 18 and doesn't have decimals field in place (like DGD)
 
@@ -39,7 +35,7 @@ contract GemJoin3 is DSNote {
 
     Vat     public vat;
     bytes32 public ilk;
-    GemLike3 public gem;
+    DSToken public gem;
     uint256 public dec;
     uint256 public live;  // Access Flag
 
@@ -49,7 +45,7 @@ contract GemJoin3 is DSNote {
         live = 1;
         vat = Vat(vat_);
         ilk = ilk_;
-        gem = GemLike3(gem_);
+        gem = DSToken(gem_);
         dec = decimals;
     }
 
