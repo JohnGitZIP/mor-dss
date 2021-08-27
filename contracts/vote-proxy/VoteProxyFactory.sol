@@ -23,7 +23,7 @@ pragma solidity >=0.4.24;
 import "./VoteProxy.sol";
 
 contract VoteProxyFactory {
-    ChiefLike public chief;
+    DSChief public chief;
     mapping(address => VoteProxy) public hotMap;
     mapping(address => VoteProxy) public coldMap;
     mapping(address => address) public linkRequests;
@@ -31,7 +31,7 @@ contract VoteProxyFactory {
     event LinkRequested(address indexed cold, address indexed hot);
     event LinkConfirmed(address indexed cold, address indexed hot, address indexed voteProxy);
 
-    constructor(address chief_) public { chief = ChiefLike(chief_); }
+    constructor(address chief_) public { chief = DSChief(chief_); }
 
     function hasProxy(address guy) public view returns (bool) {
         return (address(coldMap[guy]) != address(0x0) || address(hotMap[guy]) != address(0x0));

@@ -21,26 +21,17 @@
 pragma solidity >=0.4.24;
 
 import { DSToken } from "../ds-token/token.sol";
-
-interface ChiefLike {
-    function GOV() external view returns (DSToken);
-    function IOU() external view returns (DSToken);
-    function deposits(address) external view returns (uint256);
-    function lock(uint256) external;
-    function free(uint256) external;
-    function vote(address[] calldata) external returns (bytes32);
-    function vote(bytes32) external;
-}
+import { DSChief } from "../ds-chief/chief.sol";
 
 contract VoteProxy {
     address   public cold;
     address   public hot;
     DSToken   public gov;
     DSToken   public iou;
-    ChiefLike public chief;
+    DSChief   public chief;
 
     constructor(address _chief, address _cold, address _hot) public {
-        chief = ChiefLike(_chief);
+        chief = DSChief(_chief);
         cold = _cold;
         hot = _hot;
 

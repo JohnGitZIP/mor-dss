@@ -19,7 +19,7 @@
 pragma solidity 0.6.12;
 
 import { DSToken } from "../ds-token/token.sol";
-import { ChiefLike } from "../vote-proxy/VoteProxy.sol";
+import { DSChief } from "../ds-chief/chief.sol";
 
 interface PollingLike {
     function withdrawPoll(uint256) external;
@@ -33,7 +33,7 @@ contract VoteDelegate {
     address     public immutable delegate;
     DSToken     public immutable gov;
     DSToken     public immutable iou;
-    ChiefLike   public immutable chief;
+    DSChief     public immutable chief;
     PollingLike public immutable polling;
     uint256     public immutable expiration;
 
@@ -41,13 +41,13 @@ contract VoteDelegate {
     event Free(address indexed usr, uint256 wad);
 
     constructor(address _chief, address _polling, address _delegate) public {
-        chief = ChiefLike(_chief);
+        chief = DSChief(_chief);
         polling = PollingLike(_polling);
         delegate = _delegate;
         expiration = block.timestamp + 365 days;
 
-        DSToken _gov = gov = ChiefLike(_chief).GOV();
-        DSToken _iou = iou = ChiefLike(_chief).IOU();
+        DSToken _gov = gov = DSChief(_chief).GOV();
+        DSToken _iou = iou = DSChief(_chief).IOU();
 
         _gov.approve(_chief, type(uint256).max);
         _iou.approve(_chief, type(uint256).max);
