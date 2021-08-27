@@ -1,14 +1,14 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 pragma solidity ^0.6.0;
 
-import { LibNote } from "../median/median.sol";
+import { DSNote } from "../ds-note/note.sol";
 
 // https://github.com/smartcontractkit/chainlink/blob/master/contracts/src/v0.6/interfaces/AggregatorV3Interface.sol
 interface AggregatorV3Interface {
     function latestRoundData() external view returns (uint80 _roundId, int256 _answer, uint256 _startedAt, uint256 _updatedAt, uint80 _answeredInRound);
 }
 
-contract LinkOracle is LibNote {
+contract LinkOracle is DSNote {
 
     // --- Auth ---
     mapping (address => uint256) public wards;

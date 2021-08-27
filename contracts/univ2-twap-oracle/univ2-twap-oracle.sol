@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 pragma solidity ^0.6.0;
 
-import { LibNote } from "../median/median.sol";
-import { ERC20Like_ } from "../univ2-lp-oracle/UNIV2LPOracle.sol";
+import { DSNote } from "../ds-note/note.sol";
+import { DSToken } from "../ds-token/token.sol";
 
 interface IOracle
 {
@@ -10,7 +10,7 @@ interface IOracle
 	function updateAveragePrice(address _pair) external;
 }
 
-contract UniV2TwapOracle is LibNote {
+contract UniV2TwapOracle is DSNote {
 
     // --- Auth ---
     mapping (address => uint256) public wards;
@@ -37,7 +37,7 @@ contract UniV2TwapOracle is LibNote {
         require(_ltwap != address(0), "UniV2TwapOracle/invalid-long-twap-address");
         require(_src   != address(0), "UniV2TwapOracle/invalid-src-address");
         require(_token != address(0), "UniV2TwapOracle/invalid-token-address");
-        uint8 _dec = ERC20Like_(_token).decimals();
+        uint8 _dec = DSToken(_token).decimals();
         require(_dec   <=         18, "UniV2TwapOracle/invalid-dec-places");
         wards[msg.sender] = 1;
         stwap = _stwap;

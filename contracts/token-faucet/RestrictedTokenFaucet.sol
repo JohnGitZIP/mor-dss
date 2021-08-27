@@ -19,10 +19,10 @@
 
 pragma solidity >=0.5.0;
 
-import { _DSNote } from "./lib.sol";
+import { DSNote } from "../ds-note/note.sol";
 import { DSToken } from "../ds-token/token.sol";
 
-contract RestrictedTokenFaucet is _DSNote {
+contract RestrictedTokenFaucet is DSNote {
     // --- Auth ---
     mapping (address => uint256) public wards;
     function rely(address guy) public auth note { wards[guy] = 1; }

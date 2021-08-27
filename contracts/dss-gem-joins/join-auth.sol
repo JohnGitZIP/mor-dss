@@ -20,9 +20,7 @@
 
 pragma solidity >=0.5.12;
 
-// import "dss/lib.sol";
-import { LibNote } from "../median/median.sol";
-
+import { DSNote } from "../ds-note/note.sol";
 import { Vat } from "../dss/vat.sol";
 
 interface AuthGemLike {
@@ -33,7 +31,7 @@ interface AuthGemLike {
 
 // For a token that needs restriction on the sources which are able to execute the join function (like SAI through Migration contract)
 
-contract AuthGemJoin is LibNote {
+contract AuthGemJoin is DSNote {
     Vat     public vat;
     bytes32 public ilk;
     AuthGemLike public gem;

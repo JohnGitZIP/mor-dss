@@ -20,15 +20,13 @@
 
 pragma solidity ^0.6.7;
 
-// import "dss/lib.sol";
-import { LibNote } from "../median/median.sol";
-
+import { DSNote } from "../ds-note/note.sol";
 import { Vat } from "../dss/vat.sol";
 import { DSToken } from "../ds-token/token.sol";
 
 // Authed GemJoin for a token that has a lower precision than 18 and it has decimals (like USDC)
 
-contract AuthGemJoin5 is LibNote {
+contract AuthGemJoin5 is DSNote {
     // --- Auth ---
     mapping (address => uint256) public wards;
     function rely(address usr) external note auth { wards[usr] = 1; }

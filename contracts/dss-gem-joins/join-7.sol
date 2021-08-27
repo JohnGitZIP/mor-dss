@@ -20,9 +20,7 @@
 
 pragma solidity >=0.5.12;
 
-// import "dss/lib.sol";
-import { LibNote } from "../median/median.sol";
-
+import { DSNote } from "../ds-note/note.sol";
 import { Vat } from "../dss/vat.sol";
 
 interface GemLike7 {
@@ -40,7 +38,7 @@ interface GemLike7 {
 //  If the token is deprecated changing the implementation behind, this prevents joins
 //   and exits until the implementation is reviewed and approved by governance.
 
-contract GemJoin7 is LibNote {
+contract GemJoin7 is DSNote {
     mapping (address => uint256) public wards;
     function rely(address usr) external note auth { wards[usr] = 1; }
     function deny(address usr) external note auth { wards[usr] = 0; }

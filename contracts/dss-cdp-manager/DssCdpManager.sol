@@ -20,7 +20,7 @@
 pragma solidity >=0.5.12;
 
 import { Vat } from "../dss/vat.sol";
-import { LibNote } from "../median/median.sol";
+import { DSNote } from "../ds-note/note.sol";
 
 contract UrnHandler {
     constructor(address vat) public {
@@ -28,7 +28,7 @@ contract UrnHandler {
     }
 }
 
-contract DssCdpManager is LibNote {
+contract DssCdpManager is DSNote {
     address                   public vat;
     uint                      public cdpi;      // Auto incremental
     mapping (uint => address) public urns;      // CDPId => UrnHandler

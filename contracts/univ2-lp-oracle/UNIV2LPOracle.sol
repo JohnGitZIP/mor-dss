@@ -68,11 +68,7 @@
 
 pragma solidity =0.6.12;
 
-interface ERC20Like_ {
-    function decimals()         external view returns (uint8);
-    function balanceOf(address) external view returns (uint256);
-    function totalSupply()      external view returns (uint256);
-}
+import { DSToken } from "../ds-token/token.sol";
 
 interface UniswapV2PairLike {
     function sync()        external;
@@ -208,10 +204,10 @@ contract UNIV2LPOracle {
         emit Rely(msg.sender);
         src  = _src;
         wat  = _wat;
-        uint256 dec0 = uint256(ERC20Like_(UniswapV2PairLike(_src).token0()).decimals());
+        uint256 dec0 = uint256(DSToken(UniswapV2PairLike(_src).token0()).decimals());
         require(dec0 <= 18, "UNIV2LPOracle/token0-dec-gt-18");
         UNIT_0 = 10 ** dec0;
-        uint256 dec1 = uint256(ERC20Like_(UniswapV2PairLike(_src).token1()).decimals());
+        uint256 dec1 = uint256(DSToken(UniswapV2PairLike(_src).token1()).decimals());
         require(dec1 <= 18, "UNIV2LPOracle/token1-dec-gt-18");
         UNIT_1 = 10 ** dec1;
         orb0 = _orb0;
@@ -274,7 +270,7 @@ contract UNIV2LPOracle {
         require(p1 != 0, "UNIV2LPOracle/invalid-oracle-1-price");
 
         // Get LP token supply
-        uint256 supply = ERC20Like_(src).totalSupply();
+        uint256 supply = DSToken(src).totalSupply();
 
         // This calculation should be overflow-resistant even for tokens with very high or very
         // low prices, as the dollar value of each reserve should lie in a fairly controlled range

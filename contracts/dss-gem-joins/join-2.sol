@@ -20,9 +20,7 @@
 
 pragma solidity >=0.5.12;
 
-// import "dss/lib.sol";
-import { LibNote } from "../median/median.sol";
-
+import { DSNote } from "../ds-note/note.sol";
 import { Vat } from "../dss/vat.sol";
 
 interface GemLike2 {
@@ -36,7 +34,7 @@ interface GemLike2 {
 // For a token that does not return a bool on transfer or transferFrom (like OMG)
 // This is one way of doing it. Check the balances before and after calling a transfer
 
-contract GemJoin2 is LibNote {
+contract GemJoin2 is DSNote {
     // --- Auth ---
     mapping (address => uint256) public wards;
     function rely(address usr) external note auth { wards[usr] = 1; }

@@ -20,9 +20,7 @@
 
 pragma solidity >=0.5.12;
 
-// import "dss/lib.sol";
-import { LibNote } from "../median/median.sol";
-
+import { DSNote } from "../ds-note/note.sol";
 import { Vat } from "../dss/vat.sol";
 
 interface GemLike3 {
@@ -32,7 +30,7 @@ interface GemLike3 {
 
 // For a token that has a lower precision than 18 and doesn't have decimals field in place (like DGD)
 
-contract GemJoin3 is LibNote {
+contract GemJoin3 is DSNote {
     // --- Auth ---
     mapping (address => uint256) public wards;
     function rely(address usr) external note auth { wards[usr] = 1; }

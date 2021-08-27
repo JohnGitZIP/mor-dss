@@ -20,9 +20,7 @@
 
 pragma solidity >=0.5.12;
 
-// import "dss/lib.sol";
-import { LibNote } from "../median/median.sol";
-
+import { DSNote } from "../ds-note/note.sol";
 import { Vat } from "../dss/vat.sol";
 
 interface GemLike6 {
@@ -37,7 +35,7 @@ interface GemLike6 {
 //  If the implementation behind the proxy is changed, this prevents joins
 //   and exits until the implementation is reviewed and approved by governance.
 
-contract GemJoin6 is LibNote {
+contract GemJoin6 is DSNote {
     // --- Auth ---
     mapping (address => uint256) public wards;
     function rely(address usr) external note auth { wards[usr] = 1; }

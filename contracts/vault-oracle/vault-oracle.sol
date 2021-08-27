@@ -1,8 +1,9 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 pragma solidity ^0.6.0;
 
-import { LibNote } from "../median/median.sol";
-import { ERC20Like_, OracleLike } from "../univ2-lp-oracle/UNIV2LPOracle.sol";
+import { DSNote } from "../ds-note/note.sol";
+import { DSToken } from "../ds-token/token.sol";
+import { OracleLike } from "../univ2-lp-oracle/UNIV2LPOracle.sol";
 
 interface VaultLike {
     // function reserveToken() external view returns (address _reserveToken);
@@ -10,7 +11,7 @@ interface VaultLike {
     function totalReserve() external view returns (uint256 _totalReserve);
 }
 
-contract VaultOracle is LibNote {
+contract VaultOracle is DSNote {
 
     // --- Auth ---
     mapping (address => uint256) public wards;
@@ -34,7 +35,7 @@ contract VaultOracle is LibNote {
     modifier toll { require(bud[msg.sender] == 1, "VaultOracle/contract-not-whitelisted"); _; }
 
     constructor (address _vault, address _orb) public {
-        // require(ERC20Like_(_vault).decimals() == ERC20Like_(VaultLike(_vault).reserveToken()).decimals(), "VaultOracle/token-dec-mismatch");
+        // require(DSToken(_vault).decimals() == DSToken(VaultLike(_vault).reserveToken()).decimals(), "VaultOracle/token-dec-mismatch");
         wards[msg.sender] = 1;
         vault = _vault;
         orb = _orb;

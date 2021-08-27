@@ -19,11 +19,11 @@
 
 pragma solidity >=0.5.12;
 
-import { _DSNote } from "../token-faucet/lib.sol";
+import { DSNote } from "../ds-note/note.sol";
 import { OSM } from "../osm/osm.sol";
 import { DSAuthority } from "../ds-auth/auth.sol";
 
-contract OsmMom is _DSNote {
+contract OsmMom is DSNote {
 
     address public owner;
     modifier onlyOwner { require(msg.sender == owner, "osm-mom/only-owner"); _;}
