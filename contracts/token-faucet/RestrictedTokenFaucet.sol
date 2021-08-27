@@ -19,7 +19,7 @@
 
 pragma solidity >=0.5.0;
 
-import "./lib.sol";
+import { _DSNote } from "./lib.sol";
 
 interface ERC20Like {
     function balanceOf(address) external view returns (uint256);

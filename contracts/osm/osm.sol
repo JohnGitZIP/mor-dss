@@ -19,11 +19,10 @@
 
 pragma solidity >=0.5.10;
 
-import "../ds-value/value.sol";
+import { DSNote } from "../ds-note/note.sol";
+import { DSValue } from "../ds-value/value.sol";
 
-import { LibNote } from "../median/median.sol";
-
-contract OSM is LibNote {
+contract OSM is DSNote {
 
     // --- Auth ---
     mapping (address => uint) public wards;
