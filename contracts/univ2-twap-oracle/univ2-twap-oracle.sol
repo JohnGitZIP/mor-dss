@@ -6,7 +6,7 @@ import { DSNote } from "../ds-note/note.sol";
 import { DSToken } from "../ds-token/token.sol";
 import { PipLike } from "../dss/spot.sol";
 
-interface IOracle
+interface OracleLike
 {
     function consultAveragePrice(address _pair, address _token, uint256 _amountIn) external view returns (uint256 _amountOut);
     function updateAveragePrice(address _pair) external;
@@ -51,13 +51,13 @@ contract UniV2TwapOracle is DSNote, PipLike {
     }
 
     function poke() external {
-        IOracle(stwap).updateAveragePrice(src);
-        IOracle(ltwap).updateAveragePrice(src);
+        OracleLike(stwap).updateAveragePrice(src);
+        OracleLike(ltwap).updateAveragePrice(src);
     }
 
     function read() external view override toll returns (bytes32) {
-        uint256 sprice = IOracle(stwap).consultAveragePrice(src, token, unit);
-        uint256 lprice = IOracle(ltwap).consultAveragePrice(src, token, unit);
+        uint256 sprice = OracleLike(stwap).consultAveragePrice(src, token, unit);
+        uint256 lprice = OracleLike(ltwap).consultAveragePrice(src, token, unit);
         uint256 price = sprice < lprice ? sprice : lprice;
         if (price > cap) price = cap;
         require(price > 0, "UniV2TwapOracle/invalid-price-feed");
@@ -65,8 +65,8 @@ contract UniV2TwapOracle is DSNote, PipLike {
     }
 
     function peek() external view override toll returns (bytes32,bool) {
-        uint256 sprice = IOracle(stwap).consultAveragePrice(src, token, unit);
-        uint256 lprice = IOracle(ltwap).consultAveragePrice(src, token, unit);
+        uint256 sprice = OracleLike(stwap).consultAveragePrice(src, token, unit);
+        uint256 lprice = OracleLike(ltwap).consultAveragePrice(src, token, unit);
         uint256 price = sprice < lprice ? sprice : lprice;
         if (price > cap) price = cap;
         return (bytes32(price), price > 0);
