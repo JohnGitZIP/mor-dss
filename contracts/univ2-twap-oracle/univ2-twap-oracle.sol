@@ -5,6 +5,7 @@ pragma solidity ^0.6.0;
 import { DSNote } from "../ds-note/note.sol";
 import { DSToken } from "../ds-token/token.sol";
 import { PipLike } from "../dss/spot.sol";
+import { UniswapV2PairLike } from "../univ2-lp-oracle/UNIV2LPOracleFactory.sol";
 
 interface OracleLike
 {
@@ -26,7 +27,7 @@ contract UniV2TwapOracle is DSNote, PipLike {
     address public immutable stwap;   // Short window TWAP implementation
     address public immutable ltwap;   // Large window TWAP implementation
     address public immutable src;     // Price source (LP)
-    address public immutable token;   // Token from the pair (the other must be BUSD)
+    address public immutable token;   // Token from the pair (the other must be PSM-pegged coin, like BUSD)
     uint256 public immutable cap;     // Price cap
     uint256 public immutable unit;    // Price unit
 
@@ -39,6 +40,7 @@ contract UniV2TwapOracle is DSNote, PipLike {
         require(_ltwap != address(0), "UniV2TwapOracle/invalid-long-twap-address");
         require(_src   != address(0), "UniV2TwapOracle/invalid-src-address");
         require(_token != address(0), "UniV2TwapOracle/invalid-token-address");
+        require(_token == UniswapV2PairLike(_src).token0() || _token == UniswapV2PairLike(_src).token1(), "UniV2TwapOracle/unknown-token-address");
         uint8 _dec = DSToken(_token).decimals();
         require(_dec   <=         18, "UniV2TwapOracle/invalid-dec-places");
         wards[msg.sender] = 1;
