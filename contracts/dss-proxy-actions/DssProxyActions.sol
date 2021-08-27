@@ -23,6 +23,10 @@ import { Vat } from "../dss/vat.sol";
 import { DaiJoin } from "../dss/join.sol";
 import { End } from "../dss/end.sol";
 import { Pot } from "../dss/pot.sol";
+import { Jug } from "../dss/jug.sol";
+import { DssCdpManager } from "../dss-cdp-manager/DssCdpManager.sol";
+import { ProxyRegistry } from "../proxy-registry/ProxyRegistry.sol";
+import { DSProxy } from "../ds-proxy/proxy.sol";
 
 interface GemLike {
     function approve(address, uint) external;
@@ -36,25 +40,6 @@ interface GemLike {
     function withdraw(uint256 _shares, uint256 _minAmount, bool _execGulp) external;
 }
 
-interface ManagerLike {
-    function cdpCan(address, uint, address) external view returns (uint);
-    function ilks(uint) external view returns (bytes32);
-    function owns(uint) external view returns (address);
-    function urns(uint) external view returns (address);
-    function vat() external view returns (address);
-    function open(bytes32, address) external returns (uint);
-    function give(uint, address) external;
-    function cdpAllow(uint, address, uint) external;
-    function urnAllow(address, uint) external;
-    function frob(uint, int, int) external;
-    function flux(uint, address, uint) external;
-    function move(uint, address, uint) external;
-    function exit(address, uint, address, uint) external;
-    function quit(uint, address) external;
-    function enter(address, uint) external;
-    function shift(uint, uint) external;
-}
-
 interface GemJoinLike {
     function dec() external returns (uint);
     function gem() external returns (GemLike);
@@ -62,27 +47,16 @@ interface GemJoinLike {
     function exit(address, uint) external;
 }
 
+/*
 interface GNTJoinLike {
     function bags(address) external view returns (address);
     function make(address) external returns (address);
 }
+*/
 
 interface HopeLike {
     function hope(address) external;
     function nope(address) external;
-}
-
-interface JugLike {
-    function drip(bytes32) external returns (uint);
-}
-
-interface ProxyRegistryLike {
-    function proxies(address) external view returns (address);
-    function build(address) external returns (address);
-}
-
-interface ProxyLike {
-    function owner() external view returns (address);
 }
 
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -144,7 +118,7 @@ contract DssProxyActions is Common {
         uint wad
     ) internal returns (int dart) {
         // Updates stability fee rate
-        uint rate = JugLike(jug).drip(ilk);
+        uint rate = Jug(jug).drip(ilk);
 
         // Gets DAI balance of the urn in the vat
         uint dai = Vat(vat).dai(urn);
@@ -250,7 +224,7 @@ contract DssProxyActions is Common {
         bytes32 ilk,
         address usr
     ) public returns (uint cdp) {
-        cdp = ManagerLike(manager).open(ilk, usr);
+        cdp = DssCdpManager(manager).open(ilk, usr);
     }
 
     function give(
@@ -258,7 +232,7 @@ contract DssProxyActions is Common {
         uint cdp,
         address usr
     ) public {
-        ManagerLike(manager).give(cdp, usr);
+        DssCdpManager(manager).give(cdp, usr);
     }
 
     function giveToProxy(
@@ -268,9 +242,9 @@ contract DssProxyActions is Common {
         address dst
     ) public {
         // Gets actual proxy address
-        address proxy = ProxyRegistryLike(proxyRegistry).proxies(dst);
+        address payable proxy = payable(ProxyRegistry(proxyRegistry).proxies(dst));
         // Checks if the proxy address already existed and dst address is still the owner
-        if (proxy == address(0) || ProxyLike(proxy).owner() != dst) {
+        if (proxy == address(0) || DSProxy(proxy).owner() != dst) {
             uint csize;
             assembly {
                 csize := extcodesize(dst)
@@ -278,7 +252,7 @@ contract DssProxyActions is Common {
             // We want to avoid creating a proxy for a contract address that might not be able to handle proxies, then losing the CDP
             require(csize == 0, "Dst-is-a-contract");
             // Creates the proxy for the dst address
-            proxy = ProxyRegistryLike(proxyRegistry).build(dst);
+            proxy = ProxyRegistry(proxyRegistry).build(dst);
         }
         // Transfers CDP to the dst proxy
         give(manager, cdp, proxy);
@@ -290,7 +264,7 @@ contract DssProxyActions is Common {
         address usr,
         uint ok
     ) public {
-        ManagerLike(manager).cdpAllow(cdp, usr, ok);
+        DssCdpManager(manager).cdpAllow(cdp, usr, ok);
     }
 
     function urnAllow(
@@ -298,7 +272,7 @@ contract DssProxyActions is Common {
         address usr,
         uint ok
     ) public {
-        ManagerLike(manager).urnAllow(usr, ok);
+        DssCdpManager(manager).urnAllow(usr, ok);
     }
 
     function flux(
@@ -307,7 +281,7 @@ contract DssProxyActions is Common {
         address dst,
         uint wad
     ) public {
-        ManagerLike(manager).flux(cdp, dst, wad);
+        DssCdpManager(manager).flux(cdp, dst, wad);
     }
 
     function move(
@@ -316,7 +290,7 @@ contract DssProxyActions is Common {
         address dst,
         uint rad
     ) public {
-        ManagerLike(manager).move(cdp, dst, rad);
+        DssCdpManager(manager).move(cdp, dst, rad);
     }
 
     function frob(
@@ -325,7 +299,7 @@ contract DssProxyActions is Common {
         int dink,
         int dart
     ) public {
-        ManagerLike(manager).frob(cdp, dink, dart);
+        DssCdpManager(manager).frob(cdp, dink, dart);
     }
 
     function quit(
@@ -333,7 +307,7 @@ contract DssProxyActions is Common {
         uint cdp,
         address dst
     ) public {
-        ManagerLike(manager).quit(cdp, dst);
+        DssCdpManager(manager).quit(cdp, dst);
     }
 
     function enter(
@@ -341,7 +315,7 @@ contract DssProxyActions is Common {
         address src,
         uint cdp
     ) public {
-        ManagerLike(manager).enter(src, cdp);
+        DssCdpManager(manager).enter(src, cdp);
     }
 
     function shift(
@@ -349,7 +323,7 @@ contract DssProxyActions is Common {
         uint cdpSrc,
         uint cdpOrg
     ) public {
-        ManagerLike(manager).shift(cdpSrc, cdpOrg);
+        DssCdpManager(manager).shift(cdpSrc, cdpOrg);
     }
 /*
     function makeGemBag(
@@ -366,9 +340,9 @@ contract DssProxyActions is Common {
         // Receives ETH amount, converts it to WETH and joins it into the vat
         ethJoin_join(ethJoin, address(this));
         // Locks WETH amount into the CDP
-        Vat(ManagerLike(manager).vat()).frob(
-            ManagerLike(manager).ilks(cdp),
-            ManagerLike(manager).urns(cdp),
+        Vat(DssCdpManager(manager).vat()).frob(
+            DssCdpManager(manager).ilks(cdp),
+            DssCdpManager(manager).urns(cdp),
             address(this),
             address(this),
             toInt(msg.value),
@@ -382,7 +356,7 @@ contract DssProxyActions is Common {
         uint cdp,
         address owner
     ) public payable {
-        require(ManagerLike(manager).owns(cdp) == owner, "owner-missmatch");
+        require(DssCdpManager(manager).owns(cdp) == owner, "owner-missmatch");
         lockETH(manager, ethJoin, cdp);
     }
 */
@@ -397,9 +371,9 @@ contract DssProxyActions is Common {
         // Takes token amount from user's wallet and joins into the vat
         gemJoin_join(gemJoin, address(this), amt, transferFrom, res);
         // Locks token amount into the CDP
-        Vat(ManagerLike(manager).vat()).frob(
-            ManagerLike(manager).ilks(cdp),
-            ManagerLike(manager).urns(cdp),
+        Vat(DssCdpManager(manager).vat()).frob(
+            DssCdpManager(manager).ilks(cdp),
+            DssCdpManager(manager).urns(cdp),
             address(this),
             address(this),
             toInt(convertTo18(gemJoin, amt)),
@@ -416,7 +390,7 @@ contract DssProxyActions is Common {
         address owner,
         address res
     ) public {
-        require(ManagerLike(manager).owns(cdp) == owner, "owner-missmatch");
+        require(DssCdpManager(manager).owns(cdp) == owner, "owner-missmatch");
         lockGem(manager, gemJoin, cdp, amt, transferFrom, res);
     }
 /*
@@ -504,9 +478,9 @@ contract DssProxyActions is Common {
         uint cdp,
         uint wad
     ) public {
-        address urn = ManagerLike(manager).urns(cdp);
-        address vat = ManagerLike(manager).vat();
-        bytes32 ilk = ManagerLike(manager).ilks(cdp);
+        address urn = DssCdpManager(manager).urns(cdp);
+        address vat = DssCdpManager(manager).vat();
+        bytes32 ilk = DssCdpManager(manager).ilks(cdp);
         // Generates debt in the CDP
         frob(manager, cdp, 0, _getDrawDart(vat, jug, urn, ilk, wad));
         // Moves the DAI amount (balance in the vat in rad) to proxy's address
@@ -525,12 +499,12 @@ contract DssProxyActions is Common {
         uint cdp,
         uint wad
     ) public {
-        address vat = ManagerLike(manager).vat();
-        address urn = ManagerLike(manager).urns(cdp);
-        bytes32 ilk = ManagerLike(manager).ilks(cdp);
+        address vat = DssCdpManager(manager).vat();
+        address urn = DssCdpManager(manager).urns(cdp);
+        bytes32 ilk = DssCdpManager(manager).ilks(cdp);
 
-        address own = ManagerLike(manager).owns(cdp);
-        if (own == address(this) || ManagerLike(manager).cdpCan(own, cdp, address(this)) == 1) {
+        address own = DssCdpManager(manager).owns(cdp);
+        if (own == address(this) || DssCdpManager(manager).cdpCan(own, cdp, address(this)) == 1) {
             // Joins DAI amount into the vat
             daiJoin_join(daiJoin, urn, wad);
             // Paybacks debt to the CDP
@@ -557,7 +531,7 @@ contract DssProxyActions is Common {
         uint wad,
         address owner
     ) public {
-        require(ManagerLike(manager).owns(cdp) == owner, "owner-missmatch");
+        require(DssCdpManager(manager).owns(cdp) == owner, "owner-missmatch");
         wipe(manager, daiJoin, cdp, wad);
     }
 
@@ -566,13 +540,13 @@ contract DssProxyActions is Common {
         address daiJoin,
         uint cdp
     ) public {
-        address vat = ManagerLike(manager).vat();
-        address urn = ManagerLike(manager).urns(cdp);
-        bytes32 ilk = ManagerLike(manager).ilks(cdp);
+        address vat = DssCdpManager(manager).vat();
+        address urn = DssCdpManager(manager).urns(cdp);
+        bytes32 ilk = DssCdpManager(manager).ilks(cdp);
         (, uint art) = Vat(vat).urns(ilk, urn);
 
-        address own = ManagerLike(manager).owns(cdp);
-        if (own == address(this) || ManagerLike(manager).cdpCan(own, cdp, address(this)) == 1) {
+        address own = DssCdpManager(manager).owns(cdp);
+        if (own == address(this) || DssCdpManager(manager).cdpCan(own, cdp, address(this)) == 1) {
             // Joins DAI amount into the vat
             daiJoin_join(daiJoin, urn, _getWipeAllWad(vat, urn, urn, ilk));
             // Paybacks debt to the CDP
@@ -598,7 +572,7 @@ contract DssProxyActions is Common {
         uint cdp,
         address owner
     ) public {
-        require(ManagerLike(manager).owns(cdp) == owner, "owner-missmatch");
+        require(DssCdpManager(manager).owns(cdp) == owner, "owner-missmatch");
         wipeAll(manager, daiJoin, cdp);
     }
 
@@ -611,9 +585,9 @@ contract DssProxyActions is Common {
         uint cdp,
         uint wadD
     ) public payable {
-        address urn = ManagerLike(manager).urns(cdp);
-        address vat = ManagerLike(manager).vat();
-        bytes32 ilk = ManagerLike(manager).ilks(cdp);
+        address urn = DssCdpManager(manager).urns(cdp);
+        address vat = DssCdpManager(manager).vat();
+        bytes32 ilk = DssCdpManager(manager).ilks(cdp);
         // Receives ETH amount, converts it to WETH and joins it into the vat
         ethJoin_join(ethJoin, urn);
         // Locks WETH amount into the CDP and generates debt
@@ -651,9 +625,9 @@ contract DssProxyActions is Common {
         bool transferFrom,
         address res
     ) public {
-        address urn = ManagerLike(manager).urns(cdp);
-        address vat = ManagerLike(manager).vat();
-        bytes32 ilk = ManagerLike(manager).ilks(cdp);
+        address urn = DssCdpManager(manager).urns(cdp);
+        address vat = DssCdpManager(manager).vat();
+        bytes32 ilk = DssCdpManager(manager).ilks(cdp);
         // Takes token amount from user's wallet and joins into the vat
         gemJoin_join(gemJoin, urn, amtC, transferFrom, res);
         // Locks token amount into the CDP and generates debt
@@ -711,7 +685,7 @@ contract DssProxyActions is Common {
         uint wadC,
         uint wadD
     ) public {
-        address urn = ManagerLike(manager).urns(cdp);
+        address urn = DssCdpManager(manager).urns(cdp);
         // Joins DAI amount into the vat
         daiJoin_join(daiJoin, urn, wadD);
         // Paybacks debt to the CDP and unlocks WETH amount from it
@@ -719,7 +693,7 @@ contract DssProxyActions is Common {
             manager,
             cdp,
             -toInt(wadC),
-            _getWipeDart(ManagerLike(manager).vat(), Vat(ManagerLike(manager).vat()).dai(urn), urn, ManagerLike(manager).ilks(cdp))
+            _getWipeDart(DssCdpManager(manager).vat(), Vat(DssCdpManager(manager).vat()).dai(urn), urn, DssCdpManager(manager).ilks(cdp))
         );
         // Moves the amount from the CDP urn to proxy's address
         flux(manager, cdp, address(this), wadC);
@@ -738,9 +712,9 @@ contract DssProxyActions is Common {
         uint cdp,
         uint wadC
     ) public {
-        address vat = ManagerLike(manager).vat();
-        address urn = ManagerLike(manager).urns(cdp);
-        bytes32 ilk = ManagerLike(manager).ilks(cdp);
+        address vat = DssCdpManager(manager).vat();
+        address urn = DssCdpManager(manager).urns(cdp);
+        bytes32 ilk = DssCdpManager(manager).ilks(cdp);
         (, uint art) = Vat(vat).urns(ilk, urn);
 
         // Joins DAI amount into the vat
@@ -771,8 +745,8 @@ contract DssProxyActions is Common {
         uint wadD,
         address res
     ) public {
-        address urn = ManagerLike(manager).urns(cdp);
-        bytes32 ilk = ManagerLike(manager).ilks(cdp);
+        address urn = DssCdpManager(manager).urns(cdp);
+        bytes32 ilk = DssCdpManager(manager).ilks(cdp);
         // Joins DAI amount into the vat
         daiJoin_join(daiJoin, urn, wadD);
         uint wadC = convertTo18(gemJoin, amtC);
@@ -781,7 +755,7 @@ contract DssProxyActions is Common {
             manager,
             cdp,
             -toInt(wadC),
-            _getWipeDart(ManagerLike(manager).vat(), Vat(ManagerLike(manager).vat()).dai(urn), urn, ilk)
+            _getWipeDart(DssCdpManager(manager).vat(), Vat(DssCdpManager(manager).vat()).dai(urn), urn, ilk)
         );
         // Moves the amount from the CDP urn to proxy's address
         flux(manager, cdp, address(this), wadC);
@@ -803,9 +777,9 @@ contract DssProxyActions is Common {
         uint amtC,
         address res
     ) public {
-        address vat = ManagerLike(manager).vat();
-        address urn = ManagerLike(manager).urns(cdp);
-        bytes32 ilk = ManagerLike(manager).ilks(cdp);
+        address vat = DssCdpManager(manager).vat();
+        address urn = DssCdpManager(manager).urns(cdp);
+        bytes32 ilk = DssCdpManager(manager).ilks(cdp);
         (, uint art) = Vat(vat).urns(ilk, urn);
 
         // Joins DAI amount into the vat
@@ -839,9 +813,9 @@ contract DssProxyActionsEnd is Common {
         address end,
         uint cdp
     ) internal returns (uint ink) {
-        bytes32 ilk = ManagerLike(manager).ilks(cdp);
-        address urn = ManagerLike(manager).urns(cdp);
-        Vat vat = Vat(ManagerLike(manager).vat());
+        bytes32 ilk = DssCdpManager(manager).ilks(cdp);
+        address urn = DssCdpManager(manager).urns(cdp);
+        Vat vat = Vat(DssCdpManager(manager).vat());
         uint art;
         (ink, art) = vat.urns(ilk, urn);
 
@@ -855,7 +829,7 @@ contract DssProxyActionsEnd is Common {
             vat.hope(manager);
         }
         // Transfers position from CDP to the proxy address
-        ManagerLike(manager).quit(cdp, address(this));
+        DssCdpManager(manager).quit(cdp, address(this));
         // Frees the position and recovers the collateral in the vat registry
         End(end).free(ilk);
     }

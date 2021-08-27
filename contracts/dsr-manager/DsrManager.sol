@@ -21,15 +21,11 @@ pragma solidity >=0.5.12;
 import { Vat } from "../dss/vat.sol";
 import { Pot } from "../dss/pot.sol";
 import { DaiJoin } from "../dss/join.sol";
-
-interface DsrGemLike {
-    function transferFrom(address,address,uint256) external returns (bool);
-    function approve(address,uint256) external returns (bool);
-}
+import { Dai } from "../dss/dai.sol";
 
 contract DsrManager {
     Pot      public pot;
-    DsrGemLike  public dai;
+    Dai      public dai;
     DaiJoin  public daiJoin;
 
     uint256 public supply;
@@ -65,7 +61,7 @@ contract DsrManager {
     constructor(address pot_, address daiJoin_) public {
         pot = Pot(pot_);
         daiJoin = DaiJoin(daiJoin_);
-        dai = DsrGemLike(address(daiJoin.dai())); // REVIEW forced type cast
+        dai = daiJoin.dai();
 
         Vat vat = Vat(pot.vat());
         vat.hope(address(daiJoin));

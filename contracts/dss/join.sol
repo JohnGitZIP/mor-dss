@@ -21,16 +21,11 @@ pragma solidity >=0.5.12;
 
 import { Vat } from "./vat.sol";
 import { Dai } from "./dai.sol";
+import { DSToken } from "../ds-token/token.sol";
 
 // FIXME: This contract was altered compared to the production version.
 // It doesn't use LibNote anymore.
 // New deployments of this contract will need to include custom events (TO DO).
-
-interface Gem {
-    function decimals() external view returns (uint);
-    function transfer(address,uint) external returns (bool);
-    function transferFrom(address,address,uint) external returns (bool);
-}
 
 /*
     Here we provide *adapters* to connect the Vat to arbitrary external
@@ -68,7 +63,7 @@ contract GemJoin {
 
     Vat     public vat;   // CDP Engine
     bytes32 public ilk;   // Collateral Type
-    Gem     public gem;
+    DSToken public gem;
     uint    public dec;
     uint    public live;  // Active Flag
 
@@ -77,7 +72,7 @@ contract GemJoin {
         live = 1;
         vat = Vat(vat_);
         ilk = ilk_;
-        gem = Gem(gem_);
+        gem = DSToken(gem_);
         dec = gem.decimals();
     }
     function cage() external auth {
