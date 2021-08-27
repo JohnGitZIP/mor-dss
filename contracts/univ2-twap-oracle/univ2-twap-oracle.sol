@@ -5,7 +5,7 @@ pragma solidity ^0.6.0;
 import { DSNote } from "../ds-note/note.sol";
 import { DSToken } from "../ds-token/token.sol";
 import { PipLike } from "../dss/spot.sol";
-import { UniswapV2PairLike } from "../univ2-lp-oracle/UNIV2LPOracleFactory.sol";
+import { UniswapV2PairLike } from "../univ2-lp-oracle/UNIV2LPOracle.sol";
 
 interface OracleLike
 {
