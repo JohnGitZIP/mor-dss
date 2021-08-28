@@ -40,10 +40,9 @@
         "extraParams": [],
         "ilks": {
           "A": {
-            "lerpDelay": "604800",
-            "lerpStart": "10000000000000000",
-            "lerpEnd": "1000000000000000",
-            "lerpDuration": "604800"
+            "line": "10000000000",
+            "tin": "0.001",
+            "tout": "0.01"
           }
         }
       }
