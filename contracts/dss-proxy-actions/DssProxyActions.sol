@@ -20,39 +20,24 @@
 pragma solidity >=0.5.12;
 
 import { Vat } from "../dss/vat.sol";
-import { DaiJoin } from "../dss/join.sol";
+import { DaiJoin, GemJoin } from "../dss/join.sol";
+import { Dai } from "../dss/dai.sol";
 import { End } from "../dss/end.sol";
 import { Pot } from "../dss/pot.sol";
 import { Jug } from "../dss/jug.sol";
 import { DssCdpManager } from "../dss-cdp-manager/DssCdpManager.sol";
 import { ProxyRegistry } from "../proxy-registry/ProxyRegistry.sol";
 import { DSProxy } from "../ds-proxy/proxy.sol";
-
-interface GemLike {
-    function approve(address, uint) external;
-    function transfer(address, uint) external;
-    function transferFrom(address, address, uint) external;
-    function deposit() external payable;
-    function withdraw(uint) external;
-
-    function balanceOf(address) external view returns (uint256);
-    function deposit(uint256 _amount, uint256 _minShares, bool _execGulp) external;
-    function withdraw(uint256 _shares, uint256 _minAmount, bool _execGulp) external;
-}
-
-interface GemJoinLike {
-    function dec() external returns (uint);
-    function gem() external returns (GemLike);
-    function join(address, uint) external payable;
-    function exit(address, uint) external;
-}
-
+import { DSToken } from "../ds-token/token.sol";
 /*
-interface GNTJoinLike {
-    function bags(address) external view returns (address);
-    function make(address) external returns (address);
-}
+import { WETH9_ } from "../ds-weth/weth9.sol";
+import { GemJoin4 } from "../dss-gem-joins/join-4.sol";
 */
+
+abstract contract DSVault is DSToken {
+    function deposit(uint256 _amount, uint256 _minShares, bool _execGulp) external virtual;
+    function withdraw(uint256 _shares, uint256 _minAmount, bool _execGulp) external virtual;
+}
 
 interface HopeLike {
     function hope(address) external;
@@ -75,7 +60,7 @@ contract Common {
     // Public functions
 
     function daiJoin_join(address apt, address urn, uint wad) public {
-        GemLike dai = GemLike(address(DaiJoin(apt).dai())); // REVIEW forced type cast
+        Dai dai = DaiJoin(apt).dai();
         // Gets DAI from the user's wallet
         dai.transferFrom(msg.sender, address(this), wad);
         // Approves adapter to take the DAI amount
@@ -101,12 +86,12 @@ contract DssProxyActions is Common {
         rad = _mul(wad, 10 ** 27);
     }
 
-    function convertTo18(address gemJoin, uint256 amt) internal returns (uint256 wad) {
+    function convertTo18(address gemJoin, uint256 amt) internal view returns (uint256 wad) {
         // For those collaterals that have less than 18 decimals precision we need to do the conversion before passing to frob function
         // Adapters will automatically handle the difference of precision
         wad = _mul(
             amt,
-            10 ** (18 - GemJoinLike(gemJoin).dec())
+            10 ** (18 - GemJoin(gemJoin).dec())
         );
     }
 
@@ -172,37 +157,37 @@ contract DssProxyActions is Common {
     // Public functions
 
     function transfer(address gem, address dst, uint amt) public {
-        GemLike(gem).transfer(dst, amt);
+        DSToken(gem).transfer(dst, amt);
     }
-
+/*
     function ethJoin_join(address apt, address urn) public payable {
-        GemLike gem = GemJoinLike(apt).gem();
+        WETH9_ gem = WETH9_(payable(address(GemJoin(apt).gem())));
         // Wraps ETH in WETH
         gem.deposit{value: msg.value}();
         // Approves adapter to take the WETH amount
         gem.approve(address(apt), msg.value);
         // Joins WETH collateral into the vat
-        GemJoinLike(apt).join(urn, msg.value);
+        GemJoin(apt).join(urn, msg.value);
     }
-
+*/
     function gemJoin_join(address apt, address urn, uint amt, bool transferFrom, address res) public {
         // Only executes for tokens that have approval/transferFrom implementation
         if (transferFrom) {
-            GemLike gem = GemJoinLike(apt).gem();
+            DSToken gem = GemJoin(apt).gem();
             // Gets token from the user's wallet
             if (res == address(0)) {
                 gem.transferFrom(msg.sender, address(this), amt);
             } else {
-                GemLike(res).transferFrom(msg.sender, address(this), amt);
-                GemLike(res).approve(address(gem), amt);
-                gem.deposit(amt, 1, false);
+                DSToken(res).transferFrom(msg.sender, address(this), amt);
+                DSToken(res).approve(address(gem), amt);
+                DSVault(address(gem)).deposit(amt, 1, false);
                 amt = gem.balanceOf(address(this));
             }
             // Approves adapter to take the token amount
             gem.approve(apt, amt);
         }
         // Joins token collateral into the vat
-        GemJoinLike(apt).join(urn, amt);
+        GemJoin(apt).join(urn, amt);
     }
 
     function hope(
@@ -329,7 +314,7 @@ contract DssProxyActions is Common {
     function makeGemBag(
         address gemJoin
     ) public returns (address bag) {
-        bag = GNTJoinLike(gemJoin).make(address(this));
+        bag = GemJoin4(gemJoin).make(address(this));
     }
 
     function lockETH(
@@ -405,9 +390,9 @@ contract DssProxyActions is Common {
         // Moves the amount from the CDP urn to proxy's address
         flux(manager, cdp, address(this), wad);
         // Exits WETH amount to proxy address as a token
-        GemJoinLike(ethJoin).exit(address(this), wad);
+        GemJoin(ethJoin).exit(address(this), wad);
         // Converts WETH to ETH
-        GemJoinLike(ethJoin).gem().withdraw(wad);
+        WETH9_(payable(address(GemJoin(ethJoin).gem()))).withdraw(wad);
         // Sends ETH back to the user's wallet
         msg.sender.transfer(wad);
     }
@@ -426,11 +411,11 @@ contract DssProxyActions is Common {
         flux(manager, cdp, address(this), wad);
         // Exits token amount to the user's wallet as a token
         if (res == address(0)) {
-            GemJoinLike(gemJoin).exit(msg.sender, amt);
+            GemJoin(gemJoin).exit(msg.sender, amt);
         } else {
-            GemJoinLike(gemJoin).exit(address(this), amt);
-            GemJoinLike(gemJoin).gem().withdraw(amt, 1, true);
-            GemLike(res).transfer(msg.sender, GemLike(res).balanceOf(address(this)));
+            GemJoin(gemJoin).exit(address(this), amt);
+            DSVault(address(GemJoin(gemJoin).gem())).withdraw(amt, 1, true);
+            DSToken(res).transfer(msg.sender, DSToken(res).balanceOf(address(this)));
         }
     }
 /*
@@ -444,9 +429,9 @@ contract DssProxyActions is Common {
         flux(manager, cdp, address(this), wad);
 
         // Exits WETH amount to proxy address as a token
-        GemJoinLike(ethJoin).exit(address(this), wad);
+        GemJoin(ethJoin).exit(address(this), wad);
         // Converts WETH to ETH
-        GemJoinLike(ethJoin).gem().withdraw(wad);
+        WETH9_(payable(address(GemJoin(ethJoin).gem()))).withdraw(wad);
         // Sends ETH back to the user's wallet
         msg.sender.transfer(wad);
     }
@@ -463,11 +448,11 @@ contract DssProxyActions is Common {
 
         // Exits token amount to the user's wallet as a token
         if (res == address(0)) {
-            GemJoinLike(gemJoin).exit(msg.sender, amt);
+            GemJoin(gemJoin).exit(msg.sender, amt);
         } else {
-            GemJoinLike(gemJoin).exit(address(this), amt);
-            GemJoinLike(gemJoin).gem().withdraw(amt, 1, true);
-            GemLike(res).transfer(msg.sender, GemLike(res).balanceOf(address(this)));
+            GemJoin(gemJoin).exit(address(this), amt);
+            DSVault(address(GemJoin(gemJoin).gem())).withdraw(amt, 1, true);
+            DSToken(res).transfer(msg.sender, DSToken(res).balanceOf(address(this)));
         }
     }
 
@@ -668,13 +653,13 @@ contract DssProxyActions is Common {
         uint wadD
     ) public returns (address bag, uint cdp) {
         // Creates bag (if doesn't exist) to hold GNT
-        bag = GNTJoinLike(gntJoin).bags(address(this));
+        bag = GemJoin4(gntJoin).bags(address(this));
         if (bag == address(0)) {
             bag = makeGemBag(gntJoin);
         }
         // Transfer funds to the funds which previously were sent to the proxy
-        GemLike(GemJoinLike(gntJoin).gem()).transfer(bag, amtC);
-        cdp = openLockGemAndDraw(manager, jug, gntJoin, daiJoin, ilk, amtC, wadD, false);
+        GemJoin(gntJoin).gem().transfer(bag, amtC);
+        cdp = openLockGemAndDraw(manager, jug, gntJoin, daiJoin, ilk, amtC, wadD, false, address(0));
     }
 
     function wipeAndFreeETH(
@@ -698,9 +683,9 @@ contract DssProxyActions is Common {
         // Moves the amount from the CDP urn to proxy's address
         flux(manager, cdp, address(this), wadC);
         // Exits WETH amount to proxy address as a token
-        GemJoinLike(ethJoin).exit(address(this), wadC);
+        GemJoin(ethJoin).exit(address(this), wadC);
         // Converts WETH to ETH
-        GemJoinLike(ethJoin).gem().withdraw(wadC);
+        WETH9_(payable(address(GemJoin(ethJoin).gem()))).withdraw(wadC);
         // Sends ETH back to the user's wallet
         msg.sender.transfer(wadC);
     }
@@ -729,9 +714,9 @@ contract DssProxyActions is Common {
         // Moves the amount from the CDP urn to proxy's address
         flux(manager, cdp, address(this), wadC);
         // Exits WETH amount to proxy address as a token
-        GemJoinLike(ethJoin).exit(address(this), wadC);
+        GemJoin(ethJoin).exit(address(this), wadC);
         // Converts WETH to ETH
-        GemJoinLike(ethJoin).gem().withdraw(wadC);
+        WETH9_(payable(address(GemJoin(ethJoin).gem()))).withdraw(wadC);
         // Sends ETH back to the user's wallet
         msg.sender.transfer(wadC);
     }
@@ -761,11 +746,11 @@ contract DssProxyActions is Common {
         flux(manager, cdp, address(this), wadC);
         // Exits token amount to the user's wallet as a token
         if (res == address(0)) {
-            GemJoinLike(gemJoin).exit(msg.sender, amtC);
+            GemJoin(gemJoin).exit(msg.sender, amtC);
         } else {
-            GemJoinLike(gemJoin).exit(address(this), amtC);
-            GemJoinLike(gemJoin).gem().withdraw(amtC, 1, true);
-            GemLike(res).transfer(msg.sender, GemLike(res).balanceOf(address(this)));
+            GemJoin(gemJoin).exit(address(this), amtC);
+            DSVault(address(GemJoin(gemJoin).gem())).withdraw(amtC, 1, true);
+            DSToken(res).transfer(msg.sender, DSToken(res).balanceOf(address(this)));
         }
     }
 
@@ -796,11 +781,11 @@ contract DssProxyActions is Common {
         flux(manager, cdp, address(this), wadC);
         // Exits token amount to the user's wallet as a token
         if (res == address(0)) {
-            GemJoinLike(gemJoin).exit(msg.sender, amtC);
+            GemJoin(gemJoin).exit(msg.sender, amtC);
         } else {
-            GemJoinLike(gemJoin).exit(address(this), amtC);
-            GemJoinLike(gemJoin).gem().withdraw(amtC, 1, true);
-            GemLike(res).transfer(msg.sender, GemLike(res).balanceOf(address(this)));
+            GemJoin(gemJoin).exit(address(this), amtC);
+            DSVault(address(GemJoin(gemJoin).gem())).withdraw(amtC, 1, true);
+            DSToken(res).transfer(msg.sender, DSToken(res).balanceOf(address(this)));
         }
     }
 }
@@ -833,7 +818,7 @@ contract DssProxyActionsEnd is Common {
         // Frees the position and recovers the collateral in the vat registry
         End(end).free(ilk);
     }
-
+/*
     // Public functions
     function freeETH(
         address manager,
@@ -843,13 +828,13 @@ contract DssProxyActionsEnd is Common {
     ) public {
         uint wad = _free(manager, end, cdp);
         // Exits WETH amount to proxy address as a token
-        GemJoinLike(ethJoin).exit(address(this), wad);
+        GemJoin(ethJoin).exit(address(this), wad);
         // Converts WETH to ETH
-        GemJoinLike(ethJoin).gem().withdraw(wad);
+        WETH9_(payable(address(GemJoin(ethJoin).gem()))).withdraw(wad);
         // Sends ETH back to the user's wallet
         msg.sender.transfer(wad);
     }
-
+*/
     function freeGem(
         address manager,
         address gemJoin,
@@ -857,14 +842,14 @@ contract DssProxyActionsEnd is Common {
         uint cdp,
         address res
     ) public {
-        uint amt = _free(manager, end, cdp) / 10 ** (18 - GemJoinLike(gemJoin).dec());
+        uint amt = _free(manager, end, cdp) / 10 ** (18 - GemJoin(gemJoin).dec());
         // Exits token amount to the user's wallet as a token
         if (res == address(0)) {
-            GemJoinLike(gemJoin).exit(msg.sender, amt);
+            GemJoin(gemJoin).exit(msg.sender, amt);
         } else {
-            GemJoinLike(gemJoin).exit(address(this), amt);
-            GemJoinLike(gemJoin).gem().withdraw(amt, 1, true);
-            GemLike(res).transfer(msg.sender, GemLike(res).balanceOf(address(this)));
+            GemJoin(gemJoin).exit(address(this), amt);
+            DSVault(address(GemJoin(gemJoin).gem())).withdraw(amt, 1, true);
+            DSToken(res).transfer(msg.sender, DSToken(res).balanceOf(address(this)));
         }
     }
 
@@ -881,7 +866,7 @@ contract DssProxyActionsEnd is Common {
         }
         End(end).pack(wad);
     }
-
+/*
     function cashETH(
         address ethJoin,
         address end,
@@ -891,13 +876,13 @@ contract DssProxyActionsEnd is Common {
         End(end).cash(ilk, wad);
         uint wadC = _mul(wad, End(end).fix(ilk)) / RAY;
         // Exits WETH amount to proxy address as a token
-        GemJoinLike(ethJoin).exit(address(this), wadC);
+        GemJoin(ethJoin).exit(address(this), wadC);
         // Converts WETH to ETH
-        GemJoinLike(ethJoin).gem().withdraw(wadC);
+        WETH9_(payable(address(GemJoin(ethJoin).gem()))).withdraw(wadC);
         // Sends ETH back to the user's wallet
         msg.sender.transfer(wadC);
     }
-
+*/
     function cashGem(
         address gemJoin,
         address end,
@@ -907,13 +892,13 @@ contract DssProxyActionsEnd is Common {
     ) public {
         End(end).cash(ilk, wad);
         // Exits token amount to the user's wallet as a token
-        uint amt = _mul(wad, End(end).fix(ilk)) / RAY / 10 ** (18 - GemJoinLike(gemJoin).dec());
+        uint amt = _mul(wad, End(end).fix(ilk)) / RAY / 10 ** (18 - GemJoin(gemJoin).dec());
         if (res == address(0)) {
-            GemJoinLike(gemJoin).exit(msg.sender, amt);
+            GemJoin(gemJoin).exit(msg.sender, amt);
         } else {
-            GemJoinLike(gemJoin).exit(address(this), amt);
-            GemJoinLike(gemJoin).gem().withdraw(amt, 1, true);
-            GemLike(res).transfer(msg.sender, GemLike(res).balanceOf(address(this)));
+            GemJoin(gemJoin).exit(address(this), amt);
+            DSVault(address(GemJoin(gemJoin).gem())).withdraw(amt, 1, true);
+            DSToken(res).transfer(msg.sender, DSToken(res).balanceOf(address(this)));
         }
     }
 }
