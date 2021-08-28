@@ -1745,8 +1745,9 @@ module.exports = async (deployer, network, [account]) => {
 
       for (const ilk in token_ilks) {
         const ilk_config = token_ilks[ilk];
-        const ilk_tin = units(ilk_config.tin, 18);
-        const ilk_tout = units(ilk_config.tout, 18);
+        const line = units(ilk_config.line, 45);
+        const tin = units(ilk_config.tin, 18);
+        const tout = units(ilk_config.tout, 18);
         const ilk_name = web3.utils.asciiToHex('PSM-' + token_name + '-' + ilk);
 
         // const ilk_lerpDelay = units(ilk_config.lerpDelay, 0);
@@ -1765,8 +1766,9 @@ module.exports = async (deployer, network, [account]) => {
         const dssPsm = await artifact_deploy(DssPsm, MCD_JOIN_PSM_[token_name][ilk], MCD_JOIN_DAI, MCD_VOW);
         MCD_PSM_[token_name][ilk] = dssPsm.address;
         console.log('MCD_PSM_' + token_name + '_' + ilk + '=' + MCD_PSM_[token_name][ilk]);
-        await dssPsm.file(web3.utils.asciiToHex('tin'), ilk_tin);
-        await dssPsm.file(web3.utils.asciiToHex('tout'), ilk_tout);
+        await dssPsm.file(web3.utils.asciiToHex('tin'), tin);
+        await dssPsm.file(web3.utils.asciiToHex('tout'), tout);
+        await filex(MCD_VAT, ilk_name, 'line', line);
 
         // console.log('Deploying Lerp...');
         // await lerpFactory.newLerp(lerp_name, MCD_PSM_[token_name][ilk], web3.utils.asciiToHex('tin'), NOW + ilk_lerpDelay, ilk_lerpStart, ilk_lerpEnd, ilk_lerpDuration);
