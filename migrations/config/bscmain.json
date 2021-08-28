@@ -105,7 +105,7 @@
       "pipDeploy": {
         "osmDelay": "0",
         "type": "chainlink",
-        "src": "0xcB23da9EA243f53194CBc2380A6d4d9bC046161f"
+        "src": "0xB6064eD41d4f67e353768aA239cA86f4F73665a1"
       }
     },
     "BANANA": {
