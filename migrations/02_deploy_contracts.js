@@ -1125,7 +1125,7 @@ module.exports = async (deployer, network, [account]) => {
       if (token_pipDeploy.type === 'value') {
         const price = units(token_pipDeploy.price, 18);
         const dsValue = await artifact_at(DSValue, VAL_[token_name]);
-        await dsValue.poke(web3.utils.numberToHex(String(price)));
+        await dsValue.poke('0x' + web3.utils.numberToHex(String(price)).substring(2).padStart(64, '0'));
       }
     }
   }
