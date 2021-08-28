@@ -129,7 +129,8 @@
         "osmDelay": "0",
         "type": "univ2lp",
         "token0": "CAKE",
-        "token1": "BNB"
+        "token1": "BNB",
+        "hop": "3600"
       }
     },
     "PCSBNBBUSD": {
@@ -140,7 +141,8 @@
         "osmDelay": "0",
         "type": "univ2lp",
         "token0": "BNB",
-        "token1": "BUSD"
+        "token1": "BUSD",
+        "hop": "3600"
       }
     },
     "PCSBNBETH": {
@@ -151,7 +153,8 @@
         "osmDelay": "0",
         "type": "univ2lp",
         "token0": "ETH",
-        "token1": "BNB"
+        "token1": "BNB",
+        "hop": "3600"
       }
     },
     "PCSBNBBTCB": {
@@ -162,7 +165,8 @@
         "osmDelay": "0",
         "type": "univ2lp",
         "token0": "BTCB",
-        "token1": "BNB"
+        "token1": "BNB",
+        "hop": "3600"
       }
     },
     "PCSBNBUSDT": {
@@ -173,7 +177,8 @@
         "osmDelay": "0",
         "type": "univ2lp",
         "token0": "USDT",
-        "token1": "BNB"
+        "token1": "BNB",
+        "hop": "3600"
       }
     },
     "PCSBUSDUSDC": {
@@ -184,7 +189,8 @@
         "osmDelay": "0",
         "type": "univ2lp",
         "token0": "USDC",
-        "token1": "BUSD"
+        "token1": "BUSD",
+        "hop": "3600"
       }
     },
     "PCSBUSDBTCB": {
@@ -195,7 +201,8 @@
         "osmDelay": "0",
         "type": "univ2lp",
         "token0": "BTCB",
-        "token1": "BUSD"
+        "token1": "BUSD",
+        "hop": "3600"
       }
     },
     "PCSBUSDCAKE": {
@@ -206,7 +213,8 @@
         "osmDelay": "0",
         "type": "univ2lp",
         "token0": "CAKE",
-        "token1": "BUSD"
+        "token1": "BUSD",
+        "hop": "3600"
       }
     },
     "PCSETHBTCB": {
@@ -217,7 +225,8 @@
         "osmDelay": "0",
         "type": "univ2lp",
         "token0": "ETH",
-        "token1": "BTCB"
+        "token1": "BTCB",
+        "hop": "3600"
       }
     },
     "PCSETHUSDC": {
@@ -228,7 +237,8 @@
         "osmDelay": "0",
         "type": "univ2lp",
         "token0": "ETH",
-        "token1": "USDC"
+        "token1": "USDC",
+        "hop": "3600"
       }
     },
     "STKCAKE": {

@@ -137,7 +137,8 @@
         "osmDelay": "0",
         "type": "univ2lp",
         "token0": "MATIC",
-        "token1": "USDC"
+        "token1": "USDC",
+        "hop": "3600"
       },
       "ilks": {
         "A": {

@@ -540,6 +540,9 @@ module.exports = async (deployer, network, [account]) => {
         const univ2lpOracle = await artifact_deploy(UNIV2LPOracle, src, wat, orb0, orb1);
         VAL_[token_name] = univ2lpOracle.address;
         console.log('VAL_' + token_name + '=' + VAL_[token_name]);
+        const hop = units(token_pipDeploy.hop, 0);
+        console.log('@pip.hop', token_pipDeploy.hop, hop);
+        await univ2lpOracle.step(hop);
       }
       if (token_pipDeploy.type === 'chainlink') {
         console.log('Publishing LinkOracle...');
