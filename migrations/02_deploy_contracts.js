@@ -34,7 +34,7 @@ module.exports = async (deployer, network, [account]) => {
   function liftFunc(address, name, func) {
     let i = 0;
     const liftedFunc = (...args) => {
-      console.log('>> CALL ' + address + '.' + name + '(' + args.join(', ') + ')');
+      // console.log('>> CALL ' + address + '.' + name + '(' + args.join(', ') + ')');
       const result = func(...args);
       if (Object.prototype.toString.call(result) !== '[object Promise]') return result;
       return new Promise((resolve, reject) => {
@@ -67,7 +67,7 @@ module.exports = async (deployer, network, [account]) => {
   }
 
   async function artifact_deploy(artifact, ...params) {
-    console.log('>> CREATE ' + artifact._json.contractName + '(' + params.join(', ') + ')');
+    // console.log('>> CREATE ' + artifact._json.contractName + '(' + params.join(', ') + ')');
     for (let i = 0; ; i++) {
       try {
         await deployer.deploy(artifact, ...params);
@@ -395,8 +395,10 @@ module.exports = async (deployer, network, [account]) => {
   await end.rely(MCD_PAUSE_PROXY);
 
   // Deploy ESM
+  const esm_min = units(config.esm_min, 18);
   const ESM = artifacts.require('ESM');
-  const esm = await artifact_deploy(ESM, MCD_GOV, MCD_END, MCD_PAUSE_PROXY, units(config.esm_min, 18));
+  console.log('@esm_min', config.esm_min, esm_min);
+  const esm = await artifact_deploy(ESM, MCD_GOV, MCD_END, MCD_PAUSE_PROXY, esm_min);
   const MCD_ESM = esm.address;
   console.log('MCD_ESM=' + MCD_ESM);
   await end.rely(MCD_ESM);
@@ -508,6 +510,7 @@ module.exports = async (deployer, network, [account]) => {
         const token = await artifact_at(DSToken, T_[token_name]);
         const dec = Number(await token.decimals());
         const cap = units(token_pipDeploy.cap, dec);
+        console.log('@pip.cap', token_pipDeploy.cap, cap);
         const univ2twapOracle = await artifact_deploy(UniV2TwapOracle, stwap, ltwap, src, token.address, cap);
         VAL_[token_name] = univ2twapOracle.address;
         console.log('VAL_' + token_name + '=' + VAL_[token_name]);
@@ -993,82 +996,102 @@ module.exports = async (deployer, network, [account]) => {
   console.log('Configuring Core...');
   if (Number(config.vat_line) > 0) {
     const vat_line = units(config.vat_line, 45);
+    console.log('@vat_line', config.vat_line, vat_line);
     await file(MCD_VAT, 'Line', vat_line);
   }
   if (Number(config.vow_wait) >= 0) {
     const vow_wait = units(config.vow_wait, 0);
+    console.log('@vow_wait', config.vow_wait, vow_wait);
     await file(MCD_VOW, 'wait', vow_wait);
   }
   if (Number(config.vow_bump) >= 0) {
     const vow_bump = units(config.vow_bump, 45);
+    console.log('@vow_bump', config.vow_bump, vow_bump);
     await file(MCD_VOW, 'bump', vow_bump);
   }
   if (Number(config.vow_dump) >= 0) {
     const vow_dump = units(config.vow_dump, 18);
+    console.log('@vow_dump', config.vow_dump, vow_dump);
     await file(MCD_VOW, 'dump', vow_dump);
   }
   if (Number(config.vow_sump) >= 0) {
     const vow_sump = units(config.vow_sump, 45);
+    console.log('@vow_sump', config.vow_sump, vow_sump);
     await file(MCD_VOW, 'sump', vow_sump);
   }
   if (Number(config.vow_hump) >= 0) {
     const vow_hump = units(config.vow_hump, 45);
+    console.log('@vow_hump', config.vow_hump, vow_hump);
     await file(MCD_VOW, 'hump', vow_hump);
   }
   if (Number(config.cat_box) > 0) {
     const cat_box = units(config.cat_box, 45);
+    console.log('@cat_box', config.cat_box, cat_box);
     await file(MCD_CAT, 'box', cat_box);
   }
   if (Number(config.dog_hole) > 0) {
     const dog_hole = units(config.dog_hole, 45);
+    console.log('@dog_hole', config.dog_hole, dog_hole);
     await file(MCD_DOG, 'Hole', dog_hole);
   }
   if (Number(config.jug_base) >= 0) {
     const jug_base = units(Math.exp(Math.log(Number(config.jug_base) / 100 + 1) / (60 * 60 * 24 * 365)).toFixed(27), 27) - 10n ** 27n; // review
+    console.log('@jug_base', config.jug_base, jug_base);
     await file(MCD_JUG, 'base', jug_base);
   }
   if (Number(config.pot_dsr) >= 0) {
     const pot_dsr = units(Math.exp(Math.log(Number(config.pot_dsr) / 100 + 1) / (60 * 60 * 24 * 365)).toFixed(27), 27); // review
+    console.log('@pot_dsr', config.pot_dsr, pot_dsr);
     await dripAndFile(MCD_POT, 'dsr', pot_dsr);
   }
   if (Number(config.end_wait) >= 0) {
     const end_wait = units(config.end_wait, 0);
+    console.log('@end_wait', config.end_wait, end_wait);
     await file(MCD_END, 'wait', end_wait);
   }
   if (Number(config.flap_beg) >= 0) {
     const flap_beg = units(config.flap_beg, 16) + units('100', 16);
+    console.log('@flap_beg', config.flap_beg, flap_beg);
     await file(MCD_FLAP, 'beg', flap_beg);
   }
   if (Number(config.flap_ttl) >= 0) {
     const flap_ttl = units(config.flap_ttl, 0);
+    console.log('@flap_ttl', config.flap_ttl, flap_ttl);
     await file(MCD_FLAP, 'ttl', flap_ttl);
   }
   if (Number(config.flap_tau) >= 0) {
     const flap_tau = units(config.flap_tau, 0);
+    console.log('@flap_tau', config.flap_tau, flap_tau);
     await file(MCD_FLAP, 'tau', flap_tau);
   }
   if (Number(config.flop_beg) >= 0) {
     const flop_beg = units(config.flop_beg, 16) + units('100', 16);
+    console.log('@flop_beg', config.flop_beg, flop_beg);
     await file(MCD_FLOP, 'beg', flop_beg);
   }
   if (Number(config.flop_pad) >= 0) {
     const flop_pad = units(config.flop_pad, 16) + units('100', 16);
+    console.log('@flop_pad', config.flop_pad, flop_pad);
     await file(MCD_FLOP, 'pad', flop_pad);
   }
   if (Number(config.flop_ttl) >= 0) {
     const flop_ttl = units(config.flop_ttl, 0);
+    console.log('@flop_ttl', config.flop_ttl, flop_ttl);
     await file(MCD_FLOP, 'ttl', flop_ttl);
   }
   if (Number(config.flop_tau) >= 0) {
     const flop_tau = units(config.flop_tau, 0);
+    console.log('@flop_tau', config.flop_tau, flop_tau);
     await file(MCD_FLOP, 'tau', flop_tau);
   }
   if (Number(config.flash_max) >= 0) {
     const flash_max = units(config.flash_max, 18);
+    console.log('@flash_max', config.flash_max, flash_max);
     await file(MCD_FLASH, 'max', flash_max);
   }
   if (Number(config.flash_toll) >= 0) {
     const flash_toll = units(config.flash_toll, 16);
+    console.log('@flash_toll', config.flash_toll, flash_toll);
     await file(MCD_FLASH, 'toll', flash_toll);
   }
 
@@ -1087,6 +1110,7 @@ module.exports = async (deployer, network, [account]) => {
       }
       if (token_pipDeploy.type === 'value') {
         const price = units(token_pipDeploy.price, 18);
+        console.log('@pip.price', token_pipDeploy.price, price);
         const dsValue = await artifact_at(DSValue, VAL_[token_name]);
         await dsValue.poke('0x' + web3.utils.numberToHex(String(price)).substring(2).padStart(64, '0'));
       }
@@ -1142,6 +1166,7 @@ module.exports = async (deployer, network, [account]) => {
       const ilk_name = web3.utils.asciiToHex(token_name + '-' + ilk);
 
       const mat = units(ilk_config.mat, 25);
+      console.log('@ilk.mat', ilk_config.mat, mat);
       await filex(MCD_SPOT, ilk_name, 'mat', mat);
     }
   }
@@ -1159,12 +1184,16 @@ module.exports = async (deployer, network, [account]) => {
 
       const line = units(ilk_config.line, 45);
       const autoLine = units(ilk_config.autoLine, 45);
+      console.log('@ilk.line', ilk_config.line, line);
+      console.log('@ilk.autoLine', ilk_config.autoLine, autoLine);
       if (line > 0n && autoLine === 0n) {
         await filex(MCD_VAT, ilk_name, 'line', line);
       }
       if (autoLine > 0n) {
         const autoLineGap = units(ilk_config.autoLineGap, 45);
         const autoLineTtl = units(ilk_config.autoLineTtl, 0);
+        console.log('@ilk.autoLineGap', ilk_config.autoLineGap, autoLineGap);
+        console.log('@ilk.autoLineTtl', ilk_config.autoLineTtl, autoLineTtl);
         await dssAutoLine.setIlk(ilk_name, autoLine, autoLineGap, autoLineTtl);
         await dssAutoLine.exec(ilk_name);
       }
@@ -1185,6 +1214,7 @@ module.exports = async (deployer, network, [account]) => {
       const ilk_name = web3.utils.asciiToHex(token_name + '-' + ilk);
 
       const dust = units(ilk_config.dust, 45);
+      console.log('@ilk.dust', ilk_config.dust, dust);
       await filex(MCD_VAT, ilk_name, 'dust', dust);
     }
   }
@@ -1200,7 +1230,8 @@ module.exports = async (deployer, network, [account]) => {
       const ilk_config = token_ilks[ilk];
       const ilk_name = web3.utils.asciiToHex(token_name + '-' + ilk);
 
-      const duty = units(Math.exp(Math.log(Number(ilk_config.dust) / 100 + 1) / (60 * 60 * 24 * 365)).toFixed(27), 27); // review
+      const duty = units(Math.exp(Math.log(Number(ilk_config.duty) / 100 + 1) / (60 * 60 * 24 * 365)).toFixed(27), 27); // review
+      console.log('@ilk.duty', ilk_config.duty, duty);
       await dripAndFilex(MCD_JUG, ilk_name, 'duty', duty);
     }
   }
@@ -1241,10 +1272,12 @@ module.exports = async (deployer, network, [account]) => {
 
       if (ilk_config.flipDeploy !== undefined) {
         const chop = units(ilk_flipDeploy.chop, 16) + units('100', 16);
+        console.log('@flip.chop', ilk_flipDeploy.chop, chop);
         await filex(MCD_CAT, ilk_name, 'chop', chop);
       }
       if (ilk_config.clipDeploy !== undefined) {
         const chop = units(ilk_clipDeploy.chop, 16) + units('100', 16);
+        console.log('@clip.chop', ilk_clipDeploy.chop, chop);
         await filex(MCD_DOG, ilk_name, 'chop', chop);
         const Clipper = artifacts.require('Clipper');
         const clipper = await artifact_at(Clipper, MCD_CLIP_[token_name][ilk]);
@@ -1267,6 +1300,7 @@ module.exports = async (deployer, network, [account]) => {
 
       if (ilk_config.flipDeploy !== undefined) {
         const dunk = units(ilk_flipDeploy.dunk, 45);
+        console.log('@flip.dunk', ilk_flipDeploy.dunk, dunk);
         await filex(MCD_CAT, ilk_name, 'dunk', dunk);
       }
     }
@@ -1285,6 +1319,7 @@ module.exports = async (deployer, network, [account]) => {
 
       if (ilk_config.flipDeploy !== undefined) {
         const beg = units(ilk_flipDeploy.beg, 16) + units('100', 16);
+        console.log('@flip.beg', ilk_flipDeploy.beg, beg);
         await file(MCD_FLIP_[token_name][ilk], 'beg', beg);
       }
     }
@@ -1303,6 +1338,7 @@ module.exports = async (deployer, network, [account]) => {
 
       if (ilk_config.flipDeploy !== undefined) {
         const ttl = units(ilk_flipDeploy.ttl, 0);
+        console.log('@flip.ttl', ilk_flipDeploy.ttl, ttl);
         await file(MCD_FLIP_[token_name][ilk], 'ttl', ttl);
       }
     }
@@ -1321,6 +1357,7 @@ module.exports = async (deployer, network, [account]) => {
 
       if (ilk_config.flipDeploy !== undefined) {
         const tau = units(ilk_flipDeploy.tau, 0);
+        console.log('@flip.tau', ilk_flipDeploy.tau, tau);
         await file(MCD_FLIP_[token_name][ilk], 'tau', tau);
       }
     }
@@ -1340,6 +1377,7 @@ module.exports = async (deployer, network, [account]) => {
 
       if (ilk_config.clipDeploy !== undefined) {
         const hole = units(ilk_clipDeploy.hole, 45);
+        console.log('@clip.hole', ilk_clipDeploy.hole, hole);
         await filex(MCD_DOG, ilk_name, 'hole', hole);
       }
     }
@@ -1358,6 +1396,7 @@ module.exports = async (deployer, network, [account]) => {
 
       if (ilk_config.clipDeploy !== undefined) {
         const chip = units(ilk_clipDeploy.chip, 16);
+        console.log('@clip.chip', ilk_clipDeploy.chip, chip);
         await file(MCD_CLIP_[token_name][ilk], 'chip', chip);
       }
     }
@@ -1376,6 +1415,7 @@ module.exports = async (deployer, network, [account]) => {
 
       if (ilk_config.clipDeploy !== undefined) {
         const tip = units(ilk_clipDeploy.tip, 45);
+        console.log('@clip.tip', ilk_clipDeploy.tip, tip);
         await file(MCD_CLIP_[token_name][ilk], 'tip', tip);
       }
     }
@@ -1394,6 +1434,7 @@ module.exports = async (deployer, network, [account]) => {
 
       if (ilk_config.clipDeploy !== undefined) {
         const buf = units(ilk_clipDeploy.buf, 25);
+        console.log('@clip.buf', ilk_clipDeploy.buf, buf);
         await file(MCD_CLIP_[token_name][ilk], 'buf', buf);
       }
     }
@@ -1412,6 +1453,7 @@ module.exports = async (deployer, network, [account]) => {
 
       if (ilk_config.clipDeploy !== undefined) {
         const tail = units(ilk_clipDeploy.tail, 0);
+        console.log('@clip.tail', ilk_clipDeploy.tail, tail);
         await file(MCD_CLIP_[token_name][ilk], 'tail', tail);
       }
     }
@@ -1430,6 +1472,7 @@ module.exports = async (deployer, network, [account]) => {
 
       if (ilk_config.clipDeploy !== undefined) {
         const cusp = units(ilk_clipDeploy.cusp, 25);
+        console.log('@clip.cusp', ilk_clipDeploy.cusp, cusp);
         await file(MCD_CLIP_[token_name][ilk], 'cusp', cusp);
       }
     }
@@ -1452,14 +1495,17 @@ module.exports = async (deployer, network, [account]) => {
 
         if (calc_config.type === 'LinearDecrease') {
           const tau = units(calc_config.tau, 0);
+          console.log('@calc.tau', calc_config.tau, tau);
           await file(MCD_CLIP_CALC_[token_name][ilk], 'tau', tau);
         }
         if (calc_config.type === 'StairstepExponentialDecrease' || calc_config.type === 'ExponentialDecrease') {
           const cut = units((Number(calc_config.cut) / 100).toFixed(27), 27);
+          console.log('@calc.cut', calc_config.cut, cut);
           await file(MCD_CLIP_CALC_[token_name][ilk], 'cut', cut);
         }
         if (calc_config.type === 'StairstepExponentialDecrease') {
           const step = units(calc_config.step, 0);
+          console.log('@calc.step', calc_config.step, step);
           await file(MCD_CLIP_CALC_[token_name][ilk], 'step', step);
         }
       }
@@ -1498,6 +1544,7 @@ module.exports = async (deployer, network, [account]) => {
     if (token_import.pip === undefined) {
       if (Number(token_pipDeploy.osmDelay) > 0) {
         const osmDelay = units(token_pipDeploy.osmDelay, 0);
+        console.log('@pip.osmDelay', token_pipDeploy.osmDelay, osmDelay);
         console.log('Deploying OSM...');
         const osm = await artifact_deploy(OSM, VAL_[token_name]);
         PIP_[token_name] = osm.address;
@@ -1601,6 +1648,7 @@ module.exports = async (deployer, network, [account]) => {
       if (ilk_config.clipDeploy !== undefined) {
         await rely(MCD_CLIP_[token_name][ilk], CLIPPER_MOM);
         const cm_tolerance = units(ilk_clipDeploy.cm_tolerance, 25);
+        console.log('@clip.cm_tolerance', ilk_clipDeploy.cm_tolerance, cm_tolerance);
         await clipperMom.setPriceTolerance(MCD_CLIP_[token_name][ilk], cm_tolerance);
       }
     }
@@ -1705,6 +1753,10 @@ module.exports = async (deployer, network, [account]) => {
         const tin = units(ilk_config.tin, 18);
         const tout = units(ilk_config.tout, 18);
         const ilk_name = web3.utils.asciiToHex('PSM-' + token_name + '-' + ilk);
+
+        console.log('@psm.line', ilk_config.line, line);
+        console.log('@psm.tin', ilk_config.tin, tin);
+        console.log('@psm.tout', ilk_config.tout, tout);
 
         // const ilk_lerpDelay = units(ilk_config.lerpDelay, 0);
         // const ilk_lerpStart = units(ilk_config.lerpStart, 18);
