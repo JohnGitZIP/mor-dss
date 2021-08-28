@@ -688,26 +688,26 @@
       "ilks": {
         "A": {
           "mat": "150",
-          "line": "3000000",
-          "autoLine": "0",
-          "autoLineGap": "0",
-          "autoLineTtl": "0",
-          "dust": "5000",
-          "duty": "4",
+          "line": "0",
+          "autoLine": "10000",
+          "autoLineGap": "1000",
+          "autoLineTtl": "43200",
+          "dust": "100",
+          "duty": "5",
           "clipDeploy": {
             "chop": "15",
-            "hole": "5000000",
-            "chip": "0.1",
-            "tip": "300",
-            "buf": "115",
-            "tail": "12900",
-            "cusp": "60",
+            "hole": "100000000",
+            "chip": "0",
+            "tip": "5",
+            "buf": "130",
+            "tail": "8400",
+            "cusp": "40",
             "calc": {
               "type": "StairstepExponentialDecrease",
-              "step": "125",
-              "cut":  "99.5"
+              "step": "90",
+              "cut":  "99"
             },
-            "cm_tolerance": "70"
+            "cm_tolerance": "50"
           }
         }
       }
