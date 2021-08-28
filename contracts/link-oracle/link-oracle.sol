@@ -14,8 +14,8 @@ contract LinkOracle is DSNote, PipLike {
 
     // --- Auth ---
     mapping (address => uint256) public wards;
-    function rely(address _usr) external auth { wards[_usr] = 1;  }
-    function deny(address _usr) external auth { wards[_usr] = 0; }
+    function rely(address _usr) external note auth { wards[_usr] = 1;  }
+    function deny(address _usr) external note auth { wards[_usr] = 0; }
     modifier auth {
         require(wards[msg.sender] == 1, "LinkOracle/not-authorized");
         _;

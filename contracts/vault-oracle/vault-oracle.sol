@@ -7,7 +7,6 @@ import { DSToken } from "../ds-token/token.sol";
 import { PipLike } from "../dss/spot.sol";
 
 interface VaultLike {
-    // function reserveToken() external view returns (address _reserveToken);
     function totalSupply() external view returns (uint256 _totalSupply);
     function totalReserve() external view returns (uint256 _totalReserve);
 }
@@ -16,8 +15,8 @@ contract VaultOracle is DSNote, PipLike {
 
     // --- Auth ---
     mapping (address => uint256) public wards;
-    function rely(address _usr) external auth { wards[_usr] = 1;  }
-    function deny(address _usr) external auth { wards[_usr] = 0; }
+    function rely(address _usr) external note auth { wards[_usr] = 1;  }
+    function deny(address _usr) external note auth { wards[_usr] = 0; }
     modifier auth {
         require(wards[msg.sender] == 1, "VaultOracle/not-authorized");
         _;
@@ -29,16 +28,25 @@ contract VaultOracle is DSNote, PipLike {
     }
 
     address public immutable vault;  // vault for which shares are being priced
-    address public immutable orb;    // oracle for the reserve token
+
+    address public orb;              // oracle for the reserve token
 
     // --- Whitelisting ---
     mapping (address => uint256) public bud;
     modifier toll { require(bud[msg.sender] == 1, "VaultOracle/contract-not-whitelisted"); _; }
 
-    constructor (address _vault, address _orb) public {
-        // require(DSToken(_vault).decimals() == DSToken(VaultLike(_vault).reserveToken()).decimals(), "VaultOracle/token-dec-mismatch");
+    constructor (address _vault, address _reserve, address _orb) public {
+        require(_vault   != address(0), "VaultOracle/invalid-vault-address");
+        require(_reserve != address(0), "VaultOracle/invalid-reserve-address");
+        require(_orb     != address(0), "VaultOracle/invalid-oracle-address");
+        require(DSToken(_vault).decimals() == DSToken(_reserve).decimals(), "VaultOracle/token-dec-mismatch");
         wards[msg.sender] = 1;
         vault = _vault;
+        orb = _orb;
+    }
+
+    function link(address _orb) external note auth {
+        require(_orb != address(0), "VaultOracle/no-contract");
         orb = _orb;
     }
 

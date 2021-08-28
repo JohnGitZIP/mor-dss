@@ -17,19 +17,20 @@ contract UniV2TwapOracle is DSNote, PipLike {
 
     // --- Auth ---
     mapping (address => uint256) public wards;
-    function rely(address _usr) external auth { wards[_usr] = 1;  }
-    function deny(address _usr) external auth { wards[_usr] = 0; }
+    function rely(address _usr) external note auth { wards[_usr] = 1;  }
+    function deny(address _usr) external note auth { wards[_usr] = 0; }
     modifier auth {
         require(wards[msg.sender] == 1, "UniV2TwapOracle/not-authorized");
         _;
     }
 
-    address public immutable stwap;   // Short window TWAP implementation
-    address public immutable ltwap;   // Large window TWAP implementation
     address public immutable src;     // Price source (LP)
     address public immutable token;   // Token from the pair (the other must be PSM-pegged coin, like BUSD)
     uint256 public immutable cap;     // Price cap
     uint256 public immutable unit;    // Price unit
+
+    address public stwap;             // Short window TWAP implementation
+    address public ltwap;             // Large window TWAP implementation
 
     // --- Whitelisting ---
     mapping (address => uint256) public bud;
@@ -50,6 +51,17 @@ contract UniV2TwapOracle is DSNote, PipLike {
         token = _token;
         cap = _cap > 0 ? _cap : uint256(-1);
         unit = 10 ** uint256(_dec);
+    }
+
+    function link(uint256 _id, address _twap) external note auth {
+        require(_twap != address(0), "UniV2TwapOracle/no-contract");
+        if(_id == 0) {
+            stwap = _twap;
+        } else if (_id == 1) {
+            ltwap = _twap;
+        } else {
+            revert("UniV2TwapOracle/invalid-id");
+        }
     }
 
     function poke() external {
