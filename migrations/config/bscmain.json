@@ -58,16 +58,6 @@
         "src": "0x51597f405303C4377E36123cBc172b13269EA163"
       }
     },
-    "USDT": {
-      "import": {
-        "gem": "0x55d398326f99059fF775485246999027B3197955"
-      },
-      "pipDeploy": {
-        "osmDelay": "0",
-        "type": "chainlink",
-        "src": "0xB97Ad0E74fa7d920791E90258A6E2085088b4320"
-      }
-    },
     "BNB": {
       "import": {
         "gem": "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c"
