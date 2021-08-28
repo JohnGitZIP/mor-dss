@@ -1139,26 +1139,26 @@ module.exports = async (deployer, network, [account]) => {
     if (token_import.pip === undefined) {
       const osm = await artifact_at(OSM, PIP_[token_name]);
       if (token_pipDeploy.type !== 'value' && Number(await osm.wards(DEPLOYER)) === 1) {
-        osm.methods['kiss(address)'](MCD_SPOT);
-        osm.methods['kiss(address)'](MCD_END);
+        await osm.methods['kiss(address)'](MCD_SPOT);
+        await osm.methods['kiss(address)'](MCD_END);
         for (const ilk in token_ilks) {
           const ilk_config = token_ilks[ilk];
           const ilk_name = web3.utils.asciiToHex(token_name + '-' + ilk);
 
           if (ilk_config.clipDeploy !== undefined) {
-            osm.methods['kiss(address)'](MCD_CLIP_[token_name][ilk]);
-            osm.methods['kiss(address)'](CLIPPER_MOM);
+            await osm.methods['kiss(address)'](MCD_CLIP_[token_name][ilk]);
+            await osm.methods['kiss(address)'](CLIPPER_MOM);
           }
         }
         if (token_pipDeploy.type === 'vault') {
           const osmReserve = await artifact_at(OSM, VAL_[token_pipDeploy.reserve]);
-          osmReserve.methods['kiss(address)'](PIP_[token_name]);
+          await osmReserve.methods['kiss(address)'](PIP_[token_name]);
         }
         if (token_pipDeploy.type === 'univ2lp') {
           const osmToken0 = await artifact_at(OSM, VAL_[token_pipDeploy.token0]);
-          osmToken0.methods['kiss(address)'](PIP_[token_name]);
+          await osmToken0.methods['kiss(address)'](PIP_[token_name]);
           const osmToken1 = await artifact_at(OSM, VAL_[token_pipDeploy.token1]);
-          osmToken1.methods['kiss(address)'](PIP_[token_name]);
+          await osmToken1.methods['kiss(address)'](PIP_[token_name]);
         }
       }
     }
