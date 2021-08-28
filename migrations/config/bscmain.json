@@ -273,7 +273,7 @@
             "cusp": "40",
             "calc": {
               "type": "StairstepExponentialDecrease",
-              "step": "90",
+              "step": "180",
               "cut":  "99"
             },
             "cm_tolerance": "50"
@@ -313,7 +313,7 @@
             "cusp": "40",
             "calc": {
               "type": "StairstepExponentialDecrease",
-              "step": "90",
+              "step": "180",
               "cut":  "99"
             },
             "cm_tolerance": "50"
@@ -353,7 +353,7 @@
             "cusp": "40",
             "calc": {
               "type": "StairstepExponentialDecrease",
-              "step": "90",
+              "step": "180",
               "cut":  "99"
             },
             "cm_tolerance": "50"
@@ -393,7 +393,7 @@
             "cusp": "40",
             "calc": {
               "type": "StairstepExponentialDecrease",
-              "step": "90",
+              "step": "180",
               "cut":  "99"
             },
             "cm_tolerance": "50"
@@ -433,7 +433,7 @@
             "cusp": "40",
             "calc": {
               "type": "StairstepExponentialDecrease",
-              "step": "90",
+              "step": "180",
               "cut":  "99"
             },
             "cm_tolerance": "50"
@@ -473,7 +473,7 @@
             "cusp": "40",
             "calc": {
               "type": "StairstepExponentialDecrease",
-              "step": "90",
+              "step": "180",
               "cut":  "99"
             },
             "cm_tolerance": "50"
@@ -513,7 +513,7 @@
             "cusp": "40",
             "calc": {
               "type": "StairstepExponentialDecrease",
-              "step": "90",
+              "step": "180",
               "cut":  "99"
             },
             "cm_tolerance": "50"
@@ -593,7 +593,7 @@
             "cusp": "40",
             "calc": {
               "type": "StairstepExponentialDecrease",
-              "step": "90",
+              "step": "180",
               "cut":  "99"
             },
             "cm_tolerance": "50"
@@ -633,7 +633,7 @@
             "cusp": "40",
             "calc": {
               "type": "StairstepExponentialDecrease",
-              "step": "90",
+              "step": "180",
               "cut":  "99"
             },
             "cm_tolerance": "50"
@@ -673,7 +673,7 @@
             "cusp": "40",
             "calc": {
               "type": "StairstepExponentialDecrease",
-              "step": "90",
+              "step": "180",
               "cut":  "99"
             },
             "cm_tolerance": "50"
@@ -713,7 +713,7 @@
             "cusp": "40",
             "calc": {
               "type": "StairstepExponentialDecrease",
-              "step": "90",
+              "step": "180",
               "cut":  "99"
             },
             "cm_tolerance": "50"
