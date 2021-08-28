@@ -35,7 +35,7 @@ module.exports = async (deployer, network, [account]) => {
   function liftFunc(address, name, func) {
     let i = 0;
     const liftedFunc = (...args) => {
-      // console.log('>> CALL ' + address + '.' + name + '(' + args.join(', ') + ')');
+      console.log('>> CALL ' + address + '.' + name + '(' + args.join(', ') + ')');
       const result = func(...args);
       if (Object.prototype.toString.call(result) !== '[object Promise]') return result;
       return new Promise((resolve, reject) => {
@@ -68,7 +68,7 @@ module.exports = async (deployer, network, [account]) => {
   }
 
   async function artifact_deploy(artifact, ...params) {
-    // console.log('>> CREATE ' + artifact._json.contractName + '(' + params.join(', ') + ')');
+    console.log('>> CREATE ' + artifact._json.contractName + '(' + params.join(', ') + ')');
     for (let i = 0; ; i++) {
       try {
         await deployer.deploy(artifact, ...params);
@@ -125,6 +125,8 @@ module.exports = async (deployer, network, [account]) => {
   const multicall = await artifact_deploy(Multicall);
   const MULTICALL = multicall.address;
   console.log('MULTICALL=' + MULTICALL);
+
+  return;
 
   // FAUCET
 
