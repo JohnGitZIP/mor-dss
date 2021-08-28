@@ -232,18 +232,6 @@
         "token1": "USDC"
       }
     },
-    "PCSUSDTCAKE": {
-      "import": {
-        "gem": "0xA39Af17CE4a8eb807E076805Da1e2B8EA7D0755b"
-      },
-      "pipDeploy": {
-        "osmDelay": "0",
-        "type": "univ2lp",
-        "token0": "CAKE",
-        "token1": "USDT"
-      }
-    },
-
     "STKCAKE": {
       "import": {
         "gem": "0xB50Acf6195F97177D33D132A3E5617b934C351d3"
@@ -260,26 +248,26 @@
       "ilks": {
         "A": {
           "mat": "175",
-          "line": "3000000",
-          "autoLine": "0",
-          "autoLineGap": "0",
-          "autoLineTtl": "0",
-          "dust": "5000",
-          "duty": "4",
+          "line": "0",
+          "autoLine": "10000",
+          "autoLineGap": "1000",
+          "autoLineTtl": "43200",
+          "dust": "100",
+          "duty": "5",
           "clipDeploy": {
             "chop": "15",
-            "hole": "5000000",
-            "chip": "0.1",
-            "tip": "300",
-            "buf": "115",
-            "tail": "12900",
-            "cusp": "60",
+            "hole": "30000000",
+            "chip": "0",
+            "tip": "5",
+            "buf": "130",
+            "tail": "8400",
+            "cusp": "40",
             "calc": {
               "type": "StairstepExponentialDecrease",
-              "step": "125",
-              "cut":  "99.5"
+              "step": "90",
+              "cut":  "99"
             },
-            "cm_tolerance": "70"
+            "cm_tolerance": "50"
           }
         }
       }
@@ -300,26 +288,26 @@
       "ilks": {
         "A": {
           "mat": "175",
-          "line": "3000000",
-          "autoLine": "0",
-          "autoLineGap": "0",
-          "autoLineTtl": "0",
-          "dust": "5000",
-          "duty": "4",
+          "line": "0",
+          "autoLine": "10000",
+          "autoLineGap": "1000",
+          "autoLineTtl": "43200",
+          "dust": "100",
+          "duty": "5",
           "clipDeploy": {
             "chop": "15",
-            "hole": "5000000",
-            "chip": "0.1",
-            "tip": "300",
-            "buf": "115",
-            "tail": "12900",
-            "cusp": "60",
+            "hole": "10000000",
+            "chip": "0",
+            "tip": "5",
+            "buf": "130",
+            "tail": "8400",
+            "cusp": "40",
             "calc": {
               "type": "StairstepExponentialDecrease",
-              "step": "125",
-              "cut":  "99.5"
+              "step": "90",
+              "cut":  "99"
             },
-            "cm_tolerance": "70"
+            "cm_tolerance": "50"
           }
         }
       }
@@ -340,26 +328,26 @@
       "ilks": {
         "A": {
           "mat": "175",
-          "line": "3000000",
-          "autoLine": "0",
-          "autoLineGap": "0",
-          "autoLineTtl": "0",
-          "dust": "5000",
-          "duty": "4",
+          "line": "0",
+          "autoLine": "10000",
+          "autoLineGap": "1000",
+          "autoLineTtl": "43200",
+          "dust": "100",
+          "duty": "5",
           "clipDeploy": {
             "chop": "15",
-            "hole": "5000000",
-            "chip": "0.1",
-            "tip": "300",
-            "buf": "115",
-            "tail": "12900",
-            "cusp": "60",
+            "hole": "100000000",
+            "chip": "0",
+            "tip": "5",
+            "buf": "130",
+            "tail": "8400",
+            "cusp": "40",
             "calc": {
               "type": "StairstepExponentialDecrease",
-              "step": "125",
-              "cut":  "99.5"
+              "step": "90",
+              "cut":  "99"
             },
-            "cm_tolerance": "70"
+            "cm_tolerance": "50"
           }
         }
       }
@@ -380,26 +368,26 @@
       "ilks": {
         "A": {
           "mat": "150",
-          "line": "3000000",
-          "autoLine": "0",
-          "autoLineGap": "0",
-          "autoLineTtl": "0",
-          "dust": "5000",
-          "duty": "4",
+          "line": "0",
+          "autoLine": "10000",
+          "autoLineGap": "1000",
+          "autoLineTtl": "43200",
+          "dust": "100",
+          "duty": "5",
           "clipDeploy": {
             "chop": "15",
-            "hole": "5000000",
-            "chip": "0.1",
-            "tip": "300",
-            "buf": "115",
-            "tail": "12900",
-            "cusp": "60",
+            "hole": "100000000",
+            "chip": "0",
+            "tip": "5",
+            "buf": "130",
+            "tail": "8400",
+            "cusp": "40",
             "calc": {
               "type": "StairstepExponentialDecrease",
-              "step": "125",
-              "cut":  "99.5"
+              "step": "90",
+              "cut":  "99"
             },
-            "cm_tolerance": "70"
+            "cm_tolerance": "50"
           }
         }
       }
@@ -420,26 +408,26 @@
       "ilks": {
         "A": {
           "mat": "175",
-          "line": "3000000",
-          "autoLine": "0",
-          "autoLineGap": "0",
-          "autoLineTtl": "0",
-          "dust": "5000",
-          "duty": "4",
+          "line": "0",
+          "autoLine": "10000",
+          "autoLineGap": "1000",
+          "autoLineTtl": "43200",
+          "dust": "100",
+          "duty": "5",
           "clipDeploy": {
             "chop": "15",
-            "hole": "5000000",
-            "chip": "0.1",
-            "tip": "300",
-            "buf": "115",
-            "tail": "12900",
-            "cusp": "60",
+            "hole": "100000000",
+            "chip": "0",
+            "tip": "5",
+            "buf": "130",
+            "tail": "8400",
+            "cusp": "40",
             "calc": {
               "type": "StairstepExponentialDecrease",
-              "step": "125",
-              "cut":  "99.5"
+              "step": "90",
+              "cut":  "99"
             },
-            "cm_tolerance": "70"
+            "cm_tolerance": "50"
           }
         }
       }
@@ -460,26 +448,26 @@
       "ilks": {
         "A": {
           "mat": "175",
-          "line": "3000000",
-          "autoLine": "0",
-          "autoLineGap": "0",
-          "autoLineTtl": "0",
-          "dust": "5000",
-          "duty": "4",
+          "line": "0",
+          "autoLine": "10000",
+          "autoLineGap": "1000",
+          "autoLineTtl": "43200",
+          "dust": "100",
+          "duty": "5",
           "clipDeploy": {
             "chop": "15",
-            "hole": "5000000",
-            "chip": "0.1",
-            "tip": "300",
-            "buf": "115",
-            "tail": "12900",
-            "cusp": "60",
+            "hole": "100000000",
+            "chip": "0",
+            "tip": "5",
+            "buf": "130",
+            "tail": "8400",
+            "cusp": "40",
             "calc": {
               "type": "StairstepExponentialDecrease",
-              "step": "125",
-              "cut":  "99.5"
+              "step": "90",
+              "cut":  "99"
             },
-            "cm_tolerance": "70"
+            "cm_tolerance": "50"
           }
         }
       }
@@ -500,26 +488,26 @@
       "ilks": {
         "A": {
           "mat": "150",
-          "line": "3000000",
-          "autoLine": "0",
-          "autoLineGap": "0",
-          "autoLineTtl": "0",
-          "dust": "5000",
-          "duty": "4",
+          "line": "0",
+          "autoLine": "10000",
+          "autoLineGap": "1000",
+          "autoLineTtl": "43200",
+          "dust": "100",
+          "duty": "5",
           "clipDeploy": {
             "chop": "15",
-            "hole": "5000000",
-            "chip": "0.1",
-            "tip": "300",
-            "buf": "115",
-            "tail": "12900",
-            "cusp": "60",
+            "hole": "100000000",
+            "chip": "0",
+            "tip": "5",
+            "buf": "130",
+            "tail": "8400",
+            "cusp": "40",
             "calc": {
               "type": "StairstepExponentialDecrease",
-              "step": "125",
-              "cut":  "99.5"
+              "step": "90",
+              "cut":  "99"
             },
-            "cm_tolerance": "70"
+            "cm_tolerance": "50"
           }
         }
       }
@@ -540,26 +528,26 @@
       "ilks": {
         "A": {
           "mat": "102",
-          "line": "3000000",
+          "line": "10000",
           "autoLine": "0",
           "autoLineGap": "0",
           "autoLineTtl": "0",
-          "dust": "5000",
-          "duty": "4",
+          "dust": "100",
+          "duty": "5",
           "clipDeploy": {
             "chop": "1.5",
-            "hole": "5000000",
-            "chip": "0.1",
-            "tip": "300",
-            "buf": "115",
-            "tail": "12900",
-            "cusp": "60",
+            "hole": "300000000",
+            "chip": "0",
+            "tip": "5",
+            "buf": "102",
+            "tail": "13200",
+            "cusp": "95",
             "calc": {
               "type": "StairstepExponentialDecrease",
-              "step": "125",
-              "cut":  "99.5"
+              "step": "240",
+              "cut":  "99.9"
             },
-            "cm_tolerance": "70"
+            "cm_tolerance": "97"
           }
         }
       }
@@ -580,26 +568,26 @@
       "ilks": {
         "A": {
           "mat": "150",
-          "line": "3000000",
-          "autoLine": "0",
-          "autoLineGap": "0",
-          "autoLineTtl": "0",
-          "dust": "5000",
-          "duty": "4",
+          "line": "0",
+          "autoLine": "10000",
+          "autoLineGap": "1000",
+          "autoLineTtl": "43200",
+          "dust": "100",
+          "duty": "5",
           "clipDeploy": {
             "chop": "15",
-            "hole": "5000000",
-            "chip": "0.1",
-            "tip": "300",
-            "buf": "115",
-            "tail": "12900",
-            "cusp": "60",
+            "hole": "50000000",
+            "chip": "0",
+            "tip": "5",
+            "buf": "130",
+            "tail": "8400",
+            "cusp": "40",
             "calc": {
               "type": "StairstepExponentialDecrease",
-              "step": "125",
-              "cut":  "99.5"
+              "step": "90",
+              "cut":  "99"
             },
-            "cm_tolerance": "70"
+            "cm_tolerance": "50"
           }
         }
       }
@@ -620,26 +608,26 @@
       "ilks": {
         "A": {
           "mat": "150",
-          "line": "3000000",
-          "autoLine": "0",
-          "autoLineGap": "0",
-          "autoLineTtl": "0",
-          "dust": "5000",
-          "duty": "4",
+          "line": "0",
+          "autoLine": "10000",
+          "autoLineGap": "1000",
+          "autoLineTtl": "43200",
+          "dust": "100",
+          "duty": "5",
           "clipDeploy": {
             "chop": "15",
-            "hole": "5000000",
-            "chip": "0.1",
-            "tip": "300",
-            "buf": "115",
-            "tail": "12900",
-            "cusp": "60",
+            "hole": "30000000",
+            "chip": "0",
+            "tip": "5",
+            "buf": "130",
+            "tail": "8400",
+            "cusp": "40",
             "calc": {
               "type": "StairstepExponentialDecrease",
-              "step": "125",
-              "cut":  "99.5"
+              "step": "90",
+              "cut":  "99"
             },
-            "cm_tolerance": "70"
+            "cm_tolerance": "50"
           }
         }
       }
@@ -660,26 +648,26 @@
       "ilks": {
         "A": {
           "mat": "175",
-          "line": "3000000",
-          "autoLine": "0",
-          "autoLineGap": "0",
-          "autoLineTtl": "0",
-          "dust": "5000",
-          "duty": "4",
+          "line": "0",
+          "autoLine": "10000",
+          "autoLineGap": "1000",
+          "autoLineTtl": "43200",
+          "dust": "100",
+          "duty": "5",
           "clipDeploy": {
             "chop": "15",
-            "hole": "5000000",
-            "chip": "0.1",
-            "tip": "300",
-            "buf": "115",
-            "tail": "12900",
-            "cusp": "60",
+            "hole": "50000000",
+            "chip": "0",
+            "tip": "5",
+            "buf": "130",
+            "tail": "8400",
+            "cusp": "40",
             "calc": {
               "type": "StairstepExponentialDecrease",
-              "step": "125",
-              "cut":  "99.5"
+              "step": "90",
+              "cut":  "99"
             },
-            "cm_tolerance": "70"
+            "cm_tolerance": "50"
           }
         }
       }
@@ -696,46 +684,6 @@
         "osmDelay": "0",
         "type": "vault",
         "reserve": "PCSETHUSDC"
-      },
-      "ilks": {
-        "A": {
-          "mat": "150",
-          "line": "3000000",
-          "autoLine": "0",
-          "autoLineGap": "0",
-          "autoLineTtl": "0",
-          "dust": "5000",
-          "duty": "4",
-          "clipDeploy": {
-            "chop": "15",
-            "hole": "5000000",
-            "chip": "0.1",
-            "tip": "300",
-            "buf": "115",
-            "tail": "12900",
-            "cusp": "60",
-            "calc": {
-              "type": "StairstepExponentialDecrease",
-              "step": "125",
-              "cut":  "99.5"
-            },
-            "cm_tolerance": "70"
-          }
-        }
-      }
-    },
-    "STKPCSUSDTCAKE": {
-      "import": {
-        "gem": "0xC0c8C554069d85166B834b2Cb3541d66f53DC4f5"
-      },
-      "joinDeploy": {
-        "src": "GemJoin",
-        "extraParams": []
-      },
-      "pipDeploy": {
-        "osmDelay": "0",
-        "type": "vault",
-        "reserve": "PCSUSDTCAKE"
       },
       "ilks": {
         "A": {
