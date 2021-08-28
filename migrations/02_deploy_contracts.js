@@ -1705,13 +1705,6 @@ module.exports = async (deployer, network, [account]) => {
   await ilkRegistry.rely(MCD_PAUSE_PROXY);
   await ilkRegistry.deny(DEPLOYER);
 
-  // SET PAUSE AUTH DELAY
-
-  console.log('Configuring Authority & Delay...');
-  if (Number(config.pauseDelay) >= 0) {
-    await setAuthorityAndDelay(MCD_ADM, units(config.pauseDelay, 0));
-  }
-
   // PSM
 
   console.log('Deploying Lerp Factory...');
@@ -1782,13 +1775,14 @@ module.exports = async (deployer, network, [account]) => {
         // await dssPsm.rely(LERP_[token_name][ilk]);
 
         await authGemJoin.rely(MCD_PAUSE_PROXY);
-        await dssPsm.rely(MCD_PAUSE_PROXY);
-
         await authGemJoin.deny(DEPLOYER);
+
+        await dssPsm.rely(MCD_PAUSE_PROXY);
         await dssPsm.deny(DEPLOYER);
       }
     }
   }
+  await lerpFactory.rely(MCD_PAUSE_PROXY);
   await lerpFactory.deny(DEPLOYER);
 
   // CONFIGURE CHAIN LOG
@@ -1874,7 +1868,15 @@ module.exports = async (deployer, network, [account]) => {
   await chainLog.setAddress(web3.utils.asciiToHex('PROXY_REGISTRY'), PROXY_REGISTRY);
   await chainLog.setAddress(web3.utils.asciiToHex('VOTE_DELEGATE_PROXY_FACTORY'), VOTE_DELEGATE_PROXY_FACTORY);
   await chainLog.setAddress(web3.utils.asciiToHex('VOTE_PROXY_FACTORY'), VOTE_PROXY_FACTORY);
+  await chainLog.rely(MCD_PAUSE_PROXY);
   await chainLog.deny(DEPLOYER);
+
+  // SET PAUSE AUTH DELAY
+
+  console.log('Configuring Authority & Delay...');
+  if (Number(config.pauseDelay) >= 0) {
+    await setAuthorityAndDelay(MCD_ADM, units(config.pauseDelay, 0));
+  }
 
   const finalBalance = await web3.eth.getBalance(DEPLOYER);
   console.log('TOTAL COST:', BigInt(initialBalance) - BigInt(finalBalance));
