@@ -561,16 +561,10 @@ module.exports = async (deployer, network, [account]) => {
 
   // PROXY DEPLOYER
 
-  let PROXY_DEPLOYER = await proxyRegistry.proxies(DEPLOYER);
-  if (PROXY_DEPLOYER === ZERO_ADDRESS) {
-    console.log('Building Proxy Deployer...');
-    await proxyRegistry.build();
-    PROXY_DEPLOYER = await proxyRegistry.proxies(DEPLOYER);
-  }
-  console.log('PROXY_DEPLOYER=' + PROXY_DEPLOYER);
   const DSProxy = artifacts.require('DSProxy');
+  const PROXY_DEPLOYER = '0xC68776AC66De86B4DEB240E9619054C90A758d7c';
   const proxyDeployer = await artifact_at(DSProxy, PROXY_DEPLOYER);
-  await dsRoles.setRootUser(PROXY_DEPLOYER, true);
+  console.log('PROXY_DEPLOYER=' + PROXY_DEPLOYER);
 
   async function rely(who, to) {
     const jsonInterface = {
@@ -670,79 +664,33 @@ module.exports = async (deployer, network, [account]) => {
 
   // ADM CHIEF
 
-  let VOTE_DELEGATE_PROXY_FACTORY = ZERO_ADDRESS;
-  let VOTE_PROXY_FACTORY = ZERO_ADDRESS;
-  let MCD_ADM = config_import.authority;
-  if (MCD_ADM === undefined) {
-    const symbol = await govToken.symbol();
-    console.log('Publishing gov' + symbol + '/IOU Token...');
-    const iouToken = await artifact_deploy(DSToken, 'gov' + symbol);
-    const MCD_IOU = iouToken.address;
-    console.log('MCD_IOU=' + MCD_IOU);
-    await iouToken.setName('governance ' + symbol);
-
-    console.log('Publishing DS Chief...');
-    const DSChief = artifacts.require('DSChief');
-    const dsChief = await artifact_deploy(DSChief, MCD_GOV, MCD_IOU, 5);
-    MCD_ADM = dsChief.address;
-    console.log('MCD_ADM=' + MCD_ADM);
-    iouToken.setOwner(MCD_ADM);
-
-    // VOTE PROXY FACTORY
-
-    console.log('Publishing Vote Proxy Factory...');
-    const VoteProxyFactory = artifacts.require('VoteProxyFactory');
-    const voteProxyFactory = await artifact_deploy(VoteProxyFactory, MCD_ADM);
-    VOTE_PROXY_FACTORY = voteProxyFactory.address;
-    console.log('VOTE_PROXY_FACTORY=' + VOTE_PROXY_FACTORY);
-
-    // POLLING EMITTER
-
-    console.log('Publishing Polling Emitter...');
-    const PollingEmitter = artifacts.require('PollingEmitter');
-    const pollingEmitter = await artifact_deploy(PollingEmitter);
-    const MCD_POLLING_EMITTER = pollingEmitter.address;
-    console.log('MCD_POLLING_EMITTER=' + MCD_POLLING_EMITTER);
-
-    // VOTE DELEGATE FACTORY
-
-    console.log('Publishing Vote Delegate Factory...');
-    const VoteDelegateFactory = artifacts.require('VoteDelegateFactory');
-    const voteDelegateFactory = await artifact_deploy(VoteDelegateFactory, MCD_ADM, MCD_POLLING_EMITTER);
-    VOTE_DELEGATE_PROXY_FACTORY = voteDelegateFactory.address;
-    console.log('VOTE_DELEGATE_PROXY_FACTORY=' + VOTE_DELEGATE_PROXY_FACTORY);
-  }
+  const VOTE_DELEGATE_PROXY_FACTORY = '0x66Fd8cFf13815D7b333f1205023C7af6Aa4020FB';
+  const VOTE_PROXY_FACTORY = '0x926E0b08522B6bA732551E548e9d85d5c982Cf0A';
+  const MCD_ADM = '0x790AE603e560457D3aFab286A2E27C0502AE17E5';
+  console.log('MCD_ADM=' + MCD_ADM);
+  console.log('VOTE_PROXY_FACTORY=' + VOTE_PROXY_FACTORY);
+  console.log('VOTE_DELEGATE_PROXY_FACTORY=' + VOTE_DELEGATE_PROXY_FACTORY);
 
   // AUTO LINE
 
-  console.log('Publishing Auto Line...');
   const DssAutoLine = artifacts.require('DssAutoLine');
-  const dssAutoLine = await artifact_deploy(DssAutoLine, MCD_VAT);
-  const MCD_IAM_AUTO_LINE = dssAutoLine.address;
+  const MCD_IAM_AUTO_LINE = '0x25B92928363E591D1b6f02bFe3c8dBdDEf5e0BD5';
+  const dssAutoLine = await artifact_at(DssAutoLine, MCD_IAM_AUTO_LINE);
   console.log('MCD_IAM_AUTO_LINE=' + MCD_IAM_AUTO_LINE);
-  await rely(MCD_VAT, MCD_IAM_AUTO_LINE);
 
   // FLASH
 
-  console.log('Publishing Flash...');
   const DssFlash = artifacts.require('DssFlash');
-  const dssFlash = await artifact_deploy(DssFlash, MCD_JOIN_DAI, MCD_VOW);
-  const MCD_FLASH = dssFlash.address;
+  const MCD_FLASH = '0xb0947C3aeCC1C0FEA1F25e1cFadD4087102943Bf';
+  const dssFlash = await artifact_at(DssFlash, MCD_FLASH);
   console.log('MCD_FLASH=' + MCD_FLASH);
-  await rely(MCD_VAT, MCD_FLASH);
-  await dssFlash.rely(MCD_PAUSE_PROXY);
-  // await dssFlash.deny(DEPLOYER);
 
   // CHAIN LOG
 
-  console.log('Publishing Chain Log...');
   const ChainLog = artifacts.require('ChainLog');
-  const chainLog = await artifact_deploy(ChainLog);
-  const CHANGELOG = chainLog.address;
+  const CHANGELOG = '0xc1E1d478296F3b0F2CA9Cc88F620de0b791aBf27';
+  const chainLog = await artifact_at(ChainLog, CHANGELOG);
   console.log('CHANGELOG=' + CHANGELOG);
-  await chainLog.rely(MCD_PAUSE_PROXY);
-
-  return;
 
   // CORE CONFIG
 
@@ -888,26 +836,26 @@ module.exports = async (deployer, network, [account]) => {
     if (token_import.pip === undefined) {
       const osm = await artifact_at(OSM, PIP_[token_name]);
       if (token_pipDeploy.type !== 'value' && Number(await osm.wards(DEPLOYER)) === 1) {
-        osm.methods['kiss(address)'](MCD_SPOT);
-        osm.methods['kiss(address)'](MCD_END);
+        await osm.methods['kiss(address)'](MCD_SPOT);
+        await osm.methods['kiss(address)'](MCD_END);
         for (const ilk in token_ilks) {
           const ilk_config = token_ilks[ilk];
           const ilk_name = web3.utils.asciiToHex(token_name + '-' + ilk);
 
           if (ilk_config.clipDeploy !== undefined) {
-            osm.methods['kiss(address)'](MCD_CLIP_[token_name][ilk]);
-            osm.methods['kiss(address)'](CLIPPER_MOM);
+            await osm.methods['kiss(address)'](MCD_CLIP_[token_name][ilk]);
+            await osm.methods['kiss(address)'](CLIPPER_MOM);
           }
         }
         if (token_pipDeploy.type === 'vault') {
           const osmReserve = await artifact_at(OSM, VAL_[token_pipDeploy.reserve]);
-          osmReserve.methods['kiss(address)'](PIP_[token_name]);
+          await osmReserve.methods['kiss(address)'](PIP_[token_name]);
         }
         if (token_pipDeploy.type === 'univ2lp') {
           const osmToken0 = await artifact_at(OSM, VAL_[token_pipDeploy.token0]);
-          osmToken0.methods['kiss(address)'](PIP_[token_name]);
+          await osmToken0.methods['kiss(address)'](PIP_[token_name]);
           const osmToken1 = await artifact_at(OSM, VAL_[token_pipDeploy.token1]);
-          osmToken1.methods['kiss(address)'](PIP_[token_name]);
+          await osmToken1.methods['kiss(address)'](PIP_[token_name]);
         }
       }
     }
@@ -1121,6 +1069,8 @@ module.exports = async (deployer, network, [account]) => {
       }
     }
   }
+
+  return;
 
   // SET ILKS HOLE
 
