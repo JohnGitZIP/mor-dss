@@ -6,6 +6,7 @@ import { PipLike } from "../dss/spot.sol";
 
 // https://github.com/smartcontractkit/chainlink/blob/master/contracts/src/v0.6/interfaces/AggregatorV3Interface.sol
 interface AggregatorV3Interface {
+    function decimals() external view returns (uint8 _decimals);
     function latestRoundData() external view returns (uint80 _roundId, int256 _answer, uint256 _startedAt, uint256 _updatedAt, uint80 _answeredInRound);
 }
 
@@ -32,8 +33,9 @@ contract LinkOracle is DSNote, PipLike {
     mapping (address => uint256) public bud;
     modifier toll { require(bud[msg.sender] == 1, "LinkOracle/contract-not-whitelisted"); _; }
 
-    constructor (address _src, uint8 _dec) public {
+    constructor (address _src) public {
         require(_src  != address(0), "LinkOracle/invalid-src-address");
+        uint8 _dec = AggregatorV3Interface(_src).decimals();
         require(_dec  <=         18, "LinkOracle/invalid-dec-places");
         wards[msg.sender] = 1;
         src  = _src;

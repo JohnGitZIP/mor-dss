@@ -482,12 +482,6 @@ module.exports = async (deployer, network, [account]) => {
     const token_gemDeploy = token_config.gemDeploy || {};
 
     T_[token_name] = token_import.gem;
-    if (token_import.gem === 'internal') {
-      switch (token_name) {
-      case dai_name: T_[token_name] = MCD_DAI; break;
-      default: throw new Error('Unknown internal token: ' + token_name);
-      }
-    }
     if (token_import.gem === undefined) {
       const src = token_gemDeploy.src;
       const params = token_gemDeploy.params || [];
@@ -535,6 +529,7 @@ module.exports = async (deployer, network, [account]) => {
   const UNIV2LPOracle = artifacts.require('UNIV2LPOracle');
   const VaultOracle = artifacts.require('VaultOracle');
   const UniV2TwapOracle = artifacts.require('UniV2TwapOracle');
+  const UniswapV2PairLike = artifacts.require('UniswapV2PairLike');
   for (const token_name in config_tokens) {
     const token_config = config_tokens[token_name];
     const token_import = token_config.import || {};
@@ -547,9 +542,10 @@ module.exports = async (deployer, network, [account]) => {
         const stwap = token_pipDeploy.stwap;
         const ltwap = token_pipDeploy.ltwap;
         const src = token_pipDeploy.src;
-        const token = T_[token_name];
-        const cap = units(token_pipDeploy.cap, 18);
-        const univ2twapOracle = await artifact_deploy(UniV2TwapOracle, stwap, ltwap, src, token, cap);
+        const token = await artifact_at(DSToken, T_[token_name]);
+        const dec = Number(await token.decimals());
+        const cap = units(token_pipDeploy.cap, dec);
+        const univ2twapOracle = await artifact_deploy(UniV2TwapOracle, stwap, ltwap, src, token.address, cap);
         VAL_[token_name] = univ2twapOracle.address;
         console.log('VAL_' + token_name + '=' + VAL_[token_name]);
       }
@@ -567,6 +563,12 @@ module.exports = async (deployer, network, [account]) => {
         const wat = web3.utils.asciiToHex(token_name);
         const orb0 = VAL_[token_pipDeploy.token0];
         const orb1 = VAL_[token_pipDeploy.token1];
+        const pair = await artifact_at(UniswapV2PairLike, src);
+        const token0 = await pair.token0();
+        const token1 = await pair.token1();
+        if (token0 !== T_[token_pipDeploy.token0] || token1 !== T_[token_pipDeploy.token1]) {
+          throw new Error('Configuration Inconsistency')
+        }
         const univ2lpOracle = await artifact_deploy(UNIV2LPOracle, src, wat, orb0, orb1);
         VAL_[token_name] = univ2lpOracle.address;
         console.log('VAL_' + token_name + '=' + VAL_[token_name]);
@@ -574,8 +576,7 @@ module.exports = async (deployer, network, [account]) => {
       if (token_pipDeploy.type === 'chainlink') {
         console.log('Publishing LinkOracle...');
         const src = token_pipDeploy.src;
-        const dec = token_pipDeploy.dec;
-        const linkOracle = await artifact_deploy(LinkOracle, src, dec);
+        const linkOracle = await artifact_deploy(LinkOracle, src);
         VAL_[token_name] = linkOracle.address;
         console.log('VAL_' + token_name + '=' + VAL_[token_name]);
       }

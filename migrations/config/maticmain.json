@@ -57,8 +57,7 @@
       "pipDeploy": {
         "osmDelay": "0",
         "type": "chainlink",
-        "src": "0xAB594600376Ec9fD91F8e885dADF0CE036862dE0",
-        "dec": 8
+        "src": "0xAB594600376Ec9fD91F8e885dADF0CE036862dE0"
       },
       "ilks": {
         "A": {
@@ -98,8 +97,7 @@
       "pipDeploy": {
         "osmDelay": "0",
         "type": "chainlink",
-        "src": "0xF9680D99D6C9589e2a93a78A04A279e509205945",
-        "dec": 8
+        "src": "0xF9680D99D6C9589e2a93a78A04A279e509205945"
       },
       "ilks": {
         "A": {
