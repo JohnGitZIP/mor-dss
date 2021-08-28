@@ -6,6 +6,7 @@ const NOW_PREFIX = now.toISOString().substr(0, 10).split('-').join('');
 
 function units(coins, decimals) {
   if (typeof coins !== 'string') throw new Error('Invalid amount');
+  if (typeof decimals !== 'number') throw new Error('Invalid decimals');
   let i = coins.indexOf('.');
   if (i < 0) i = coins.length;
   const s = coins.slice(i + 1);
@@ -1505,7 +1506,7 @@ module.exports = async (deployer, network, [account]) => {
           await file(MCD_CLIP_CALC_[token_name][ilk], 'tau', tau);
         }
         if (calc_config.type === 'StairstepExponentialDecrease' || calc_config.type === 'ExponentialDecrease') {
-          const cut = units((Number(calc_config.cut) / 100).toFixed(27), 27);
+          const cut = units(calc_config.cut, 25);
           console.log('@calc.cut', calc_config.cut, cut);
           await file(MCD_CLIP_CALC_[token_name][ilk], 'cut', cut);
         }
