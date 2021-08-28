@@ -230,168 +230,87 @@ module.exports = async (deployer, network, [account]) => {
 
   // AUTHORITY
 
-  console.log('Deploying DSRoles...');
   const DSRoles = artifacts.require('DSRoles');
-  const dsRoles = await artifact_deploy(DSRoles);
-  const MCD_ADM_TEMP = dsRoles.address;
+  const MCD_ADM_TEMP = '0xDacf9095314275E65b9aF40c0e6b0BB8969ad684';
+  const dsRoles = await artifact_at(DSRoles, MCD_ADM_TEMP);
   console.log('MCD_ADM_TEMP=' + MCD_ADM_TEMP);
-  await dsRoles.setRootUser(DEPLOYER, true);
 
   // CORE
 
-  console.log('Deploying Core...');
-
   // Deploy Vat
   const Vat = artifacts.require('Vat');
-  const vat = await artifact_deploy(Vat);
-  const MCD_VAT = vat.address;
+  const MCD_VAT = '0x713C28b2Ef6F89750BDf97f7Bbf307f6F949b3fF';
+  const vat = await artifact_at(Vat, MCD_VAT);
   console.log('MCD_VAT=' + MCD_VAT);
   const Spotter = artifacts.require('Spotter');
-  const spotter = await artifact_deploy(Spotter, MCD_VAT);
-  const MCD_SPOT = spotter.address;
+  const MCD_SPOT = '0x7C4925D62d24A826F8d945130E620fdC510d0f68';
+  const spotter = await artifact_at(Spotter, MCD_SPOT);
   console.log('MCD_SPOT=' + MCD_SPOT);
-  await vat.rely(MCD_SPOT);
 
   // Deploy Dai
   const Dai = artifacts.require('Dai');
-  const dai = await artifact_deploy(Dai, chainId);
-  const MCD_DAI = dai.address;
+  const MCD_DAI = '0x87BAde473ea0513D4aA7085484aEAA6cB6EBE7e3';
+  const dai = await artifact_at(Dai, MCD_DAI);
   console.log('MCD_DAI=' + MCD_DAI);
   const dai_name = await dai.symbol();
   const DaiJoin = artifacts.require('DaiJoin');
-  const daiJoin = await artifact_deploy(DaiJoin, MCD_VAT, MCD_DAI);
-  const MCD_JOIN_DAI = daiJoin.address;
+  const MCD_JOIN_DAI = '0x9438760f1ac27F7cFE638D686d889C56eb42F4D0';
+  const daiJoin = await artifact_at(DaiJoin, MCD_JOIN_DAI);
   console.log('MCD_JOIN_DAI=' + MCD_JOIN_DAI);
-  await dai.rely(MCD_JOIN_DAI);
 
   // Deploy Taxation
   const Jug = artifacts.require('Jug');
-  const jug = await artifact_deploy(Jug, MCD_VAT);
-  const MCD_JUG = jug.address;
+  const MCD_JUG = '0xb2d474EAAB89DD0134B8A98a9AB38aC41a537c6C';
+  const jug = await artifact_at(Jug, MCD_JUG);
   console.log('MCD_JUG=' + MCD_JUG);
   const Pot = artifacts.require('Pot');
-  const pot = await artifact_deploy(Pot, MCD_VAT);
-  const MCD_POT = pot.address;
+  const MCD_POT = '0x6e22DA49b28dc5aB70aC7527CC0cc04bD35eB615';
+  const pot = await artifact_at(Pot, MCD_POT);
   console.log('MCD_POT=' + MCD_POT);
-  await vat.rely(MCD_JUG);
-  await vat.rely(MCD_POT);
 
   // Deploy Auctions
   const Flapper = artifacts.require('Flapper');
-  const flap = await artifact_deploy(Flapper, MCD_VAT, MCD_GOV);
-  const MCD_FLAP = flap.address;
+  const MCD_FLAP = '0x3Bf3C5146c5b1259f8886d3B2480aD53A835F795';
+  const flap = await artifact_at(Flapper, MCD_FLAP);
   console.log('MCD_FLAP=' + MCD_FLAP);
   const Flopper = artifacts.require('Flopper');
-  const flop = await artifact_deploy(Flopper, MCD_VAT, MCD_GOV);
-  const MCD_FLOP = flop.address;
+  const MCD_FLOP = '0x1DC6298DCa4A433581802144Da9bA1640d90FEFc';
+  const flop = await artifact_at(Flopper, MCD_FLOP);
   console.log('MCD_FLOP=' + MCD_FLOP);
   const Vow = artifacts.require('Vow');
-  const vow = await artifact_deploy(Vow, MCD_VAT, MCD_FLAP, MCD_FLOP);
-  const MCD_VOW = vow.address;
+  const MCD_VOW = '0xbb37ccb8eFd844abD260AfC68025F5491570AC9d';
+  const vow = await artifact_at(Vow, MCD_VOW);
   console.log('MCD_VOW=' + MCD_VOW);
-  await jug.file(web3.utils.asciiToHex('vow'), MCD_VOW);
-  await pot.file(web3.utils.asciiToHex('vow'), MCD_VOW);
-  await vat.rely(MCD_FLOP);
-  await flap.rely(MCD_VOW);
-  await flop.rely(MCD_VOW);
 
   // Deploy Liquidator
   const Cat = artifacts.require('Cat');
-  const cat = await artifact_deploy(Cat, MCD_VAT);
-  const MCD_CAT = cat.address;
+  const MCD_CAT = '0x22db688102b2Fa5bD0456252Fc4a9EA6ca70F9dE';
+  const cat = await artifact_at(Cat, MCD_CAT);
   console.log('MCD_CAT=' + MCD_CAT);
   const Dog = artifacts.require('Dog');
-  const dog = await artifact_deploy(Dog, MCD_VAT);
-  const MCD_DOG = dog.address;
+  const MCD_DOG = '0xDea7563440195eA7Ea83900DE38F603C25a37594';
+  const dog = await artifact_at(Dog, MCD_DOG);
   console.log('MCD_DOG=' + MCD_DOG);
-  await cat.file(web3.utils.asciiToHex('vow'), MCD_VOW);
-  await dog.file(web3.utils.asciiToHex('vow'), MCD_VOW);
-  await vat.rely(MCD_CAT);
-  await vat.rely(MCD_DOG);
-  await vow.rely(MCD_CAT);
-  await vow.rely(MCD_DOG);
 
   // Deploy End
   const End = artifacts.require('End');
-  const end = await artifact_deploy(End);
-  const MCD_END = end.address;
+  const MCD_END = '0x7f70639F3aC04b2919d5bA1b397aDe484D87be4e';
+  const end = await artifact_at(End, MCD_END);
   console.log('MCD_END=' + MCD_END);
-  await end.file(web3.utils.asciiToHex('vat'), MCD_VAT);
-  await end.file(web3.utils.asciiToHex('cat'), MCD_CAT);
-  await end.file(web3.utils.asciiToHex('dog'), MCD_DOG);
-  await end.file(web3.utils.asciiToHex('vow'), MCD_VOW);
-  await end.file(web3.utils.asciiToHex('pot'), MCD_POT);
-  await end.file(web3.utils.asciiToHex('spot'), MCD_SPOT);
-  await vat.rely(MCD_END);
-  await cat.rely(MCD_END);
-  await dog.rely(MCD_END);
-  await vow.rely(MCD_END);
-  await pot.rely(MCD_END);
-  await spotter.rely(MCD_END);
 
   // Deploy Pause
   const DSPause = artifacts.require('DSPause');
-  const pause = await artifact_deploy(DSPause, 0, ZERO_ADDRESS, MCD_ADM_TEMP);
-  const MCD_PAUSE = pause.address;
+  const MCD_PAUSE = '0xb93949F3b910A6cfAc8d76B1677BA331183498A4';
+  const pause = await artifact_at(DSPause, MCD_PAUSE);
   console.log('MCD_PAUSE=' + MCD_PAUSE);
-  const MCD_PAUSE_PROXY = await pause.proxy();
+  const MCD_PAUSE_PROXY = '0x8Ab3Ce4138fA46C2E0FcaA89e8A721A6252e5Fae';
   console.log('MCD_PAUSE_PROXY=' + MCD_PAUSE_PROXY);
-  await vat.rely(MCD_PAUSE_PROXY);
-  await cat.rely(MCD_PAUSE_PROXY);
-  await dog.rely(MCD_PAUSE_PROXY);
-  await vow.rely(MCD_PAUSE_PROXY);
-  await jug.rely(MCD_PAUSE_PROXY);
-  await pot.rely(MCD_PAUSE_PROXY);
-  await spotter.rely(MCD_PAUSE_PROXY);
-  await flap.rely(MCD_PAUSE_PROXY);
-  await flop.rely(MCD_PAUSE_PROXY);
-  await end.rely(MCD_PAUSE_PROXY);
 
   // Deploy ESM
-  const esm_min = units(config.esm_min, 18);
   const ESM = artifacts.require('ESM');
-  console.log('@esm_min', config.esm_min, esm_min);
-  const esm = await artifact_deploy(ESM, MCD_GOV, MCD_END, MCD_PAUSE_PROXY, esm_min);
-  const MCD_ESM = esm.address;
+  const MCD_ESM = '0x9C482597dA255549F53406b2D57498d2959F2EA7';
+  const esm = await artifact_at(ESM, MCD_ESM);
   console.log('MCD_ESM=' + MCD_ESM);
-  await end.rely(MCD_ESM);
-  await vat.rely(MCD_ESM);
-
-  await vat.rely(MCD_DEPLOY);
-  await spotter.rely(MCD_DEPLOY);
-  await dai.rely(MCD_DEPLOY);
-  await jug.rely(MCD_DEPLOY);
-  await pot.rely(MCD_DEPLOY);
-  await flap.rely(MCD_DEPLOY);
-  await flop.rely(MCD_DEPLOY);
-  await vow.rely(MCD_DEPLOY);
-  await cat.rely(MCD_DEPLOY);
-  await dog.rely(MCD_DEPLOY);
-  await end.rely(MCD_DEPLOY);
-  await dssDeploy.updateDeployed(MCD_VAT, MCD_JUG, MCD_VOW, MCD_CAT, MCD_DOG, MCD_DAI, MCD_JOIN_DAI, MCD_FLAP, MCD_FLOP, MCD_SPOT, MCD_POT, MCD_END, MCD_ESM, MCD_PAUSE);
-
-  // FAUCET CONFIG
-
-  let GOV_GUARD  = ZERO_ADDRESS;
-  let mkrAuthority;
-  if (config_import.gov === undefined) {
-    console.log('Configuring Faucet...');
-    await govToken.mint(FAUCET, units('1000000', 18));
-    await restrictedTokenFaucet.gulp(MCD_GOV);
-    await restrictedTokenFaucet.setAmt(MCD_GOV, units('1000', 18));
-
-    console.log('Publishing MKR Authority ...');
-    const MkrAuthority = artifacts.require('MkrAuthority');
-    mkrAuthority = await artifact_deploy(MkrAuthority);
-    GOV_GUARD = mkrAuthority.address;
-    console.log('GOV_GUARD=' + GOV_GUARD);
-    govToken.setAuthority(GOV_GUARD);
-    govToken.setOwner(MCD_PAUSE_PROXY);
-    mkrAuthority.rely(MCD_FLOP);
-    mkrAuthority.setRoot(MCD_PAUSE_PROXY);
-  }
-
-  return;
 
   // DEPLOY COLLATERALS
 
@@ -523,6 +442,8 @@ module.exports = async (deployer, network, [account]) => {
     }
     PIP_[token_name] = VAL_[token_name];
   }
+
+  return;
 
   // DEPLOY ILKS
 
