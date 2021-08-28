@@ -136,123 +136,97 @@ module.exports = async (deployer, network, [account]) => {
 
   // FABS
 
-  console.log('Publishing VatFab...');
   const VatFab = artifacts.require('VatFab');
-  const vatFab = await artifact_deploy(VatFab);
-  const VAT_FAB = vatFab.address;
+  const VAT_FAB = '0x741C6E1ef20f3932148468b97d18267520D94994';
+  const vatFab = await artifact_at(VatFab, VAT_FAB);
   console.log('VAT_FAB=' + VAT_FAB);
 
-  console.log('Publishing JugFab...');
   const JugFab = artifacts.require('JugFab');
-  const jugFab = await artifact_deploy(JugFab);
-  const JUG_FAB = jugFab.address;
+  const JUG_FAB = '0x8A1F8ce3De0F3d54F8D3218b42390637eF6037E0';
+  const jugFab = await artifact_at(JugFab, JUG_FAB);
   console.log('JUG_FAB=' + JUG_FAB);
 
-  console.log('Publishing VowFab...');
   const VowFab = artifacts.require('VowFab');
-  const vowFab = await artifact_deploy(VowFab);
-  const VOW_FAB = vowFab.address;
+  const VOW_FAB = '0xe090fbA275a39A66f37487801D86EE099F75148a';
+  const vowFab = await artifact_at(VowFab, VOW_FAB);
   console.log('VOW_FAB=' + VOW_FAB);
 
-  console.log('Publishing CatFab...');
   const CatFab = artifacts.require('CatFab');
-  const catFab = await artifact_deploy(CatFab);
-  const CAT_FAB = catFab.address;
+  const CAT_FAB = '0x2eb0DCb9eDfCA6DcC944Aa541B9f075Cb54D4576';
+  const catFab = await artifact_at(CatFab, CAT_FAB);
   console.log('CAT_FAB=' + CAT_FAB);
 
-  console.log('Publishing DogFab...');
   const DogFab = artifacts.require('DogFab');
-  const dogFab = await artifact_deploy(DogFab);
-  const DOG_FAB = dogFab.address;
+  const DOG_FAB = '0x2a276BB021426EA89536e918e0105D3243FD3b86';
+  const dogFab = await artifact_at(DogFab, DOG_FAB);
   console.log('DOG_FAB=' + DOG_FAB);
 
-  console.log('Publishing DaiFab...');
   const DaiFab = artifacts.require('DaiFab');
-  const daiFab = await artifact_deploy(DaiFab);
-  const DAI_FAB = daiFab.address;
+  const DAI_FAB = '0x0B9D71FecE78E8F93Ab6C35A12A02513Eb0D8e79';
+  const daiFab = await artifact_at(DaiFab, DAI_FAB);
   console.log('DAI_FAB=' + DAI_FAB);
 
-  console.log('Publishing DaiJoinFab...');
   const DaiJoinFab = artifacts.require('DaiJoinFab');
-  const daiJoinFab = await artifact_deploy(DaiJoinFab);
-  const MCD_JOIN_FAB = daiJoinFab.address;
+  const MCD_JOIN_FAB = '0x45777E44d2d59b4d3bADB198CC5ece59524c7cce';
+  const daiJoinFab = await artifact_at(DaiJoinFab, MCD_JOIN_FAB);
   console.log('MCD_JOIN_FAB=' + MCD_JOIN_FAB);
 
-  console.log('Publishing FlapFab...');
   const FlapFab = artifacts.require('FlapFab');
-  const flapFab = await artifact_deploy(FlapFab);
-  const FLAP_FAB = flapFab.address;
+  const FLAP_FAB = '0xB319297a68E6b3d25D6d3C34b773614186EdB0C5';
+  const flapFab = await artifact_at(FlapFab, FLAP_FAB);
   console.log('FLAP_FAB=' + FLAP_FAB);
 
-  console.log('Publishing FlopFab...');
   const FlopFab = artifacts.require('FlopFab');
-  const flopFab = await artifact_deploy(FlopFab);
-  const FLOP_FAB = flopFab.address;
+  const FLOP_FAB = '0x17dC3B78E2eCb298187B8d0c2929B00C8A154746';
+  const flopFab = await artifact_at(FlopFab, FLOP_FAB);
   console.log('FLOP_FAB=' + FLOP_FAB);
 
-  console.log('Publishing FlipFab...');
   const FlipFab = artifacts.require('FlipFab');
-  const flipFab = await artifact_deploy(FlipFab);
-  const FLIP_FAB = flipFab.address;
+  const FLIP_FAB = '0x30623E39aed9483c033FEd109f5fd009ff7F0bAf';
+  const flipFab = await artifact_at(FlipFab, FLIP_FAB);
   console.log('FLIP_FAB=' + FLIP_FAB);
 
-  console.log('Publishing ClipFab...');
   const ClipFab = artifacts.require('ClipFab');
-  const clipFab = await artifact_deploy(ClipFab);
-  const CLIP_FAB = clipFab.address;
+  const CLIP_FAB = '0xC1A9385d9953d4C0552db4Ad321b71B97309b1b1';
+  const clipFab = await artifact_at(ClipFab, CLIP_FAB);
   console.log('CLIP_FAB=' + CLIP_FAB);
 
-  console.log('Publishing SpotFab...');
   const SpotFab = artifacts.require('SpotFab');
-  const spotFab = await artifact_deploy(SpotFab);
-  const SPOT_FAB = spotFab.address;
+  const SPOT_FAB = '0xc652b9c2aB4Fe6E17EBA677dcc7Bb0b7F6e76770';
+  const spotFab = await artifact_at(SpotFab, SPOT_FAB);
   console.log('SPOT_FAB=' + SPOT_FAB);
 
-  console.log('Publishing PotFab...');
   const PotFab = artifacts.require('PotFab');
-  const potFab = await artifact_deploy(PotFab);
-  const POT_FAB = potFab.address;
+  const POT_FAB = '0x7E98Da8124baa6d800f9c021643996595485BA80';
+  const potFab = await artifact_at(PotFab, POT_FAB);
   console.log('POT_FAB=' + POT_FAB);
 
-  console.log('Publishing EndFab...');
   const EndFab = artifacts.require('EndFab');
-  const endFab = await artifact_deploy(EndFab);
-  const END_FAB = endFab.address;
+  const END_FAB = '0x1e674E1D2B8a1bF8431AD099B94a3B6E49847ED6';
+  const endFab = await artifact_at(EndFab, END_FAB);
   console.log('END_FAB=' + END_FAB);
 
-  console.log('Publishing ESMFab...');
   const ESMFab = artifacts.require('ESMFab');
-  const esmFab = await artifact_deploy(ESMFab);
-  const ESM_FAB = esmFab.address;
+  const ESM_FAB = '0xA7E3ef1BCE9f894d9f8205AAbD478a8e461e0610';
+  const esmFab = await artifact_at(ESMFab, ESM_FAB);
   console.log('ESM_FAB=' + ESM_FAB);
 
-  console.log('Publishing PauseFab...');
   const PauseFab = artifacts.require('PauseFab');
-  const pauseFab = await artifact_deploy(PauseFab);
-  const PAUSE_FAB = pauseFab.address;
+  const PAUSE_FAB = '0xa5e94e7BB58df6471FcFFdeaE14F3e4b16a48420';
+  const pauseFab = await artifact_at(PauseFab, PAUSE_FAB);
   console.log('PAUSE_FAB=' + PAUSE_FAB);
 
   // GOV TOKEN
 
-  let MCD_GOV = config_import.gov;
+  let MCD_GOV = '0x336eD56D8615271b38EcEE6F4786B55d0EE91b96';
   const DSToken = artifacts.require('DSToken');
-  if (config_import.gov === undefined) {
-    console.log('Publishing Stock/Gov Token...');
-    const govToken = await artifact_deploy(DSToken, 'STK');
-    MCD_GOV = govToken.address;
-    console.log('MCD_GOV=' + MCD_GOV);
-    await govToken.setName('Stock');
-  }
   const govToken = await artifact_at(DSToken, MCD_GOV);
 
   // CORE DEPLOYER
 
-  console.log('Publishing DssDeploy...');
-  const dssDeploy = await artifact_deploy(DssDeploy, VAT_FAB, JUG_FAB, VOW_FAB, CAT_FAB, DOG_FAB, DAI_FAB, MCD_JOIN_FAB, FLAP_FAB, FLOP_FAB, FLIP_FAB, CLIP_FAB, SPOT_FAB, POT_FAB, END_FAB, ESM_FAB, PAUSE_FAB);
-  const MCD_DEPLOY = dssDeploy.address;
+  const MCD_DEPLOY = '0xa10d039d4AD03f15FFF3e49916F62D35923238f6';
+  const dssDeploy = await artifact_at(DssDeploy, MCD_DEPLOY);
   console.log('MCD_DEPLOY=' + MCD_DEPLOY);
-
-  return;
 
   // AUTHORITY
 
@@ -416,6 +390,8 @@ module.exports = async (deployer, network, [account]) => {
     mkrAuthority.rely(MCD_FLOP);
     mkrAuthority.setRoot(MCD_PAUSE_PROXY);
   }
+
+  return;
 
   // DEPLOY COLLATERALS
 
