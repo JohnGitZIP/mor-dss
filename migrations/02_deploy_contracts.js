@@ -287,7 +287,6 @@ module.exports = async (deployer, network, [account]) => {
   // CORE
 
   console.log('Deploying Core...');
-  // await dssDeploy.deploy1(chainId, MCD_GOV);
 
   // Deploy Vat
   const Vat = artifacts.require('Vat');
@@ -342,8 +341,6 @@ module.exports = async (deployer, network, [account]) => {
   await vat.rely(MCD_FLOP);
   await flap.rely(MCD_VOW);
   await flop.rely(MCD_VOW);
-
-  // await dssDeploy.deploy2(MCD_GOV, 0, MCD_ADM_TEMP, units(config.esm_min, 18));
 
   // Deploy Liquidator
   const Cat = artifacts.require('Cat');
@@ -417,40 +414,6 @@ module.exports = async (deployer, network, [account]) => {
   await dog.rely(MCD_DEPLOY);
   await end.rely(MCD_DEPLOY);
   await dssDeploy.updateDeployed(MCD_VAT, MCD_JUG, MCD_VOW, MCD_CAT, MCD_DOG, MCD_DAI, MCD_JOIN_DAI, MCD_FLAP, MCD_FLOP, MCD_SPOT, MCD_POT, MCD_END, MCD_ESM, MCD_PAUSE);
-  // const mods = await dssDeploy.mods();
-  // const MCD_VAT = mods.vat;
-  // const MCD_SPOT = mods.spotter;
-  // const MCD_DAI = mods.dai;
-  // const MCD_JOIN_DAI = mods.daiJoin;
-  // const MCD_JUG = mods.jug;
-  // const MCD_POT = mods.pot;
-  // const MCD_FLAP = mods.flap;
-  // const MCD_FLOP = mods.flop;
-  // const MCD_VOW = mods.vow;
-  // const MCD_CAT = mods.cat;
-  // const MCD_DOG = mods.dog;
-  // const MCD_END = mods.end;
-  // const MCD_PAUSE = mods.pause;
-  // const MCD_ESM = mods.esm;
-  // console.log('MCD_VAT=' + MCD_VAT);
-  // console.log('MCD_SPOT=' + MCD_SPOT);
-  // console.log('MCD_DAI=' + MCD_DAI);
-  // console.log('MCD_JOIN_DAI=' + MCD_JOIN_DAI);
-  // console.log('MCD_JUG=' + MCD_JUG);
-  // console.log('MCD_POT=' + MCD_POT);
-  // console.log('MCD_FLAP=' + MCD_FLAP);
-  // console.log('MCD_FLOP=' + MCD_FLOP);
-  // console.log('MCD_VOW=' + MCD_VOW);
-  // console.log('MCD_CAT=' + MCD_CAT);
-  // console.log('MCD_DOG=' + MCD_DOG);
-  // console.log('MCD_END=' + MCD_END);
-  // console.log('MCD_PAUSE=' + MCD_PAUSE);
-  // console.log('MCD_ESM=' + MCD_ESM);
-
-  // const DSPause = artifacts.require('DSPause');
-  // const pause = await artifact_at(DSPause, MCD_PAUSE);
-  // const MCD_PAUSE_PROXY = await pause.proxy();
-  // console.log('MCD_PAUSE_PROXY=' + MCD_PAUSE_PROXY);
 
   // FAUCET CONFIG
 
