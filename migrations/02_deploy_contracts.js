@@ -125,39 +125,14 @@ module.exports = async (deployer, network, [account]) => {
   const multicall = await artifact_at(Multicall, MULTICALL);
   console.log('MULTICALL=' + MULTICALL);
 
-  // FAUCET
-
-  let FAUCET = config_import.faucet;
-  let restrictedTokenFaucet;
-  const RestrictedTokenFaucet = artifacts.require('RestrictedTokenFaucet');
-  if (config_import.faucet === undefined) {
-    console.log('Publishing Token Faucet...');
-    restrictedTokenFaucet = await artifact_deploy(RestrictedTokenFaucet);
-    FAUCET = restrictedTokenFaucet.address;
-    console.log('FAUCET=' + FAUCET);
-    await restrictedTokenFaucet.hope(ZERO_ADDRESS);
-  }
-
   // PROXY REGISTRY
 
-  let PROXY_FACTORY = ZERO_ADDRESS;
-  let PROXY_REGISTRY = config_import.proxyRegistry;
+  const PROXY_FACTORY = '0xb05b13496A6451A1Eb2fB18393232368b345C577';
+  console.log('PROXY_FACTORY=' + PROXY_FACTORY);
+  const PROXY_REGISTRY = '0x4939C03546FEAeC270507e8D4a819BeB40A2BD59';
+  console.log('PROXY_REGISTRY=' + PROXY_REGISTRY);
   const ProxyRegistry = artifacts.require('ProxyRegistry');
-  if (config_import.proxyRegistry === undefined) {
-    console.log('Publishing Proxy Factory...');
-    const DSProxyFactory = artifacts.require('DSProxyFactory');
-    const dsProxyFactory = await artifact_deploy(DSProxyFactory);
-    PROXY_FACTORY = dsProxyFactory.address;
-    console.log('PROXY_FACTORY=' + PROXY_FACTORY);
-
-    console.log('Publishing Proxy Registry...');
-    const proxyRegistry = await artifact_deploy(ProxyRegistry, PROXY_FACTORY);
-    PROXY_REGISTRY = proxyRegistry.address;
-    console.log('PROXY_REGISTRY=' + PROXY_REGISTRY);
-  }
   const proxyRegistry = await artifact_at(ProxyRegistry, PROXY_REGISTRY);
-
-  return;
 
   // FABS
 
@@ -276,6 +251,8 @@ module.exports = async (deployer, network, [account]) => {
   const dssDeploy = await artifact_deploy(DssDeploy, VAT_FAB, JUG_FAB, VOW_FAB, CAT_FAB, DOG_FAB, DAI_FAB, MCD_JOIN_FAB, FLAP_FAB, FLOP_FAB, FLIP_FAB, CLIP_FAB, SPOT_FAB, POT_FAB, END_FAB, ESM_FAB, PAUSE_FAB);
   const MCD_DEPLOY = dssDeploy.address;
   console.log('MCD_DEPLOY=' + MCD_DEPLOY);
+
+  return;
 
   // AUTHORITY
 
