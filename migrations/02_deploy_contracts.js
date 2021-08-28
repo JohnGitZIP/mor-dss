@@ -369,81 +369,36 @@ module.exports = async (deployer, network, [account]) => {
   const VaultOracle = artifacts.require('VaultOracle');
   const UniV2TwapOracle = artifacts.require('UniV2TwapOracle');
   const UniswapV2PairLike = artifacts.require('UniswapV2PairLike');
-  for (const token_name in config_tokens) {
-    const token_config = config_tokens[token_name];
-    const token_import = token_config.import || {};
-    const token_pipDeploy = token_config.pipDeploy || {};
-
-    VAL_[token_name] = token_import.pip;
-    if (token_import.pip === undefined) {
-      if (token_pipDeploy.type === 'twap') {
-        console.log('Publishing TWAP Oracle...');
-        const stwap = token_pipDeploy.stwap;
-        const ltwap = token_pipDeploy.ltwap;
-        const src = token_pipDeploy.src;
-        const token = await artifact_at(DSToken, T_[token_name]);
-        const dec = Number(await token.decimals());
-        const cap = units(token_pipDeploy.cap, dec);
-        console.log('@pip.cap', token_pipDeploy.cap, cap);
-        const univ2twapOracle = await artifact_deploy(UniV2TwapOracle, stwap, ltwap, src, token.address, cap);
-        VAL_[token_name] = univ2twapOracle.address;
-        console.log('VAL_' + token_name + '=' + VAL_[token_name]);
-      }
-      if (token_pipDeploy.type === 'vault') {
-        console.log('Publishing Vault Oracle...');
-        const src = T_[token_name];
-        const res = T_[token_pipDeploy.reserve];
-        const orb = VAL_[token_pipDeploy.reserve];
-        const vaultOracle = await artifact_deploy(VaultOracle, src, res, orb);
-        VAL_[token_name] = vaultOracle.address;
-        console.log('VAL_' + token_name + '=' + VAL_[token_name]);
-      }
-      if (token_pipDeploy.type === 'univ2lp') {
-        console.log('Publishing Uniswap V2 LP Oracle...');
-        const src = T_[token_name];
-        const wat = web3.utils.asciiToHex(token_name);
-        const orb0 = VAL_[token_pipDeploy.token0];
-        const orb1 = VAL_[token_pipDeploy.token1];
-        const pair = await artifact_at(UniswapV2PairLike, src);
-        const token0 = await pair.token0();
-        const token1 = await pair.token1();
-        if (token0 !== T_[token_pipDeploy.token0] || token1 !== T_[token_pipDeploy.token1]) {
-          throw new Error('Configuration Inconsistency')
-        }
-        const univ2lpOracle = await artifact_deploy(UNIV2LPOracle, src, wat, orb0, orb1);
-        VAL_[token_name] = univ2lpOracle.address;
-        console.log('VAL_' + token_name + '=' + VAL_[token_name]);
-        const hop = units(token_pipDeploy.hop, 0);
-        console.log('@pip.hop', token_pipDeploy.hop, hop);
-        await univ2lpOracle.step(hop);
-      }
-      if (token_pipDeploy.type === 'chainlink') {
-        console.log('Publishing LinkOracle...');
-        const src = token_pipDeploy.src;
-        const linkOracle = await artifact_deploy(LinkOracle, src);
-        VAL_[token_name] = linkOracle.address;
-        console.log('VAL_' + token_name + '=' + VAL_[token_name]);
-      }
-      if (token_pipDeploy.type === 'median') {
-        console.log('Publishing Median...');
-        const wat = web3.utils.asciiToHex(token_name + 'USD');
-        const median = await artifact_deploy(Median, wat);
-        VAL_[token_name] = median.address;
-        console.log('VAL_' + token_name + '=' + VAL_[token_name]);
-        await median.lift(token_pipDeploy.signers);
-        await median.setBar(3);
-      }
-      if (token_pipDeploy.type === 'value') {
-        console.log('Publishing DsValue...');
-        const dsValue = await artifact_deploy(DSValue);
-        VAL_[token_name] = dsValue.address;
-        console.log('VAL_' + token_name + '=' + VAL_[token_name]);
-      }
-    }
-    PIP_[token_name] = VAL_[token_name];
+  PIP_['BUSD'] = VAL_['BUSD'] = '0x08F39c96E6A954894252171a5300dECD350d3fA8';
+  PIP_['USDC'] = VAL_['USDC'] = '0xd4d7BCF6c7b54349C91f39cAd89B228C53FE6BD7';
+  PIP_['BNB'] = VAL_['BNB'] = '0x63c2E42758EF8776BF7b70afb00E0e2748Ad3F05';
+  PIP_['ETH'] = VAL_['ETH'] = '0x7622ce6588116c1C7F1a4E61A153C1efC7226f78';
+  PIP_['BTCB'] = VAL_['BTCB'] = '0x585707c57413e09a4BE58e89798f5074b2B89De1';
+  PIP_['CAKE'] = VAL_['CAKE'] = '0x447FE0cc2145F27127Cf60C6FD6D9025A4208b8B';
+  PIP_['BANANA'] = VAL_['BANANA'] = '0x6Ee2E2d648698357Cc518D1D5E8170586dca5348';
+  PIP_['PCSBNBCAKE'] = VAL_['PCSBNBCAKE'] = '0x326Db2b9640e51077fD9B70767855f5c2128e91A';
+  PIP_['PCSBNBBUSD'] = VAL_['PCSBNBBUSD'] = '0x1a06452B84456728Ee4054AE6157d3feDF56C295';
+  PIP_['PCSBNBETH'] = VAL_['PCSBNBETH'] = '0x8BBcd7E4da4395E391Fbfc2A11775debe3ca0D58';
+  PIP_['PCSBNBBTCB'] = VAL_['PCSBNBBTCB'] = '0xcf55226EE56F174B3cB3F75a5182d2300e788e91';
+  PIP_['PCSBUSDUSDC'] = VAL_['PCSBUSDUSDC'] = '0xC5065b47A133071fe8cD94f46950fCfBA53864C6';
+  PIP_['PCSBUSDBTCB'] = VAL_['PCSBUSDBTCB'] = '0x3d4604395595Bb30A8B7754b5dDBF0B3F680564b';
+  PIP_['PCSBUSDCAKE'] = VAL_['PCSBUSDCAKE'] = '0x1e1ee1AcD4B7ad405A0D701884F093d54DF7fba4';
+  PIP_['PCSETHBTCB'] = VAL_['PCSETHBTCB'] = '0x58849cE72b4E4338C00f0760Ca6AfCe11b5ee370';
+  PIP_['PCSETHUSDC'] = VAL_['PCSETHUSDC'] = '0xc690F38430Db2057C992c3d3190D9902CD7E0294';
+  PIP_['STKCAKE'] = VAL_['STKCAKE'] = '0xeE991787C4ffE1de8c8c7c45e3EF14bFc47A2735';
+  PIP_['STKBANANA'] = VAL_['STKBANANA'] = '0xE4d5a6E0581646f5a5806F9c171E96879ae8b385';
+  PIP_['STKPCSBNBCAKE'] = VAL_['STKPCSBNBCAKE'] = '0x5Df1B3212EB26f506af448cE25cd4E315BEdf630';
+  PIP_['STKPCSBNBBUSD'] = VAL_['STKPCSBNBBUSD'] = '0x8a8eA20937BBC38c0952b206892e9A273E7180E1';
+  PIP_['STKPCSBNBETH'] = VAL_['STKPCSBNBETH'] = '0x0Ca167778392473E0868503522a11f1e749bbF82';
+  PIP_['STKPCSBNBBTCB'] = VAL_['STKPCSBNBBTCB'] = '0x7e7C92D432307218b94052488B2CD54D8b826546';
+  PIP_['STKPCSBUSDUSDC'] = VAL_['STKPCSBUSDUSDC'] = '0x7bA715959A52ef046BE76c4E32f1de1d161E2888';
+  PIP_['STKPCSBUSDBTCB'] = VAL_['STKPCSBUSDBTCB'] = '0x8652883985B39D85B6432e3Ec5D9bea77edc31b0';
+  PIP_['STKPCSBUSDCAKE'] = VAL_['STKPCSBUSDCAKE'] = '0xeBcb52E5696A2a90D684C76cDf7095534F265370';
+  PIP_['STKPCSETHBTCB'] = VAL_['STKPCSETHBTCB'] = '0x70AF6F516f9E167620a5bdd970c671c69C81E92F';
+  PIP_['STKPCSETHUSDC'] = VAL_['STKPCSETHUSDC'] = '0x68697fF7Ec17F528E3E4862A1dbE6d7D9cBBd5C6';
+  for (const token_name in VAL_) {
+    console.log('VAL_' + token_name + '=' + VAL_[token_name]);
   }
-
-  return;
 
   // DEPLOY ILKS
 
@@ -525,7 +480,7 @@ module.exports = async (deployer, network, [account]) => {
         MCD_CLIP_CALC_[token_name][ilk] = calc.address;
         console.log('MCD_CLIP_CALC_' + token_name + '_' + ilk + '=' + MCD_CLIP_CALC_[token_name][ilk]);
         await calc.rely(MCD_PAUSE_PROXY);
-        await calc.deny(DEPLOYER);
+        // await calc.deny(DEPLOYER);
 
         console.log('Publishing Clip...');
         await dssDeploy.deployCollateralClip(ilk_name, MCD_JOIN_[token_name][ilk], PIP_[token_name], MCD_CLIP_CALC_[token_name][ilk]);
@@ -632,17 +587,17 @@ module.exports = async (deployer, network, [account]) => {
 
   console.log('Releasing Auth...');
   await dssDeploy.releaseAuth();
-  await vat.deny(DEPLOYER);
-  await cat.deny(DEPLOYER);
-  await dog.deny(DEPLOYER);
-  await vow.deny(DEPLOYER);
-  await jug.deny(DEPLOYER);
-  await pot.deny(DEPLOYER);
-  await dai.deny(DEPLOYER);
-  await spotter.deny(DEPLOYER);
-  await flap.deny(DEPLOYER);
-  await flop.deny(DEPLOYER);
-  await end.deny(DEPLOYER);
+  // await vat.deny(DEPLOYER);
+  // await cat.deny(DEPLOYER);
+  // await dog.deny(DEPLOYER);
+  // await vow.deny(DEPLOYER);
+  // await jug.deny(DEPLOYER);
+  // await pot.deny(DEPLOYER);
+  // await dai.deny(DEPLOYER);
+  // await spotter.deny(DEPLOYER);
+  // await flap.deny(DEPLOYER);
+  // await flop.deny(DEPLOYER);
+  // await end.deny(DEPLOYER);
 
   for (const token_name in config_tokens) {
     const token_config = config_tokens[token_name];
@@ -655,7 +610,7 @@ module.exports = async (deployer, network, [account]) => {
       const GemJoin = artifacts.require('GemJoin');
       const gemJoin = await artifact_at(GemJoin, MCD_JOIN_[token_name][ilk]);
       await gemJoin.rely(MCD_PAUSE_PROXY);
-      await gemJoin.deny(DEPLOYER);
+      // await gemJoin.deny(DEPLOYER);
       if (ilk_config.flipDeploy !== undefined) {
         await dssDeploy.releaseAuthFlip(ilk_name);
         // const Flipper = artifacts.require('Flipper');
@@ -686,6 +641,8 @@ module.exports = async (deployer, network, [account]) => {
   const dssDeployPauseProxyActions = await artifact_deploy(DssDeployPauseProxyActions);
   const PROXY_PAUSE_ACTIONS = dssDeployPauseProxyActions.address;
   console.log('PROXY_PAUSE_ACTIONS=' + PROXY_PAUSE_ACTIONS);
+
+  return;
 
   // PROXY DEPLOYER
 
