@@ -309,7 +309,7 @@
             "chip": "0",
             "tip": "5",
             "buf": "130",
-            "tail": ""16800"",
+            "tail": "16800",
             "cusp": "40",
             "calc": {
               "type": "StairstepExponentialDecrease",
@@ -349,7 +349,7 @@
             "chip": "0",
             "tip": "5",
             "buf": "130",
-            "tail": ""16800"",
+            "tail": "16800",
             "cusp": "40",
             "calc": {
               "type": "StairstepExponentialDecrease",
@@ -389,7 +389,7 @@
             "chip": "0",
             "tip": "5",
             "buf": "130",
-            "tail": ""16800"",
+            "tail": "16800",
             "cusp": "40",
             "calc": {
               "type": "StairstepExponentialDecrease",
@@ -429,7 +429,7 @@
             "chip": "0",
             "tip": "5",
             "buf": "130",
-            "tail": ""16800"",
+            "tail": "16800",
             "cusp": "40",
             "calc": {
               "type": "StairstepExponentialDecrease",
@@ -469,7 +469,7 @@
             "chip": "0",
             "tip": "5",
             "buf": "130",
-            "tail": ""16800"",
+            "tail": "16800",
             "cusp": "40",
             "calc": {
               "type": "StairstepExponentialDecrease",
@@ -509,7 +509,7 @@
             "chip": "0",
             "tip": "5",
             "buf": "130",
-            "tail": ""16800"",
+            "tail": "16800",
             "cusp": "40",
             "calc": {
               "type": "StairstepExponentialDecrease",
@@ -589,7 +589,7 @@
             "chip": "0",
             "tip": "5",
             "buf": "130",
-            "tail": ""16800"",
+            "tail": "16800",
             "cusp": "40",
             "calc": {
               "type": "StairstepExponentialDecrease",
@@ -629,7 +629,7 @@
             "chip": "0",
             "tip": "5",
             "buf": "130",
-            "tail": ""16800"",
+            "tail": "16800",
             "cusp": "40",
             "calc": {
               "type": "StairstepExponentialDecrease",
@@ -669,7 +669,7 @@
             "chip": "0",
             "tip": "5",
             "buf": "130",
-            "tail": ""16800"",
+            "tail": "16800",
             "cusp": "40",
             "calc": {
               "type": "StairstepExponentialDecrease",
