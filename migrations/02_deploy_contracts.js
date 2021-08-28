@@ -1035,12 +1035,12 @@ module.exports = async (deployer, network, [account]) => {
     await file(MCD_DOG, 'Hole', dog_hole);
   }
   if (Number(config.jug_base) >= 0) {
-    const jug_base = units(Math.exp(Math.log(Number(config.jug_base) / 100 + 1) / (60 * 60 * 24 * 365)).toFixed(27), 27) - 10n ** 27n; // review
+    const jug_base = units(Math.exp(Math.log(Number(config.jug_base) / 100 + 1) / (60 * 60 * 24 * 365)).toFixed(27), 27) - 10n ** 27n;
     console.log('@jug_base', config.jug_base, jug_base);
     await file(MCD_JUG, 'base', jug_base);
   }
   if (Number(config.pot_dsr) >= 0) {
-    const pot_dsr = units(Math.exp(Math.log(Number(config.pot_dsr) / 100 + 1) / (60 * 60 * 24 * 365)).toFixed(27), 27); // review
+    const pot_dsr = units(Math.exp(Math.log(Number(config.pot_dsr) / 100 + 1) / (60 * 60 * 24 * 365)).toFixed(27), 27);
     console.log('@pot_dsr', config.pot_dsr, pot_dsr);
     await dripAndFile(MCD_POT, 'dsr', pot_dsr);
   }
@@ -1109,10 +1109,16 @@ module.exports = async (deployer, network, [account]) => {
         await univ2twapOracle.poke();
       }
       if (token_pipDeploy.type === 'value') {
-        const price = units(token_pipDeploy.price, 18);
+        const token = await artifact_at(DSToken, T_[token_name]);
+        const dec = Number(await token.decimals());
+        const price = units(token_pipDeploy.price, dec);
         console.log('@pip.price', token_pipDeploy.price, price);
         const dsValue = await artifact_at(DSValue, VAL_[token_name]);
         await dsValue.poke('0x' + web3.utils.numberToHex(String(price)).substring(2).padStart(64, '0'));
+      }
+      if (Number(token_pipDeploy.osmDelay) > 0) {
+        const osm = await artifact_at(OSM, PIP_[token_name]);
+        await osm.poke();
       }
     }
   }
@@ -1230,7 +1236,7 @@ module.exports = async (deployer, network, [account]) => {
       const ilk_config = token_ilks[ilk];
       const ilk_name = web3.utils.asciiToHex(token_name + '-' + ilk);
 
-      const duty = units(Math.exp(Math.log(Number(ilk_config.duty) / 100 + 1) / (60 * 60 * 24 * 365)).toFixed(27), 27); // review
+      const duty = units(Math.exp(Math.log(Number(ilk_config.duty) / 100 + 1) / (60 * 60 * 24 * 365)).toFixed(27), 27);
       console.log('@ilk.duty', ilk_config.duty, duty);
       await dripAndFilex(MCD_JUG, ilk_name, 'duty', duty);
     }
