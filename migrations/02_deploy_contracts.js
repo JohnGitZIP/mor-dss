@@ -120,13 +120,10 @@ module.exports = async (deployer, network, [account]) => {
 
   // MULTICALL
 
-  console.log('Publishing Multicall...');
   const Multicall = artifacts.require('Multicall');
-  const multicall = await artifact_deploy(Multicall);
-  const MULTICALL = multicall.address;
+  const MULTICALL = '0x0b78ad358dDa2887285eaD72e84b47242360b872';
+  const multicall = await artifact_at(Multicall, MULTICALL);
   console.log('MULTICALL=' + MULTICALL);
-
-  return;
 
   // FAUCET
 
@@ -159,6 +156,8 @@ module.exports = async (deployer, network, [account]) => {
     console.log('PROXY_REGISTRY=' + PROXY_REGISTRY);
   }
   const proxyRegistry = await artifact_at(ProxyRegistry, PROXY_REGISTRY);
+
+  return;
 
   // FABS
 
