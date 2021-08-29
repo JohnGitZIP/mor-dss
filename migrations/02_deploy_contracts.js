@@ -702,173 +702,18 @@ module.exports = async (deployer, network, [account]) => {
 
   // PSM
 
-  console.log('Deploying Lerp Factory...');
   const LerpFactory = artifacts.require('LerpFactory');
-  const lerpFactory = await artifact_deploy(LerpFactory);
-  const LERP_FAB = lerpFactory.address;
+  const LERP_FAB = '0x8a54d489B2B21E9FE5f762f73b8e7e929345C994';
+  const lerpFactory = await artifact_at(LerpFactory, LERP_FAB);
   console.log('LERP_FAB=' + LERP_FAB);
-  await lerpFactory.rely(MCD_PAUSE_PROXY);
 
   const MCD_JOIN_PSM_ = {};
   const MCD_PSM_ = {};
   const LERP_ = {};
-  for (const token_name in config_tokens) {
-    const token_config = config_tokens[token_name];
-    const token_psmDeploy = token_config.psmDeploy;
-
-    if (token_psmDeploy !== undefined) {
-      MCD_JOIN_PSM_[token_name] = MCD_JOIN_PSM_[token_name] || {};
-      MCD_PSM_[token_name] = MCD_PSM_[token_name] || {};
-      LERP_[token_name] = LERP_[token_name] || {};
-
-      const src = token_psmDeploy.src;
-      const extraParams = token_psmDeploy.extraParams || [];
-      const token_ilks = token_psmDeploy.ilks || {};
-      let AuthGemJoin;
-      switch (src) {
-      case 'AuthGemJoin': AuthGemJoin = artifacts.require('AuthGemJoin'); break;
-      case 'AuthGemJoin5': AuthGemJoin = artifacts.require('AuthGemJoin5'); break;
-      default: throw new Error('Unknown auth join: ' + src);
-      }
-
-      for (const ilk in token_ilks) {
-        const ilk_config = token_ilks[ilk];
-        const line = units(ilk_config.line, 45);
-        const tin = units(ilk_config.tin, 18);
-        const tout = units(ilk_config.tout, 18);
-        const ilk_name = web3.utils.asciiToHex('PSM-' + token_name + '-' + ilk);
-
-        console.log('@psm.line', ilk_config.line, line);
-        console.log('@psm.tin', ilk_config.tin, tin);
-        console.log('@psm.tout', ilk_config.tout, tout);
-
-        // const ilk_lerpDelay = units(ilk_config.lerpDelay, 0);
-        // const ilk_lerpStart = units(ilk_config.lerpStart, 18);
-        // const ilk_lerpEnd = units(ilk_config.lerpEnd, 18);
-        // const ilk_lerpDuration = units(ilk_config.lerpDuration, 0);
-        // const lerp_name = web3.utils.asciiToHex(NOW_PREFIX + '_PSM_' + token_name + '_' + ilk + '_TIN');
-
-        console.log('Publishing Auth Gem Join...');
-        const authGemJoin = await artifact_deploy(AuthGemJoin, MCD_VAT, ilk_name, T_[token_name], ...extraParams);
-        MCD_JOIN_PSM_[token_name][ilk] = authGemJoin.address;
-        console.log('MCD_JOIN_PSM_' + token_name + '_' + ilk + '=' + MCD_JOIN_PSM_[token_name][ilk]);
-
-        console.log('Deploying Dss Psm...');
-        const DssPsm = artifacts.require('DssPsm');
-        const dssPsm = await artifact_deploy(DssPsm, MCD_JOIN_PSM_[token_name][ilk], MCD_JOIN_DAI, MCD_VOW);
-        MCD_PSM_[token_name][ilk] = dssPsm.address;
-        console.log('MCD_PSM_' + token_name + '_' + ilk + '=' + MCD_PSM_[token_name][ilk]);
-        await dssPsm.file(web3.utils.asciiToHex('tin'), tin);
-        await dssPsm.file(web3.utils.asciiToHex('tout'), tout);
-        await filex(MCD_VAT, ilk_name, 'line', line);
-
-        // console.log('Deploying Lerp...');
-        // await lerpFactory.newLerp(lerp_name, MCD_PSM_[token_name][ilk], web3.utils.asciiToHex('tin'), NOW + ilk_lerpDelay, ilk_lerpStart, ilk_lerpEnd, ilk_lerpDuration);
-        // const lerpAddress = await lerpFactory.lerps(lerp_name);
-        // const Lerp = artifacts.require('Lerp');
-        // const lerp = await artifact_at(Lerp, lerpAddress);
-        // LERP_[token_name][ilk] = lerp.address;
-        // console.log('LERP_' + token_name + '_' + ilk + '=' + LERP_[token_name][ilk]);
-
-        await authGemJoin.rely(MCD_PSM_[token_name][ilk]);
-        // await dssPsm.rely(LERP_[token_name][ilk]);
-
-        await authGemJoin.rely(MCD_PAUSE_PROXY);
-        // await authGemJoin.deny(DEPLOYER);
-
-        await dssPsm.rely(MCD_PAUSE_PROXY);
-        // await dssPsm.deny(DEPLOYER);
-      }
-    }
-  }
-  await lerpFactory.rely(MCD_PAUSE_PROXY);
-  // await lerpFactory.deny(DEPLOYER);
-
-  // CONFIGURE CHAIN LOG
-
-  console.log('Configuring Chain Log...');
-  for (const token_name in T_) {
-    await chainLog.setAddress(web3.utils.asciiToHex(token_name), T_[token_name]);
-  }
-  for (const token_name in PIP_) {
-    await chainLog.setAddress(web3.utils.asciiToHex('PIP_' + token_name), PIP_[token_name]);
-  }
-  for (const token_name in MCD_JOIN_) {
-    for (const ilk in MCD_JOIN_[token_name]) {
-      await chainLog.setAddress(web3.utils.asciiToHex('MCD_JOIN_' + token_name + '_' + ilk), MCD_JOIN_[token_name][ilk]);
-    }
-  }
-  for (const token_name in MCD_FLIP_) {
-    for (const ilk in MCD_FLIP_[token_name]) {
-      await chainLog.setAddress(web3.utils.asciiToHex('MCD_FLIP_' + token_name + '_' + ilk), MCD_FLIP_[token_name][ilk]);
-    }
-  }
-  for (const token_name in MCD_CLIP_) {
-    for (const ilk in MCD_CLIP_[token_name]) {
-      await chainLog.setAddress(web3.utils.asciiToHex('MCD_CLIP_' + token_name + '_' + ilk), MCD_CLIP_[token_name][ilk]);
-    }
-  }
-  for (const token_name in MCD_CLIP_CALC_) {
-    for (const ilk in MCD_CLIP_CALC_[token_name]) {
-      await chainLog.setAddress(web3.utils.asciiToHex('MCD_CLIP_CALC_' + token_name + '_' + ilk), MCD_CLIP_CALC_[token_name][ilk]);
-    }
-  }
-  for (const token_name in MCD_PSM_) {
-    for (const ilk in MCD_PSM_[token_name]) {
-      await chainLog.setAddress(web3.utils.asciiToHex('MCD_PSM_' + token_name + '_' + ilk), MCD_PSM_[token_name][ilk]);
-    }
-  }
-  for (const token_name in MCD_JOIN_PSM_) {
-    for (const ilk in MCD_JOIN_PSM_[token_name]) {
-      await chainLog.setAddress(web3.utils.asciiToHex('MCD_JOIN_PSM_' + token_name + '_' + ilk), MCD_JOIN_PSM_[token_name][ilk]);
-    }
-  }
-  await chainLog.setAddress(web3.utils.asciiToHex('CDP_MANAGER'), CDP_MANAGER);
-  await chainLog.setAddress(web3.utils.asciiToHex('CHANGELOG'), CHANGELOG);
-  await chainLog.setAddress(web3.utils.asciiToHex('CLIP_FAB'), CLIP_FAB);
-  await chainLog.setAddress(web3.utils.asciiToHex('CLIPPER_MOM'), CLIPPER_MOM);
-  await chainLog.setAddress(web3.utils.asciiToHex('DSR_MANAGER'), DSR_MANAGER);
-  await chainLog.setAddress(web3.utils.asciiToHex('FAUCET'), FAUCET);
-  await chainLog.setAddress(web3.utils.asciiToHex('FLIP_FAB'), FLIP_FAB);
-  await chainLog.setAddress(web3.utils.asciiToHex('FLIPPER_MOM'), FLIPPER_MOM);
-  await chainLog.setAddress(web3.utils.asciiToHex('GET_CDPS'), GET_CDPS);
-  await chainLog.setAddress(web3.utils.asciiToHex('GOV_GUARD'), GOV_GUARD);
-  await chainLog.setAddress(web3.utils.asciiToHex('ILK_REGISTRY'), ILK_REGISTRY);
-  await chainLog.setAddress(web3.utils.asciiToHex('LERP_FAB'), LERP_FAB);
-  await chainLog.setAddress(web3.utils.asciiToHex('MCD_ADM'), MCD_ADM);
-  await chainLog.setAddress(web3.utils.asciiToHex('MCD_CAT'), MCD_CAT);
-  await chainLog.setAddress(web3.utils.asciiToHex('MCD_DAI'), MCD_DAI);
-  await chainLog.setAddress(web3.utils.asciiToHex('MCD_DEPLOY'), MCD_DEPLOY);
-  await chainLog.setAddress(web3.utils.asciiToHex('MCD_DOG'), MCD_DOG);
-  await chainLog.setAddress(web3.utils.asciiToHex('MCD_END'), MCD_END);
-  await chainLog.setAddress(web3.utils.asciiToHex('MCD_ESM'), MCD_ESM);
-  await chainLog.setAddress(web3.utils.asciiToHex('MCD_FLAP'), MCD_FLAP);
-  await chainLog.setAddress(web3.utils.asciiToHex('MCD_FLASH'), MCD_FLASH);
-  await chainLog.setAddress(web3.utils.asciiToHex('MCD_FLOP'), MCD_FLOP);
-  await chainLog.setAddress(web3.utils.asciiToHex('MCD_GOV'), MCD_GOV);
-  await chainLog.setAddress(web3.utils.asciiToHex('MCD_GOV_ACTIONS'), MCD_GOV_ACTIONS);
-  await chainLog.setAddress(web3.utils.asciiToHex('MCD_IAM_AUTO_LINE'), MCD_IAM_AUTO_LINE);
-  await chainLog.setAddress(web3.utils.asciiToHex('MCD_JOIN_DAI'), MCD_JOIN_DAI);
-  await chainLog.setAddress(web3.utils.asciiToHex('MCD_JUG'), MCD_JUG);
-  await chainLog.setAddress(web3.utils.asciiToHex('MCD_PAUSE'), MCD_PAUSE);
-  await chainLog.setAddress(web3.utils.asciiToHex('MCD_PAUSE_PROXY'), MCD_PAUSE_PROXY);
-  await chainLog.setAddress(web3.utils.asciiToHex('MCD_POT'), MCD_POT);
-  await chainLog.setAddress(web3.utils.asciiToHex('MCD_SPOT'), MCD_SPOT);
-  await chainLog.setAddress(web3.utils.asciiToHex('MCD_VAT'), MCD_VAT);
-  await chainLog.setAddress(web3.utils.asciiToHex('MCD_VOW'), MCD_VOW);
-  await chainLog.setAddress(web3.utils.asciiToHex('MULTICALL'), MULTICALL);
-  await chainLog.setAddress(web3.utils.asciiToHex('OSM_MOM'), OSM_MOM);
-  await chainLog.setAddress(web3.utils.asciiToHex('PROXY_ACTIONS'), PROXY_ACTIONS);
-  await chainLog.setAddress(web3.utils.asciiToHex('PROXY_ACTIONS_DSR'), PROXY_ACTIONS_DSR);
-  await chainLog.setAddress(web3.utils.asciiToHex('PROXY_ACTIONS_END'), PROXY_ACTIONS_END);
-  await chainLog.setAddress(web3.utils.asciiToHex('PROXY_DEPLOYER'), PROXY_DEPLOYER);
-  await chainLog.setAddress(web3.utils.asciiToHex('PROXY_FACTORY'), PROXY_FACTORY);
-  await chainLog.setAddress(web3.utils.asciiToHex('PROXY_PAUSE_ACTIONS'), PROXY_PAUSE_ACTIONS);
-  await chainLog.setAddress(web3.utils.asciiToHex('PROXY_REGISTRY'), PROXY_REGISTRY);
-  await chainLog.setAddress(web3.utils.asciiToHex('VOTE_DELEGATE_PROXY_FACTORY'), VOTE_DELEGATE_PROXY_FACTORY);
-  await chainLog.setAddress(web3.utils.asciiToHex('VOTE_PROXY_FACTORY'), VOTE_PROXY_FACTORY);
-  await chainLog.rely(MCD_PAUSE_PROXY);
-  // await chainLog.deny(DEPLOYER);
+  MCD_JOIN_['PSM_BUSD'] = {};
+  MCD_PSM_['BUSD'] = {};
+  MCD_JOIN_['PSM_BUSD']['A'] = '0x49425E950c4aC30129c2062ef45a6Bf840A5A6b5';
+  MCD_PSM_['BUSD']['A'] = '0xbeFe1b144A20e0c2e93f8c9F0178a763DB76C2f2';
 
   // SET PAUSE AUTH DELAY
 
