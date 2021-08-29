@@ -35,7 +35,7 @@ module.exports = async (deployer, network, [account]) => {
   function liftFunc(address, name, func) {
     let i = 0;
     const liftedFunc = (...args) => {
-      // console.log('>> CALL ' + address + '.' + name + '(' + args.join(', ') + ')');
+      console.log('>> CALL ' + address + '.' + name + '(' + args.join(', ') + ')');
       const result = func(...args);
       if (Object.prototype.toString.call(result) !== '[object Promise]') return result;
       return new Promise((resolve, reject) => {
@@ -68,7 +68,7 @@ module.exports = async (deployer, network, [account]) => {
   }
 
   async function artifact_deploy(artifact, ...params) {
-    // console.log('>> CREATE ' + artifact._json.contractName + '(' + params.join(', ') + ')');
+    console.log('>> CREATE ' + artifact._json.contractName + '(' + params.join(', ') + ')');
     for (let i = 0; ; i++) {
       try {
         await deployer.deploy(artifact, ...params);
@@ -481,7 +481,7 @@ module.exports = async (deployer, network, [account]) => {
       console.log('Publishing Gem Token...');
       const gemToken = await artifact_deploy(GemToken, ...params);
       T_[token_name] = gemToken.address;
-      console.log(token_name + '=' + T_[token_name]);
+      console.log(token_name.replace('-', '_') + '=' + T_[token_name]);
     }
   }
 
@@ -514,7 +514,7 @@ module.exports = async (deployer, network, [account]) => {
         console.log('@pip.cap', token_pipDeploy.cap, cap);
         const univ2twapOracle = await artifact_deploy(UniV2TwapOracle, stwap, ltwap, src, token.address, cap);
         VAL_[token_name] = univ2twapOracle.address;
-        console.log('VAL_' + token_name + '=' + VAL_[token_name]);
+        console.log('VAL_' + token_name.replace('-', '_') + '=' + VAL_[token_name]);
       }
       if (token_pipDeploy.type === 'vault') {
         console.log('Publishing Vault Oracle...');
@@ -523,7 +523,7 @@ module.exports = async (deployer, network, [account]) => {
         const orb = VAL_[token_pipDeploy.reserve];
         const vaultOracle = await artifact_deploy(VaultOracle, src, res, orb);
         VAL_[token_name] = vaultOracle.address;
-        console.log('VAL_' + token_name + '=' + VAL_[token_name]);
+        console.log('VAL_' + token_name.replace('-', '_') + '=' + VAL_[token_name]);
       }
       if (token_pipDeploy.type === 'univ2lp') {
         console.log('Publishing Uniswap V2 LP Oracle...');
@@ -539,7 +539,7 @@ module.exports = async (deployer, network, [account]) => {
         }
         const univ2lpOracle = await artifact_deploy(UNIV2LPOracle, src, wat, orb0, orb1);
         VAL_[token_name] = univ2lpOracle.address;
-        console.log('VAL_' + token_name + '=' + VAL_[token_name]);
+        console.log('VAL_' + token_name.replace('-', '_') + '=' + VAL_[token_name]);
         const hop = units(token_pipDeploy.hop, 0);
         console.log('@pip.hop', token_pipDeploy.hop, hop);
         await univ2lpOracle.step(hop);
@@ -549,14 +549,14 @@ module.exports = async (deployer, network, [account]) => {
         const src = token_pipDeploy.src;
         const linkOracle = await artifact_deploy(LinkOracle, src);
         VAL_[token_name] = linkOracle.address;
-        console.log('VAL_' + token_name + '=' + VAL_[token_name]);
+        console.log('VAL_' + token_name.replace('-', '_') + '=' + VAL_[token_name]);
       }
       if (token_pipDeploy.type === 'median') {
         console.log('Publishing Median...');
-        const wat = web3.utils.asciiToHex(token_name + 'USD');
+        const wat = web3.utils.asciiToHex(token_name.replace('-', '_') + 'USD');
         const median = await artifact_deploy(Median, wat);
         VAL_[token_name] = median.address;
-        console.log('VAL_' + token_name + '=' + VAL_[token_name]);
+        console.log('VAL_' + token_name.replace('-', '_') + '=' + VAL_[token_name]);
         await median.lift(token_pipDeploy.signers);
         await median.setBar(3);
       }
@@ -564,7 +564,7 @@ module.exports = async (deployer, network, [account]) => {
         console.log('Publishing DsValue...');
         const dsValue = await artifact_deploy(DSValue);
         VAL_[token_name] = dsValue.address;
-        console.log('VAL_' + token_name + '=' + VAL_[token_name]);
+        console.log('VAL_' + token_name.replace('-', '_') + '=' + VAL_[token_name]);
       }
     }
     PIP_[token_name] = VAL_[token_name];
@@ -612,18 +612,18 @@ module.exports = async (deployer, network, [account]) => {
       console.log('Publishing Gem Join...');
       const gemJoin = await artifact_deploy(GemJoin, MCD_VAT, ilk_name, T_[token_name], ...extraParams);
       MCD_JOIN_[token_name][ilk] = gemJoin.address;
-      console.log('MCD_JOIN_' + token_name + '_' + ilk + '=' + MCD_JOIN_[token_name][ilk]);
+      console.log('MCD_JOIN_' + token_name.replace('-', '_') + '_' + ilk + '=' + MCD_JOIN_[token_name][ilk]);
 
       if (ilk_config.flipDeploy !== undefined) {
         console.log('Publishing Flip...');
         await dssDeploy.deployCollateralFlip(ilk_name, MCD_JOIN_[token_name][ilk], PIP_[token_name]);
         const { flip } = await dssDeploy.ilks(ilk_name);
         MCD_FLIP_[token_name][ilk] = flip;
-        console.log('MCD_FLIP_' + token_name + '_' + ilk + '=' + MCD_FLIP_[token_name][ilk]);
+        console.log('MCD_FLIP_' + token_name.replace('-', '_') + '_' + ilk + '=' + MCD_FLIP_[token_name][ilk]);
         // const Flipper = artifacts.require('Flipper');
         // const flip = await artifact_deploy(Flipper, MCD_VAT, MCD_CAT, ilk_name);
         // MCD_FLIP_[token_name][ilk] = flip.address;
-        // console.log('MCD_FLIP_' + token_name + '_' + ilk + '=' + MCD_FLIP_[token_name][ilk]);
+        // console.log('MCD_FLIP_' + token_name.replace('-', '_') + '_' + ilk + '=' + MCD_FLIP_[token_name][ilk]);
         // await spotter.file(ilk_name, web3.utils.asciiToHex('pip'), PIP_[token_name]);
         // await cat.file(ilk_name, web3.utils.asciiToHex('flip'), MCD_FLIP_[token_name][ilk]);
         // await vat.init(ilk_name);
@@ -650,7 +650,7 @@ module.exports = async (deployer, network, [account]) => {
         console.log('Publishing Calc...');
         const calc = await artifact_deploy(Calc);
         MCD_CLIP_CALC_[token_name][ilk] = calc.address;
-        console.log('MCD_CLIP_CALC_' + token_name + '_' + ilk + '=' + MCD_CLIP_CALC_[token_name][ilk]);
+        console.log('MCD_CLIP_CALC_' + token_name.replace('-', '_') + '_' + ilk + '=' + MCD_CLIP_CALC_[token_name][ilk]);
         await calc.rely(MCD_PAUSE_PROXY);
         await calc.deny(DEPLOYER);
 
@@ -658,11 +658,11 @@ module.exports = async (deployer, network, [account]) => {
         await dssDeploy.deployCollateralClip(ilk_name, MCD_JOIN_[token_name][ilk], PIP_[token_name], MCD_CLIP_CALC_[token_name][ilk]);
         const { clip } = await dssDeploy.ilks(ilk_name);
         MCD_CLIP_[token_name][ilk] = clip;
-        console.log('MCD_CLIP_' + token_name + '_' + ilk + '=' + MCD_CLIP_[token_name][ilk]);
+        console.log('MCD_CLIP_' + token_name.replace('-', '_') + '_' + ilk + '=' + MCD_CLIP_[token_name][ilk]);
         // const Clipper = artifacts.require('Clipper');
         // const clip = await artifact_deploy(Clipper, MCD_VAT, MCD_SPOT, MCD_DOG, ilk_name);
         // MCD_CLIP_[token_name][ilk] = clip.address;
-        // console.log('MCD_CLIP_' + token_name + '_' + ilk + '=' + MCD_CLIP_[token_name][ilk]);
+        // console.log('MCD_CLIP_' + token_name.replace('-', '_') + '_' + ilk + '=' + MCD_CLIP_[token_name][ilk]);
         // await spotter.file(ilk_name, web3.utils.asciiToHex('pip'), PIP_[token_name]);
         // await dog.file(ilk_name, web3.utils.asciiToHex('clip'), MCD_CLIP_[token_name][ilk]);
         // await clip.file(web3.utils.asciiToHex('vow'), MCD_VOW);
@@ -754,6 +754,43 @@ module.exports = async (deployer, network, [account]) => {
   const ilkRegistry = await artifact_deploy(IlkRegistry, MCD_VAT, MCD_DOG, MCD_CAT, MCD_SPOT);
   const ILK_REGISTRY = ilkRegistry.address;
   console.log('ILK_REGISTRY=' + ILK_REGISTRY);
+
+  // PSM
+
+  const MCD_PSM_ = {};
+  for (const token_name in config_tokens) {
+    const token_config = config_tokens[token_name];
+    const token_ilks = token_config.ilks || {};
+
+    MCD_PSM_[token_name] = MCD_PSM_[token_name] || {};
+
+    for (const ilk in token_ilks) {
+      const ilk_config = token_ilks[ilk];
+      const ilk_psmDeploy = ilk_config.psmDeploy;
+
+      if (ilk_psmDeploy !== undefined) {
+        const ilk_name = web3.utils.asciiToHex(token_name + '-' + ilk);
+        const tin = units(ilk_psmDeploy.tin, 18);
+        const tout = units(ilk_psmDeploy.tout, 18);
+        console.log('@psm.tin', ilk_psmDeploy.tin, tin);
+        console.log('@psm.tout', ilk_psmDeploy.tout, tout);
+
+        console.log('Deploying Dss Psm...');
+        const DssPsm = artifacts.require('DssPsm');
+        const dssPsm = await artifact_deploy(DssPsm, MCD_JOIN_[token_name][ilk], MCD_JOIN_DAI, MCD_VOW);
+        MCD_PSM_[token_name][ilk] = dssPsm.address;
+        console.log('MCD_' + token_name.replace('-', '_') + '_' + ilk + '=' + MCD_PSM_[token_name][ilk]);
+        await dssPsm.file(web3.utils.asciiToHex('tin'), tin);
+        await dssPsm.file(web3.utils.asciiToHex('tout'), tout);
+        await dssPsm.rely(MCD_PAUSE_PROXY);
+        await dssPsm.deny(DEPLOYER);
+
+        const AuthGemJoin = artifacts.require('AuthGemJoin');
+        const authGemJoin = await artifact_at(AuthGemJoin, MCD_JOIN_[token_name][ilk]);
+        await authGemJoin.rely(MCD_PSM_[token_name][ilk]);
+      }
+    }
+  }
 
   // REMOVE AUTH
 
@@ -1560,7 +1597,7 @@ module.exports = async (deployer, network, [account]) => {
         console.log('Deploying OSM...');
         const osm = await artifact_deploy(OSM, VAL_[token_name]);
         PIP_[token_name] = osm.address;
-        console.log('PIP_' + token_name + '=' + PIP_[token_name]);
+        console.log('PIP_' + token_name.replace('-', '_') + '=' + PIP_[token_name]);
         await osm.step(osmDelay);
         if (token_pipDeploy.type === 'twap') {
           const univ2twapOracle = await artifact_at(UniV2TwapOracle, VAL_[token_name]);
@@ -1728,67 +1765,13 @@ module.exports = async (deployer, network, [account]) => {
   await ilkRegistry.rely(MCD_PAUSE_PROXY);
   await ilkRegistry.deny(DEPLOYER);
 
-  // PSM
+  // LERP
 
   console.log('Deploying Lerp Factory...');
   const LerpFactory = artifacts.require('LerpFactory');
   const lerpFactory = await artifact_deploy(LerpFactory);
   const LERP_FAB = lerpFactory.address;
   console.log('LERP_FAB=' + LERP_FAB);
-  await lerpFactory.rely(MCD_PAUSE_PROXY);
-
-  const MCD_PSM_ = {};
-  const LERP_ = {};
-  for (const token_name in config_tokens) {
-    const token_config = config_tokens[token_name];
-    const token_ilks = token_config.ilks || {};
-    const token_psmDeploy = token_config.psmDeploy;
-
-    if (token_psmDeploy !== undefined) {
-      MCD_PSM_[token_name] = MCD_PSM_[token_name] || {};
-      LERP_[token_name] = LERP_[token_name] || {};
-
-      for (const ilk in token_ilks) {
-        const ilk_config = token_ilks[ilk];
-        const tin = units(token_psmDeploy.tin, 18);
-        const tout = units(token_psmDeploy.tout, 18);
-        const ilk_name = web3.utils.asciiToHex(token_name + '-' + ilk);
-
-        console.log('@psm.tin', token_psmDeploy.tin, tin);
-        console.log('@psm.tout', token_psmDeploy.tout, tout);
-
-        // const ilk_lerpDelay = units(ilk_config.lerpDelay, 0);
-        // const ilk_lerpStart = units(ilk_config.lerpStart, 18);
-        // const ilk_lerpEnd = units(ilk_config.lerpEnd, 18);
-        // const ilk_lerpDuration = units(ilk_config.lerpDuration, 0);
-        // const lerp_name = web3.utils.asciiToHex(NOW_PREFIX + '_' + token_name + '_' + ilk + '_TIN');
-
-        console.log('Deploying Dss Psm...');
-        const DssPsm = artifacts.require('DssPsm');
-        const dssPsm = await artifact_deploy(DssPsm, MCD_JOIN_[token_name][ilk], MCD_JOIN_DAI, MCD_VOW);
-        MCD_PSM_[token_name][ilk] = dssPsm.address;
-        console.log('MCD_PSM_' + token_name + '_' + ilk + '=' + MCD_PSM_[token_name][ilk]);
-        await dssPsm.file(web3.utils.asciiToHex('tin'), tin);
-        await dssPsm.file(web3.utils.asciiToHex('tout'), tout);
-
-        // console.log('Deploying Lerp...');
-        // await lerpFactory.newLerp(lerp_name, MCD_PSM_[token_name][ilk], web3.utils.asciiToHex('tin'), NOW + ilk_lerpDelay, ilk_lerpStart, ilk_lerpEnd, ilk_lerpDuration);
-        // const lerpAddress = await lerpFactory.lerps(lerp_name);
-        // const Lerp = artifacts.require('Lerp');
-        // const lerp = await artifact_at(Lerp, lerpAddress);
-        // LERP_[token_name][ilk] = lerp.address;
-        // console.log('LERP_' + token_name + '_' + ilk + '=' + LERP_[token_name][ilk]);
-        // await dssPsm.rely(LERP_[token_name][ilk]);
-
-        await dssPsm.rely(MCD_PAUSE_PROXY);
-        await dssPsm.deny(DEPLOYER);
-
-        const AuthGemJoin = artifacts.require('AuthGemJoin');
-        const authGemJoin = await artifact_at(AuthGemJoin, MCD_JOIN_[token_name][ilk]);
-        await authGemJoin.rely(MCD_PSM_[token_name][ilk]);
-      }
-    }
-  }
   await lerpFactory.rely(MCD_PAUSE_PROXY);
   await lerpFactory.deny(DEPLOYER);
 
@@ -1799,36 +1782,31 @@ module.exports = async (deployer, network, [account]) => {
     await chainLog.setAddress(web3.utils.asciiToHex(token_name), T_[token_name]);
   }
   for (const token_name in PIP_) {
-    await chainLog.setAddress(web3.utils.asciiToHex('PIP_' + token_name), PIP_[token_name]);
+    await chainLog.setAddress(web3.utils.asciiToHex('PIP_' + token_name.replace('-', '_')), PIP_[token_name]);
   }
   for (const token_name in MCD_JOIN_) {
     for (const ilk in MCD_JOIN_[token_name]) {
-      await chainLog.setAddress(web3.utils.asciiToHex('MCD_JOIN_' + token_name + '_' + ilk), MCD_JOIN_[token_name][ilk]);
+      await chainLog.setAddress(web3.utils.asciiToHex('MCD_JOIN_' + token_name.replace('-', '_') + '_' + ilk), MCD_JOIN_[token_name][ilk]);
     }
   }
   for (const token_name in MCD_FLIP_) {
     for (const ilk in MCD_FLIP_[token_name]) {
-      await chainLog.setAddress(web3.utils.asciiToHex('MCD_FLIP_' + token_name + '_' + ilk), MCD_FLIP_[token_name][ilk]);
+      await chainLog.setAddress(web3.utils.asciiToHex('MCD_FLIP_' + token_name.replace('-', '_') + '_' + ilk), MCD_FLIP_[token_name][ilk]);
     }
   }
   for (const token_name in MCD_CLIP_) {
     for (const ilk in MCD_CLIP_[token_name]) {
-      await chainLog.setAddress(web3.utils.asciiToHex('MCD_CLIP_' + token_name + '_' + ilk), MCD_CLIP_[token_name][ilk]);
+      await chainLog.setAddress(web3.utils.asciiToHex('MCD_CLIP_' + token_name.replace('-', '_') + '_' + ilk), MCD_CLIP_[token_name][ilk]);
     }
   }
   for (const token_name in MCD_CLIP_CALC_) {
     for (const ilk in MCD_CLIP_CALC_[token_name]) {
-      await chainLog.setAddress(web3.utils.asciiToHex('MCD_CLIP_CALC_' + token_name + '_' + ilk), MCD_CLIP_CALC_[token_name][ilk]);
+      await chainLog.setAddress(web3.utils.asciiToHex('MCD_CLIP_CALC_' + token_name.replace('-', '_') + '_' + ilk), MCD_CLIP_CALC_[token_name][ilk]);
     }
   }
   for (const token_name in MCD_PSM_) {
     for (const ilk in MCD_PSM_[token_name]) {
-      await chainLog.setAddress(web3.utils.asciiToHex('MCD_PSM_' + token_name + '_' + ilk), MCD_PSM_[token_name][ilk]);
-    }
-  }
-  for (const token_name in MCD_JOIN_PSM_) {
-    for (const ilk in MCD_JOIN_PSM_[token_name]) {
-      await chainLog.setAddress(web3.utils.asciiToHex('MCD_JOIN_PSM_' + token_name + '_' + ilk), MCD_JOIN_PSM_[token_name][ilk]);
+      await chainLog.setAddress(web3.utils.asciiToHex('MCD_' + token_name.replace('-', '_') + '_' + ilk), MCD_PSM_[token_name][ilk]);
     }
   }
   await chainLog.setAddress(web3.utils.asciiToHex('CDP_MANAGER'), CDP_MANAGER);
@@ -1875,7 +1853,6 @@ module.exports = async (deployer, network, [account]) => {
   await chainLog.setAddress(web3.utils.asciiToHex('PROXY_REGISTRY'), PROXY_REGISTRY);
   await chainLog.setAddress(web3.utils.asciiToHex('VOTE_DELEGATE_PROXY_FACTORY'), VOTE_DELEGATE_PROXY_FACTORY);
   await chainLog.setAddress(web3.utils.asciiToHex('VOTE_PROXY_FACTORY'), VOTE_PROXY_FACTORY);
-  await chainLog.rely(MCD_PAUSE_PROXY);
   await chainLog.deny(DEPLOYER);
 
   // SET PAUSE AUTH DELAY

@@ -50,10 +50,6 @@
         "type": "value",
         "price": "1"
       },
-      "psmDeploy": {
-        "tin": "0.001",
-        "tout": "0.01"
-      },
       "ilks": {
         "A": {
           "mat": "100",
@@ -63,6 +59,10 @@
           "autoLineTtl": "0",
           "dust": "0",
           "duty": "0",
+          "psmDeploy": {
+            "tin": "0.001",
+            "tout": "0.01"
+          },
           "clipDeploy": {
             "chop": "13",
             "hole": "0",
