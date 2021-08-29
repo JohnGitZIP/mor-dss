@@ -35,6 +35,7 @@ import { GemJoin4 } from "../dss-gem-joins/join-4.sol";
 */
 
 abstract contract DSVault is DSToken {
+    function totalReserve() external view virtual returns (uint256 _totalReserve);
     function deposit(uint256 _amount, uint256 _minShares, bool _execGulp) external virtual;
     function withdraw(uint256 _shares, uint256 _minAmount, bool _execGulp) external virtual;
 }
@@ -52,6 +53,10 @@ contract Common {
     uint256 constant RAY = 10 ** 27;
 
     // Internal functions
+
+    function _add(uint x, uint y) internal pure returns (uint z) {
+        require((z = x + y) >= x, "add-overflow");
+    }
 
     function _mul(uint x, uint y) internal pure returns (uint z) {
         require(y == 0 || (z = x * y) / y == x, "mul-overflow");
@@ -178,10 +183,12 @@ contract DssProxyActions is Common {
             if (res == address(0)) {
                 gem.transferFrom(msg.sender, address(this), amt);
             } else {
-                DSToken(res).transferFrom(msg.sender, address(this), amt);
-                DSToken(res).approve(address(gem), amt);
-                DSVault(address(gem)).deposit(amt, 1, false);
-                amt = gem.balanceOf(address(this));
+                uint256 supply = DSVault(address(gem)).totalSupply();
+                uint256 reserve = DSVault(address(gem)).totalReserve();
+                uint256 resAmt = _add(_mul(amt, reserve), supply - 1) / supply;
+                DSToken(res).transferFrom(msg.sender, address(this), resAmt);
+                DSToken(res).approve(address(gem), resAmt);
+                DSVault(address(gem)).deposit(resAmt, 1, false);
             }
             // Approves adapter to take the token amount
             gem.approve(apt, amt);
