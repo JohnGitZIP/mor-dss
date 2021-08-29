@@ -20,7 +20,7 @@ pragma solidity ^0.6.7;
 import { DaiJoin } from "../dss/join.sol";
 import { Dai } from "../dss/dai.sol";
 import { Vat } from "../dss/vat.sol";
-import { AuthGemJoin5 } from "./join-5-auth.sol";
+import { AuthGemJoin } from "../dss-gem-joins/join-auth.sol";
 
 // Peg Stability Module
 // Allows anyone to go between Dai and the Gem by pooling the liquidity
@@ -35,7 +35,7 @@ contract DssPsm {
     modifier auth { require(wards[msg.sender] == 1); _; }
 
     Vat immutable public vat;
-    AuthGemJoin5 immutable public gemJoin;
+    AuthGemJoin immutable public gemJoin;
     Dai immutable public dai;
     DaiJoin immutable public daiJoin;
     bytes32 immutable public ilk;
@@ -57,7 +57,7 @@ contract DssPsm {
     constructor(address gemJoin_, address daiJoin_, address vow_) public {
         wards[msg.sender] = 1;
         emit Rely(msg.sender);
-        AuthGemJoin5 gemJoin__ = gemJoin = AuthGemJoin5(gemJoin_);
+        AuthGemJoin gemJoin__ = gemJoin = AuthGemJoin(gemJoin_);
         DaiJoin daiJoin__ = daiJoin = DaiJoin(daiJoin_);
         Vat vat__ = vat = gemJoin__.vat();
         Dai dai__ = dai = daiJoin__.dai();
