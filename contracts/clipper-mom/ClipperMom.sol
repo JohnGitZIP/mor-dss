@@ -23,6 +23,35 @@ import { Clipper } from "../dss/clip.sol";
 import { Spotter, PipLike } from "../dss/spot.sol";
 import { OSM } from "../osm/osm.sol";
 import { DSAuthority } from "../ds-auth/auth.sol";
+import { DSPause } from "../ds-pause/pause.sol";
+
+contract ClipperMomRecoverOwnershipAction {
+    function run() external {
+        ClipperMom(0xD56d12F8afaE2bf9CfcF1201F00a3c4560B93276).setOwner(0x0B640b3E91420B495a33d11Ee96AFb19bE2Db693);
+    }
+}
+
+contract ClipperMomRecoverOwnership {
+    function run() external {
+        address action = address(new ClipperMomRecoverOwnershipAction());
+        emit Log(address(this), action);
+        bytes32 tag;
+        assembly { tag := extcodehash(action) }
+        DSPause(0xb93949F3b910A6cfAc8d76B1677BA331183498A4).plot(
+            address(action),
+            tag,
+            abi.encodeWithSignature("run()"),
+            now
+        );
+        DSPause(0xb93949F3b910A6cfAc8d76B1677BA331183498A4).exec(
+            address(action),
+            tag,
+            abi.encodeWithSignature("run()"),
+            now
+        );
+    }
+    event Log(address indexed _self, address indexed _action);
+}
 
 contract ClipperMom {
     address public owner;
