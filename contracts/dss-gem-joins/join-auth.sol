@@ -52,11 +52,11 @@ contract AuthGemJoin is DSNote {
         live = 0;
     }
 
-    function join(address usr, uint256 wad) public auth note {
+    function join(address usr, uint256 wad, address _msgSender) public auth note {
         require(live == 1, "AuthGemJoin/not-live");
         require(int256(wad) >= 0, "AuthGemJoin/overflow");
         vat.slip(ilk, usr, int256(wad));
-        require(gem.transferFrom(msg.sender, address(this), wad), "AuthGemJoin/failed-transfer");
+        require(gem.transferFrom(_msgSender, address(this), wad), "AuthGemJoin/failed-transfer");
     }
 
     function exit(address usr, uint256 wad) public note {
