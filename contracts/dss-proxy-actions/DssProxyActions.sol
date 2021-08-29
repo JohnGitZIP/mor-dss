@@ -38,6 +38,7 @@ abstract contract DSVault is DSToken {
     function totalReserve() external view virtual returns (uint256 _totalReserve);
     function deposit(uint256 _amount, uint256 _minShares, bool _execGulp) external virtual;
     function withdraw(uint256 _shares, uint256 _minAmount, bool _execGulp) external virtual;
+	function gulp() external virtual;
 }
 
 interface HopeLike {
@@ -183,6 +184,7 @@ contract DssProxyActions is Common {
             if (res == address(0)) {
                 gem.transferFrom(msg.sender, address(this), amt);
             } else {
+                DSVault(address(gem)).gulp();
                 uint256 supply = DSVault(address(gem)).totalSupply();
                 uint256 reserve = DSVault(address(gem)).totalReserve();
                 uint256 resAmt = _add(_mul(amt, reserve), supply - 1) / supply;
