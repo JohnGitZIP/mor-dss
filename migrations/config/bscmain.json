@@ -35,15 +35,48 @@
         "osmDelay": "0",
         "type": "chainlink",
         "src": "0xcBb98864Ef56E9042e7d2efef76141f15731B82f"
+      }
+    },
+    "PSM-BUSD": {
+      "import": {
+        "gem": "0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56"
+      },
+      "joinDeploy": {
+        "src": "AuthGemJoin",
+        "extraParams": []
+      },
+      "pipDeploy": {
+        "osmDelay": "0",
+        "type": "value",
+        "price": "1"
       },
       "psmDeploy": {
-        "src": "AuthGemJoin",
-        "extraParams": [],
-        "ilks": {
-          "A": {
-            "line": "10000000000",
-            "tin": "0.001",
-            "tout": "0.01"
+        "tin": "0.001",
+        "tout": "0.01"
+      },
+      "ilks": {
+        "A": {
+          "mat": "100",
+          "line": "10000000000",
+          "autoLine": "0",
+          "autoLineGap": "0",
+          "autoLineTtl": "0",
+          "dust": "0",
+          "duty": "0",
+          "clipDeploy": {
+            "chop": "13",
+            "hole": "0",
+            "chip": "0.1",
+            "tip": "300",
+            "buf": "105",
+            "tail": "13200",
+            "cusp": "90",
+            "calc": {
+              "type": "StairstepExponentialDecrease",
+              "step": "120",
+              "cut":  "99"
+            },
+            "cm_tolerance": "95"
           }
         }
       }

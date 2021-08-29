@@ -30,17 +30,49 @@
       "pipDeploy": {
         "osmDelay": "0",
         "type": "chainlink",
-        "src": "0xfE4A8cc5b5B2366C1B58Bea3858e81843581b2F7",
-        "dec": 8
+        "src": "0xfE4A8cc5b5B2366C1B58Bea3858e81843581b2F7"
+      }
+    },
+    "PSM-USDC": {
+      "import": {
+        "gem": "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174"
+      },
+      "joinDeploy": {
+        "src": "AuthGemJoin5",
+        "extraParams": []
+      },
+      "pipDeploy": {
+        "osmDelay": "0",
+        "type": "value",
+        "price": "1"
       },
       "psmDeploy": {
-        "src": "AuthGemJoin5",
-        "extraParams": [],
-        "ilks": {
-          "A": {
-            "line": "10000000000",
-            "tin": "0.001",
-            "tout": "0.01"
+        "tin": "0.001",
+        "tout": "0.01"
+      },
+      "ilks": {
+        "A": {
+          "mat": "100",
+          "line": "10000000000",
+          "autoLine": "0",
+          "autoLineGap": "0",
+          "autoLineTtl": "0",
+          "dust": "0",
+          "duty": "0",
+          "clipDeploy": {
+            "chop": "13",
+            "hole": "0",
+            "chip": "0.1",
+            "tip": "300",
+            "buf": "105",
+            "tail": "13200",
+            "cusp": "90",
+            "calc": {
+              "type": "StairstepExponentialDecrease",
+              "step": "120",
+              "cut":  "99"
+            },
+            "cm_tolerance": "95"
           }
         }
       }
