@@ -3,6 +3,7 @@
 source .env
 
 CHAIN_ID=56
+GAS_PRICE=5000000000
 GAS_LIMIT=60000000
 FORK_URL='wss://bsc-ws-node.nariox.org:443'
 #FORK_URL='https://bsc-dataseed.binance.org/'
@@ -15,6 +16,7 @@ npx ganache-cli \
 	-h 0.0.0.0 \
 	-i $CHAIN_ID \
 	--chainId $CHAIN_ID \
+	-g $GAS_PRICE \
 	-l $GAS_LIMIT \
 	-f $FORK_URL \
 	--account $PRIVATE_KEY,$BALANCE
