@@ -1,6 +1,6 @@
-/*
 const fs = require('fs')
 require('dotenv').config();
+/*
 const axios = require('axios')
 */
 const Web3 = require('web3');
@@ -100,7 +100,6 @@ const NATIVE_SYMBOL = {
 */
 const HTTP_PROVIDER_URLS = {
   'bscmain': [
-/*
     'https://bsc-dataseed.binance.org/',
     'https://bsc-dataseed1.defibit.io/',
     'https://bsc-dataseed1.ninicoin.io/',
@@ -108,15 +107,12 @@ const HTTP_PROVIDER_URLS = {
     'https://bsc-dataseed3.defibit.io/',
     'https://bsc-dataseed4.defibit.io/',
     'https://bsc-dataseed2.ninicoin.io/',
-*/
     'https://bsc-dataseed3.ninicoin.io/',
-/*
     'https://bsc-dataseed4.ninicoin.io/',
     'https://bsc-dataseed1.binance.org/',
     'https://bsc-dataseed2.binance.org/',
     'https://bsc-dataseed3.binance.org/',
     'https://bsc-dataseed4.binance.org/',
-*/
   ],
 };
 
@@ -174,15 +170,15 @@ const PIPLIKE_ABI = require('../build/contracts/PipLike.json').abi;
 const UNIV2LPORACLE_ABI = require('../build/contracts/UNIV2LPOracle.json').abi;
 
 const PIP_LIST = {
-	'PSM_BUSD': { address: '0x4C4119f8438CC66CE21414dC7d09437954433C78', type: 'value' },
-	'BUSD': 		{ address: '0x08F39c96E6A954894252171a5300dECD350d3fA8', type: 'chainlink' },
-	'USDC': 		{	address: '0xd4d7BCF6c7b54349C91f39cAd89B228C53FE6BD7', type: 'chainlink' },
-	'BNB': 			{ address: '0x63c2E42758EF8776BF7b70afb00E0e2748Ad3F05', type: 'chainlink' },
-	'ETH': 			{ address: '0x7622ce6588116c1C7F1a4E61A153C1efC7226f78', type: 'chainlink' },
-	'BTCB': 		{ address: '0x585707c57413e09a4BE58e89798f5074b2B89De1', type: 'chainlink' },
-	'CAKE': 		{ address: '0x447FE0cc2145F27127Cf60C6FD6D9025A4208b8B', type: 'chainlink' },
-	'BANANA':		{ address: '0x6Ee2E2d648698357Cc518D1D5E8170586dca5348', type: 'twap' },
-	'MOR': 			{ address: '0x3Ac5DF5d1a97E66d9a20c90961daaBcf9EC34B06', type: 'twap' },
+  'PSM_BUSD': { address: '0x4C4119f8438CC66CE21414dC7d09437954433C78', type: 'value' },
+  'BUSD':     { address: '0x08F39c96E6A954894252171a5300dECD350d3fA8', type: 'chainlink' },
+  'USDC':     {  address: '0xd4d7BCF6c7b54349C91f39cAd89B228C53FE6BD7', type: 'chainlink' },
+  'BNB':       { address: '0x63c2E42758EF8776BF7b70afb00E0e2748Ad3F05', type: 'chainlink' },
+  'ETH':       { address: '0x7622ce6588116c1C7F1a4E61A153C1efC7226f78', type: 'chainlink' },
+  'BTCB':     { address: '0x585707c57413e09a4BE58e89798f5074b2B89De1', type: 'chainlink' },
+  'CAKE':     { address: '0x447FE0cc2145F27127Cf60C6FD6D9025A4208b8B', type: 'chainlink' },
+  'BANANA':    { address: '0x6Ee2E2d648698357Cc518D1D5E8170586dca5348', type: 'twap' },
+  'MOR':       { address: '0x3Ac5DF5d1a97E66d9a20c90961daaBcf9EC34B06', type: 'twap' },
 
   'PCSBNBCAKE': { address: '0x326Db2b9640e51077fD9B70767855f5c2128e91A', type: 'univ2lp' },
   'PCSBNBBUSD': { address: '0x1a06452B84456728Ee4054AE6157d3feDF56C295', type: 'univ2lp' },
@@ -297,12 +293,12 @@ async function getTokenSymbol(privateKey, network, address) {
 async function vat_ilk(privateKey, network, name) {
   const web3 = getWeb3(privateKey, network);
   const abi = VAT_ABI;
-	const address = MCD_VAT;
+  const address = MCD_VAT;
   const contract = new web3.eth.Contract(abi, address);
-	const [from] = web3.currentProvider.getAddresses();
+  const [from] = web3.currentProvider.getAddresses();
   try {
     const { Art, rate, spot, line, dust } = await contract.methods.ilks(web3.utils.asciiToHex(name)).call({ from });
-		return { Art: coins(Art, 18), rate: coins(rate, 27), spot: coins(spot, 27), line: coins(line, 45), dust: coins(line, 45) }
+    return { Art: coins(Art, 18), rate: coins(rate, 27), spot: coins(spot, 27), line: coins(line, 45), dust: coins(line, 45) }
   } catch (e) {
     throw new Error(e.message);
   }
@@ -311,12 +307,12 @@ async function vat_ilk(privateKey, network, name) {
 async function spot_ilk(privateKey, network, name) {
   const web3 = getWeb3(privateKey, network);
   const abi = SPOTTER_ABI;
-	const address = MCD_SPOT;
+  const address = MCD_SPOT;
   const contract = new web3.eth.Contract(abi, address);
-	const [from] = web3.currentProvider.getAddresses();
+  const [from] = web3.currentProvider.getAddresses();
   try {
     const { pip, mat } = await contract.methods.ilks(web3.utils.asciiToHex(name)).call({ from });
-		return { pip, mat: coins(mat, 25) };
+    return { pip, mat: coins(mat, 25) };
   } catch (e) {
     throw new Error(e.message);
   }
@@ -326,11 +322,11 @@ async function peek(privateKey, network, address) {
   const web3 = getWeb3(privateKey, network);
   const abi = PIPLIKE_ABI;
   const contract = new web3.eth.Contract(abi, address);
-	const [from] = web3.currentProvider.getAddresses();
+  const [from] = web3.currentProvider.getAddresses();
   try {
     const result = await contract.methods.peek().call({ from });
-		const value = coins(web3.utils.hexToNumberString(result[0]), 18);
-		const has = result[1];
+    const value = coins(web3.utils.hexToNumberString(result[0]), 18);
+    const has = result[1];
     return [value, has];
   } catch (e) {
     throw new Error(e.message);
@@ -341,11 +337,11 @@ async function peep(privateKey, network, address) {
   const web3 = getWeb3(privateKey, network);
   const abi = UNIV2LPORACLE_ABI;
   const contract = new web3.eth.Contract(abi, address);
-	const [from] = web3.currentProvider.getAddresses();
+  const [from] = web3.currentProvider.getAddresses();
   try {
     const result = await contract.methods.peep().call({ from });
-		const value = coins(web3.utils.hexToNumberString(result[0]), 18);
-		const has = result[1];
+    const value = coins(web3.utils.hexToNumberString(result[0]), 18);
+    const has = result[1];
     return [value, has];
   } catch (e) {
     throw new Error(e.message);
@@ -356,7 +352,7 @@ async function zph(privateKey, network, address) {
   const web3 = getWeb3(privateKey, network);
   const abi = UNIV2LPORACLE_ABI;
   const contract = new web3.eth.Contract(abi, address);
-	const [from] = web3.currentProvider.getAddresses();
+  const [from] = web3.currentProvider.getAddresses();
   try {
     return await contract.methods.zph().call({ from });
   } catch (e) {
@@ -367,7 +363,7 @@ async function zph(privateKey, network, address) {
 async function spot_poke(privateKey, network, name, nonce) {
   const web3 = getWeb3(privateKey, network);
   const abi = SPOTTER_ABI;
-	const address = MCD_SPOT;
+  const address = MCD_SPOT;
   const contract = new web3.eth.Contract(abi, address);
   const [from] = web3.currentProvider.getAddresses();
   let txId = null;
@@ -759,16 +755,17 @@ async function readBuyback(privateKey, network, collector) {
   return buyback;
 }
 
-let lastGulp = {};
+*/
+let lastPoke;
 
-function readLastGulp() {
-  try { lastGulp = JSON.parse(fs.readFileSync('gulpbot.json')); } catch (e) { }
+function readLastPoke() {
+  try { lastPoke = JSON.parse(fs.readFileSync('pokebot.json')); } catch (e) { }
 }
 
-function writeLastGulp() {
-  try { fs.writeFileSync('gulpbot.json', JSON.stringify(lastGulp, undefined, 2)); } catch (e) { }
+function writeLastPoke() {
+  try { fs.writeFileSync('pokebot.json', JSON.stringify(lastPoke, undefined, 2)); } catch (e) { }
 }
-
+/*
 async function safeGulp(privateKey, network, address) {
   const now = Date.now();
 / *
@@ -1054,7 +1051,100 @@ async function gulpAll(privateKey, network) {
 }
 */
 
+async function pokeAll(network) {
+  const pips = {};
+
+  // poke PIPs
+  for (const name in PIP_LIST) {
+    const { address, type } = PIP_LIST[name];
+    const data = { name, address, type };
+    if (type === 'univ2lp') {
+      const now = Math.floor(Date.now() / 1000);
+      const timestamp = Number(await zph(privateKey, network, address));
+      data.wait = timestamp > now ? timestamp - now : 0;
+      if (data.wait === 0) {
+        if (name === 'PCSETHUSDC') {
+          const name = 'BANANA';
+          const address = pips[name].address;
+          const nonce = await getNonce(privateKey, network);
+          console.log('Poking ' + name + ' at nonce ' + nonce + '...');
+          await poke(privateKey, network, address, nonce);
+          do { await sleep(3 * 1000); } while (await getNonce(privateKey, network) <= nonce);
+        }
+        if (name === 'APEMORBUSD') {
+          const name = 'MOR';
+          const address = pips[name].address;
+          const nonce = await getNonce(privateKey, network);
+          console.log('Poking ' + name + ' at nonce ' + nonce + '...');
+          await poke(privateKey, network, address, nonce);
+          do { await sleep(3 * 1000); } while (await getNonce(privateKey, network) <= nonce);
+        }
+        const nonce = await getNonce(privateKey, network);
+        console.log('Poking ' + name + ' at nonce ' + nonce + '...');
+        await poke(privateKey, network, address, nonce);
+        do { await sleep(3 * 1000); } while (await getNonce(privateKey, network) <= nonce);
+        const timestamp = Number(await zph(privateKey, network, address));
+        data.wait = timestamp > now ? timestamp - now : 0;
+      }
+      {
+        const [price, has] = await peep(privateKey, network, address);
+        if (has) data.nextValue = price;
+      }
+    }
+    {
+      const [price, has] = await peek(privateKey, network, address);
+      if (has) data.value = price;
+    }
+    pips[name] = data;
+    console.log(data);
+  }
+
+  // poke spotter ILKs
+  for (const name of ILK_LIST) {
+    const [token, ilk] = name.split('-');
+    const { value } = pips[token];
+    if (value !== undefined) {
+      const { spot } = await vat_ilk(privateKey, network, name);
+      const { mat } = await spot_ilk(privateKey, network, name);
+      const calcSpot = (100 * Number(value) / Number(mat)).toFixed(27);
+      const deviation = Math.abs((Number(calcSpot) - Number(spot)) / Number(calcSpot)).toFixed(6);
+      console.log({ name, value, mat, spot, calcSpot, deviation });
+      if (Number(deviation) >= 0.05) { // 5%
+        const nonce = await getNonce(privateKey, network);
+        console.log('Poking ' + name + ' at nonce ' + nonce + '...');
+        await spot_poke(privateKey, network, name, nonce);
+        do { await sleep(3 * 1000); } while (await getNonce(privateKey, network) <= nonce);
+      }
+    }
+  }
+}
+
 async function main(args) {
+  const network = 'bscmain';
+
+  const TIMEFRAME = 4 * 60 * 60 * 1000; // 4 hours
+
+  await readLastPoke();
+
+  for (;;) {
+    const when = lastPoke + TIMEFRAME;
+    const delay = Math.max(when - Date.now(), 0);
+    console.log('WAITING ' + Math.floor(delay / 1000) + 's');
+    await sleep(delay);
+
+    try {
+      await pokeAll(network);
+    } catch {
+      console.log('ERROR');
+      continue;
+    }
+
+    lastPoke = Date.now();
+    await writeLastPoke();
+
+    console.log('CYCLE COMPLETED');
+  }
+
 /*
   let [binary, script, network] = args;
   network = network || 'bscmain';
@@ -1103,71 +1193,7 @@ async function main(args) {
   }
 */
 
-	const network = 'bscmain';
 
-	const pips = {};
-
-  for (const name in PIP_LIST) {
-		const { address, type } = PIP_LIST[name];
-		const data = { name, address, type };
-		if (type === 'univ2lp') {
-			const now = Math.floor(Date.now() / 1000);
-			const timestamp = Number(await zph(privateKey, network, address));
-			data.wait = timestamp > now ? timestamp - now : 0;
-			if (data.wait === 0) {
-				if (name === 'PCSETHUSDC') {
-					const name = 'BANANA';
-					const address = pips[name].address;
-					const nonce = await getNonce(privateKey, network);
-					console.log('Poking ' + name + ' at nonce ' + nonce + '...');
-					await poke(privateKey, network, address, nonce);
-					do { await sleep(3 * 1000); } while (await getNonce(privateKey, network) <= nonce);
-				}
-				if (name === 'APEMORBUSD') {
-					const name = 'MOR';
-					const address = pips[name].address;
-					const nonce = await getNonce(privateKey, network);
-					console.log('Poking ' + name + ' at nonce ' + nonce + '...');
-					await poke(privateKey, network, address, nonce);
-					do { await sleep(3 * 1000); } while (await getNonce(privateKey, network) <= nonce);
-				}
-				const nonce = await getNonce(privateKey, network);
-				console.log('Poking ' + name + ' at nonce ' + nonce + '...');
-				await poke(privateKey, network, address, nonce);
-				do { await sleep(3 * 1000); } while (await getNonce(privateKey, network) <= nonce);
-				const timestamp = Number(await zph(privateKey, network, address));
-				data.wait = timestamp > now ? timestamp - now : 0;
-			}
-			{
-				const [price, has] = await peep(privateKey, network, address);
-				if (has) data.nextValue = price;
-			}
-		}
-		{
-			const [price, has] = await peek(privateKey, network, address);
-			if (has) data.value = price;
-		}
-		pips[name] = data;
-    console.log(data);
-  }
-
-	for (const name of ILK_LIST) {
-		const [token, ilk] = name.split('-');
-		const { value } = pips[token];
-		if (value !== undefined) {
-			const { spot } = await vat_ilk(privateKey, network, name);
-			const { mat } = await spot_ilk(privateKey, network, name);
-      const calcSpot = (100 * Number(value) / Number(mat)).toFixed(27);
-			const deviation = Math.abs((Number(calcSpot) - Number(spot)) / Number(calcSpot)).toFixed(6);
-			console.log({ name, value, mat, spot, calcSpot, deviation });
-			if (Number(deviation) >= 0.05) { // 5%
-				const nonce = await getNonce(privateKey, network);
-				console.log('Poking ' + name + ' at nonce ' + nonce + '...');
-				await spot_poke(privateKey, network, name, nonce);
-				do { await sleep(3 * 1000); } while (await getNonce(privateKey, network) <= nonce);
-			}
-		}
-	}
 }
 
 entrypoint(main);

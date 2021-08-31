@@ -1,0 +1,15 @@
+version: '2.2'
+
+x-pokebot: &pokebot
+  image: node:14-alpine
+  working_dir: /repo/
+  command: node /repo/scripts/pokebot.js
+  volumes: [ "../:/repo/" ]
+  restart: always
+
+services:
+  pokebot:
+    <<: *pokebot
+    container_name: pokebot
+    environment:
+      PRIVATE_KEY: ${POKEBOT_PRIVATE_KEY}
