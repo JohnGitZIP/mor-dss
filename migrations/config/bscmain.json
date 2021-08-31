@@ -27,6 +27,19 @@
     "faucet": "0x0000000000000000000000000000000000000000"
   },
   "tokens": {
+    "MOR": {
+      "import": {
+        "gem": "0x87BAde473ea0513D4aA7085484aEAA6cB6EBE7e3"
+      },
+      "pipDeploy": {
+        "osmDelay": "0",
+        "type": "twap",
+        "stwap": "0x8E3C2dE1DD90367e48fA94ED2A80B491C3E67480",
+        "ltwap": "0xA518DF59453d53bff35526c42A5C2d33438e75E5",
+        "src": "0x33526eD690200663EAAbF28e1D8621e58898c5fd",
+        "cap": "1"
+      }
+    },
     "BUSD": {
       "import": {
         "gem": "0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56"
@@ -249,6 +262,18 @@
         "type": "univ2lp",
         "token0": "ETH",
         "token1": "USDC",
+        "hop": "3600"
+      }
+    },
+    "APEMORBUSD": {
+      "import": {
+        "gem": "0x33526eD690200663EAAbF28e1D8621e58898c5fd"
+      },
+      "pipDeploy": {
+        "osmDelay": "0",
+        "type": "univ2lp",
+        "token0": "MOR",
+        "token1": "BUSD",
         "hop": "3600"
       }
     },
@@ -688,6 +713,46 @@
               "cut":  "99"
             },
             "cm_tolerance": "50"
+          }
+        }
+      }
+    },
+    "STKAPEMORBUSD": {
+      "import": {
+        "gem": "0xC2E8C3c427E0a5BaaF512A013516aECB65Bd75CB"
+      },
+      "joinDeploy": {
+        "src": "GemJoin",
+        "extraParams": []
+      },
+      "pipDeploy": {
+        "osmDelay": "0",
+        "type": "vault",
+        "reserve": "APEMORBUSD"
+      },
+      "ilks": {
+        "A": {
+          "mat": "102",
+          "line": "10000",
+          "autoLine": "0",
+          "autoLineGap": "0",
+          "autoLineTtl": "0",
+          "dust": "100",
+          "duty": "5",
+          "clipDeploy": {
+            "chop": "1.5",
+            "hole": "300000000",
+            "chip": "0",
+            "tip": "5",
+            "buf": "102",
+            "tail": "13200",
+            "cusp": "95",
+            "calc": {
+              "type": "StairstepExponentialDecrease",
+              "step": "240",
+              "cut":  "99.9"
+            },
+            "cm_tolerance": "97"
           }
         }
       }
