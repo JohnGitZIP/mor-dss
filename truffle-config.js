@@ -54,7 +54,7 @@ module.exports = {
     },
     bscmain: {
       network_id: 56,
-      gasPrice,
+      gasPrice: '5000000000',
       networkCheckTimeout: 10000, // fixes truffle bug
       provider: () => new HDWalletProvider(privateKey, 'wss://bsc-ws-node.nariox.org:443'),
       // provider: () => new HDWalletProvider(privateKey, 'wss://apis.ankr.com/wss/' + ankrApikeyBscmain + '/' + ankrProjectId + '/binance/full/main'),
