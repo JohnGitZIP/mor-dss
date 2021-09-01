@@ -185,6 +185,7 @@ contract DssProxyActions is Common {
                 gem.transferFrom(msg.sender, address(this), amt);
             } else {
                 DSVault(address(gem)).gulp();
+                DSVault(address(gem)).gulp();
                 uint256 supply = DSVault(address(gem)).totalSupply();
                 uint256 reserve = DSVault(address(gem)).totalReserve();
                 uint256 resAmt = _add(_mul(amt, reserve), supply - 1) / supply;
