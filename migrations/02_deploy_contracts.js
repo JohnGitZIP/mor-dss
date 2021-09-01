@@ -290,8 +290,18 @@ module.exports = async (deployer, network, [account]) => {
     console.log(String(await vow.hump()));
   }
   for (const [ilk, ilk_dust] of [
-    ['STKCAKE-A',   '100'],
-    ['STKBANANA-A', '100'],
+    ['STKCAKE-A',        '100'],
+    ['STKBANANA-A',      '100'],
+    ['STKPCSBNBCAKE-A',  '100'],
+    ['STKPCSBNBBUSD-A',  '100'],
+    ['STKPCSBNBETH-A',   '100'],
+    ['STKPCSBNBBTCB-A',  '100'],
+    ['STKPCSBUSDUSDC-A', '100'],
+    ['STKPCSBUSDBTCB-A', '100'],
+    ['STKPCSBUSDCAKE-A', '100'],
+    ['STKPCSETHBTCB-A',  '100'],
+    ['STKPCSETHUSDC-A',  '100'],
+    ['STKAPEMORBUSD-A',  '100'],
   ]) {
     const ilk_name = web3.utils.asciiToHex(ilk);
     const key = web3.utils.asciiToHex('dust');
