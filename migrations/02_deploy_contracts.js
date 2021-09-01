@@ -251,13 +251,6 @@ module.exports = async (deployer, network, [account]) => {
   const MCD_CLIP_CALC_STKAPEMORBUSD_A = '0xd7Ee11db2155679C68e7e412ADFbC342cBb7F6C0';
   const MCD_CLIP_STKAPEMORBUSD_A = '0xa4f9600534190d96bc60D33A3594E0b0869cAdaB';
 
-  const config = {
-    vat_line: '10000000000',
-    vow_bump: '10000',
-    vow_hump: '10000000',
-    dust: '100',
-  };
-
   const Vat = artifacts.require('Vat');
   const vat = await artifact_at(Vat, MCD_VAT);
 
@@ -267,6 +260,11 @@ module.exports = async (deployer, network, [account]) => {
   const DssAutoLine = artifacts.require('DssAutoLine');
   const dssAutoLine = await artifact_at(DssAutoLine, MCD_IAM_AUTO_LINE);
 
+  const config = {
+    vat_line: '10000000000',
+    vow_bump: '10000',
+    vow_hump: '10000000',
+  };
   {
     const key = web3.utils.asciiToHex('Line');
     const vat_line = units(config.vat_line, 45);
@@ -285,12 +283,14 @@ module.exports = async (deployer, network, [account]) => {
     console.log('@vow_hump', config.vow_hump, vow_hump);
     await vow.methods['file(bytes32,uint256)'](key, vow_hump);
   }
-  for (const ilk of ['STKCAKE-A', 'STKBANANA-A']) {
+  for (const [ilk, ilk_dust] of [
+    ['STKCAKE-A',   '100'],
+    ['STKBANANA-A', '100'],
+  ]) {
     const ilk_name = web3.utils.asciiToHex(ilk);
     const key = web3.utils.asciiToHex('dust');
-
-    const dust = units(config.dust, 45);
-    console.log('@ilk.dust', ilk, config.dust, dust);
+    const dust = units(ilk_dust, 45);
+    console.log('@ilk.dust', ilk, ilk_dust, dust);
     await vat.methods['file(bytes32,bytes32,uint256)'](ilk_name, key, dust);
   }
   for (const [ilk, ilk_line] of [
@@ -299,12 +299,10 @@ module.exports = async (deployer, network, [account]) => {
   ]) {
     const ilk_name = web3.utils.asciiToHex(ilk);
     const key = web3.utils.asciiToHex('line');
-
     const line = units(ilk_line, 45);
     console.log('@ilk.line', ilk, ilk_line, line);
     await vat.methods['file(bytes32,bytes32,uint256)'](ilk_name, key, line);
   }
-
   for (const [ilk, ilk_autoLine, ilk_autoLineGap, ilk_autoLineTtl] of [
     ['STKCAKE-A',        '500000000', '10000000', '43200'],
     ['STKBANANA-A',       '30000000',  '1500000', '43200'],
@@ -318,7 +316,6 @@ module.exports = async (deployer, network, [account]) => {
     ['STKPCSETHUSDC-A',   '50000000',  '5000000', '43200'],
   ]) {
     const ilk_name = web3.utils.asciiToHex(ilk);
-
     const autoLine = units(ilk_autoLine, 45);
     const autoLineGap = units(ilk_autoLineGap, 45);
     const autoLineTtl = units(ilk_autoLineTtl, 0);
