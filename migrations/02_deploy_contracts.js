@@ -249,7 +249,23 @@ module.exports = async (deployer, network, [account]) => {
   const MCD_CLIP_CALC_STKAPEMORBUSD_A = '0xd7Ee11db2155679C68e7e412ADFbC342cBb7F6C0';
   const MCD_CLIP_STKAPEMORBUSD_A = '0xa4f9600534190d96bc60D33A3594E0b0869cAdaB';
 
-	for (const address of [
+  const dssDeploy = await artifact_at(DssDeploy, MCD_DEPLOY);
+  await dssDeploy.setOwner(MULTISIG);
+
+  const DSRoles = artifacts.require('DSRoles');
+  const dsRoles = await artifact_at(DSRoles, MCD_ADM_TEMP);
+  await dsRoles.setRootUser(MULTISIG, true);
+  await dsRoles.setOwner(MULTISIG);
+
+  const DSProxy = artifacts.require('DSProxy');
+  const proxyDeployer = await artifact_at(DSProxy, PROXY_DEPLOYER);
+  await proxyDeployer.setOwner(MULTISIG);
+
+  const ClipperMom = artifacts.require('ClipperMom');
+  const clipperMom = await artifact_at(ClipperMom, CLIPPER_MOM);
+  await clipperMom.setOwner(MULTISIG); // should be MCD_PAUSE_PROXY
+
+  for (const address of [
     // MULTICALL,
     // PROXY_FACTORY,
     // PROXY_REGISTRY,
@@ -379,13 +395,12 @@ module.exports = async (deployer, network, [account]) => {
     MCD_JOIN_STKAPEMORBUSD_A,
     MCD_CLIP_CALC_STKAPEMORBUSD_A,
     // MCD_CLIP_STKAPEMORBUSD_A,
-	]) {
-		console.log(address);
-		const DenyLike = artifacts.require('DenyLike');
+  ]) {
+    const DenyLike = artifacts.require('DenyLike');
     const denyLike = await artifact_at(DenyLike, address);
-	  await denyLike.rely(MULTISIG);
-	  await denyLike.deny(DEPLOYER);
-	}
+    await denyLike.rely(MULTISIG);
+    await denyLike.deny(DEPLOYER);
+  }
 
 /*
 
