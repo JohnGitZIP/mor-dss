@@ -254,7 +254,7 @@ module.exports = async (deployer, network, [account]) => {
   const Vat = artifacts.require('Vat');
   const vat = await artifact_at(Vat, MCD_VAT);
 
-  const Vow = artifacts.require('Vat');
+  const Vow = artifacts.require('Vow');
   const vow = await artifact_at(Vow, MCD_VOW);
 
   const DssAutoLine = artifacts.require('DssAutoLine');
@@ -268,20 +268,26 @@ module.exports = async (deployer, network, [account]) => {
   {
     const key = web3.utils.asciiToHex('Line');
     const vat_line = units(config.vat_line, 45);
+    console.log(String(await vat.Line()));
     console.log('@vat_line', config.vat_line, vat_line);
     await vat.methods['file(bytes32,uint256)'](key, vat_line);
+    console.log(String(await vat.Line()));
   }
   {
     const key = web3.utils.asciiToHex('bump');
     const vow_bump = units(config.vow_bump, 45);
+    console.log(String(await vow.bump()));
     console.log('@vow_bump', config.vow_bump, vow_bump);
     await vow.methods['file(bytes32,uint256)'](key, vow_bump);
+    console.log(String(await vow.bump()));
   }
   {
     const key = web3.utils.asciiToHex('hump');
     const vow_hump = units(config.vow_hump, 45);
+    console.log(String(await vow.hump()));
     console.log('@vow_hump', config.vow_hump, vow_hump);
     await vow.methods['file(bytes32,uint256)'](key, vow_hump);
+    console.log(String(await vow.hump()));
   }
   for (const [ilk, ilk_dust] of [
     ['STKCAKE-A',   '100'],
@@ -290,8 +296,10 @@ module.exports = async (deployer, network, [account]) => {
     const ilk_name = web3.utils.asciiToHex(ilk);
     const key = web3.utils.asciiToHex('dust');
     const dust = units(ilk_dust, 45);
+    console.log(String((await vat.ilks(ilk_name)).dust));
     console.log('@ilk.dust', ilk, ilk_dust, dust);
     await vat.methods['file(bytes32,bytes32,uint256)'](ilk_name, key, dust);
+    console.log(String((await vat.ilks(ilk_name)).dust));
   }
   for (const [ilk, ilk_line] of [
     ['STKAPEMORBUSD-A',  '30000000'],
@@ -300,8 +308,10 @@ module.exports = async (deployer, network, [account]) => {
     const ilk_name = web3.utils.asciiToHex(ilk);
     const key = web3.utils.asciiToHex('line');
     const line = units(ilk_line, 45);
+    console.log(String((await vat.ilks(ilk_name)).line));
     console.log('@ilk.line', ilk, ilk_line, line);
     await vat.methods['file(bytes32,bytes32,uint256)'](ilk_name, key, line);
+    console.log(String((await vat.ilks(ilk_name)).line));
   }
   for (const [ilk, ilk_autoLine, ilk_autoLineGap, ilk_autoLineTtl] of [
     ['STKCAKE-A',        '500000000', '10000000', '43200'],
@@ -319,11 +329,17 @@ module.exports = async (deployer, network, [account]) => {
     const autoLine = units(ilk_autoLine, 45);
     const autoLineGap = units(ilk_autoLineGap, 45);
     const autoLineTtl = units(ilk_autoLineTtl, 0);
+    console.log(String((await dssAutoLine.ilks(ilk_name)).line));
+    console.log(String((await dssAutoLine.ilks(ilk_name)).gap));
+    console.log(String((await dssAutoLine.ilks(ilk_name)).ttl));
     console.log('@ilk.autoLine', ilk, ilk_autoLine, autoLine);
     console.log('@ilk.autoLineGap', ilk, ilk_autoLineGap, autoLineGap);
     console.log('@ilk.autoLineTtl', ilk, ilk_autoLineTtl, autoLineTtl);
     await dssAutoLine.setIlk(ilk_name, autoLine, autoLineGap, autoLineTtl);
     await dssAutoLine.exec(ilk_name);
+    console.log(String((await dssAutoLine.ilks(ilk_name)).line));
+    console.log(String((await dssAutoLine.ilks(ilk_name)).gap));
+    console.log(String((await dssAutoLine.ilks(ilk_name)).ttl));
   }
 
   const dssDeploy = await artifact_at(DssDeploy, MCD_DEPLOY);
