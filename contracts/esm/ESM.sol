@@ -23,6 +23,7 @@ import { End } from "../dss/end.sol";
 import { DSToken } from "../ds-token/token.sol";
 
 interface DenyLike {
+    function rely(address) external;
     function deny(address) external;
 }
 
