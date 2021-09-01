@@ -115,9 +115,11 @@ module.exports = async (deployer, network, [account]) => {
 
   const chainId = await web3.eth.net.getId();
 
+/*
   const config = require('./config/' + CONFIG[chainId] + '.json');
   const config_import = config.import || {};
   const config_tokens = config.tokens || {};
+*/
 
   const MULTICALL = '0x0b78ad358dDa2887285eaD72e84b47242360b872';
   const PROXY_FACTORY = '0xb05b13496A6451A1Eb2fB18393232368b345C577';
@@ -248,6 +250,84 @@ module.exports = async (deployer, network, [account]) => {
   const MCD_JOIN_STKAPEMORBUSD_A = '0xF755dA11576A9C3355a854F79e4F80E00e251358';
   const MCD_CLIP_CALC_STKAPEMORBUSD_A = '0xd7Ee11db2155679C68e7e412ADFbC342cBb7F6C0';
   const MCD_CLIP_STKAPEMORBUSD_A = '0xa4f9600534190d96bc60D33A3594E0b0869cAdaB';
+
+  const config = {
+    vat_line: '10000000000',
+    vow_bump: '10000',
+    vow_hump: '10000000',
+    dust: '100',
+  };
+
+  const Vat = artifacts.require('Vat');
+  const vat = await artifact_at(Vat, MCD_VAT);
+
+  const Vow = artifacts.require('Vat');
+  const vow = await artifact_at(Vow, MCD_VOW);
+
+  const DssAutoLine = artifacts.require('DssAutoLine');
+  const dssAutoLine = await artifact_at(DssAutoLine, MCD_IAM_AUTO_LINE);
+
+  {
+    const key = web3.utils.asciiToHex('Line');
+    const vat_line = units(config.vat_line, 45);
+    console.log('@vat_line', config.vat_line, vat_line);
+    await vat.methods['file(bytes32,uint256)'](key, vat_line);
+  }
+  {
+    const key = web3.utils.asciiToHex('bump');
+    const vow_bump = units(config.vow_bump, 45);
+    console.log('@vow_bump', config.vow_bump, vow_bump);
+    await vow.methods['file(bytes32,uint256)'](key, vow_bump);
+  }
+  {
+    const key = web3.utils.asciiToHex('hump');
+    const vow_hump = units(config.vow_hump, 45);
+    console.log('@vow_hump', config.vow_hump, vow_hump);
+    await vow.methods['file(bytes32,uint256)'](key, vow_hump);
+  }
+  for (const ilk of ['STKCAKE-A', 'STKBANANA-A']) {
+    const ilk_name = web3.utils.asciiToHex(ilk);
+    const key = web3.utils.asciiToHex('dust');
+
+    const dust = units(config.dust, 45);
+    console.log('@ilk.dust', ilk, config.dust, dust);
+    await vat.methods['file(bytes32,bytes32,uint256)'](ilk_name, key, dust);
+  }
+  for (const [ilk, ilk_line] of [
+    ['STKAPEMORBUSD-A',  '30000000'],
+    ['STKPCSBUSDUSDC-A', '10000000'],
+  ]) {
+    const ilk_name = web3.utils.asciiToHex(ilk);
+    const key = web3.utils.asciiToHex('line');
+
+    const line = units(ilk_line, 45);
+    console.log('@ilk.line', ilk, ilk_line, line);
+    await vat.methods['file(bytes32,bytes32,uint256)'](ilk_name, key, line);
+  }
+
+  for (const [ilk, ilk_autoLine, ilk_autoLineGap, ilk_autoLineTtl] of [
+    ['STKCAKE-A',        '500000000', '10000000', '43200'],
+    ['STKBANANA-A',       '30000000',  '1500000', '43200'],
+    ['STKPCSBNBCAKE-A',  '500000000', '10000000', '43200'],
+    ['STKPCSBNBBUSD-A',  '500000000', '10000000', '43200'],
+    ['STKPCSBNBETH-A',   '150000000',  '5000000', '43200'],
+    ['STKPCSBNBBTCB-A',  '150000000',  '5000000', '43200'],
+    ['STKPCSBUSDBTCB-A',  '75000000',  '5000000', '43200'],
+    ['STKPCSBUSDCAKE-A',  '50000000',  '5000000', '43200'],
+    ['STKPCSETHBTCB-A',   '50000000',  '5000000', '43200'],
+    ['STKPCSETHUSDC-A',   '50000000',  '5000000', '43200'],
+  ]) {
+    const ilk_name = web3.utils.asciiToHex(ilk);
+
+    const autoLine = units(ilk_autoLine, 45);
+    const autoLineGap = units(ilk_autoLineGap, 45);
+    const autoLineTtl = units(ilk_autoLineTtl, 0);
+    console.log('@ilk.autoLine', ilk, ilk_autoLine, autoLine);
+    console.log('@ilk.autoLineGap', ilk, ilk_autoLineGap, autoLineGap);
+    console.log('@ilk.autoLineTtl', ilk, ilk_autoLineTtl, autoLineTtl);
+    await dssAutoLine.setIlk(ilk_name, autoLine, autoLineGap, autoLineTtl);
+    await dssAutoLine.exec(ilk_name);
+  }
 
   const dssDeploy = await artifact_at(DssDeploy, MCD_DEPLOY);
   await dssDeploy.setOwner(MULTISIG);
