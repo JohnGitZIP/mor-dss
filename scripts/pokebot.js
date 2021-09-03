@@ -1109,7 +1109,7 @@ async function pokeAll(network) {
       const calcSpot = (100 * Number(value) / Number(mat)).toFixed(27);
       const deviation = Math.abs((Number(calcSpot) - Number(spot)) / Number(calcSpot)).toFixed(6);
       console.log({ name, value, mat, spot, calcSpot, deviation });
-      if (Number(deviation) >= 0.05) { // 5%
+      if (Number(deviation) >= 0.03) { // 3%
         const nonce = await getNonce(privateKey, network);
         console.log('Poking ' + name + ' at nonce ' + nonce + '...');
         await spot_poke(privateKey, network, name, nonce);
