@@ -66,12 +66,12 @@ const privateKey = process.env['PRIVATE_KEY'] || '';
 const ADDRESS_URL_PREFIX = {
   'bscmain': 'https://bscscan.com/address/',
 };
-/*
+
 const TX_URL_PREFIX = {
   'bscmain': 'https://bscscan.com/tx/',
   'bsctest': 'https://testnet.bscscan.com/tx/',
 };
-*/
+
 const NATIVE_SYMBOL = {
   'bscmain': 'BNB',
 };
