@@ -69,7 +69,6 @@ const ADDRESS_URL_PREFIX = {
 
 const TX_URL_PREFIX = {
   'bscmain': 'https://bscscan.com/tx/',
-  'bsctest': 'https://testnet.bscscan.com/tx/',
 };
 
 const NATIVE_SYMBOL = {
@@ -198,6 +197,12 @@ const ILK_LIST = [
   'STKPCSETHUSDC-A',
   'STKAPEMORBUSD-A',
 ];
+
+function getDefaultAccount(privateKey, network) {
+  const web3 = getWeb3(privateKey, network);
+  const [account] = web3.currentProvider.getAddresses();
+  return account;
+}
 
 async function getNonce(privateKey, network) {
   const web3 = getWeb3(privateKey, network);
