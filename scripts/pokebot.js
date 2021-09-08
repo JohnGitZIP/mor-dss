@@ -1,6 +1,6 @@
 const fs = require('fs')
 require('dotenv').config();
-const axios = require('axios')
+const axios = require('axios');
 const Web3 = require('web3');
 const HDWalletProvider = require('@truffle/hdwallet-provider');
 
