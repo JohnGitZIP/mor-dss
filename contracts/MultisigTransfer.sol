@@ -165,7 +165,7 @@ contract MultisigTransfer
 	function adjustDuty() internal
 	{
 		uint256 _duty = 1000000004431822020478648483; // 15%/year
-		bytes memory _data = abi.encodeWithSignature("dripAndFile(address,address,address,bytes32,bytes32,uint256)", MCD_PAUSE, MCD_GOV_ACTIONS, MCD_JUG, "STKAPEMORBUSD-A", "duty", _duty);
+		bytes memory _data = abi.encodeWithSignature("dripAndFile(address,address,address,bytes32,bytes32,uint256)", MCD_PAUSE, MCD_GOV_ACTIONS, MCD_JUG, bytes32("STKAPEMORBUSD-A"), bytes32("duty"), _duty);
 		DSProxy(payable(PROXY_DEPLOYER)).execute(PROXY_PAUSE_ACTIONS, _data);
 	}
 
