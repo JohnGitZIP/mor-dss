@@ -140,12 +140,18 @@ contract MultisigTransfer
 	address constant MCD_CLIP_STKAPEMORBUSD_A = 0xa4f9600534190d96bc60D33A3594E0b0869cAdaB;
 
 	// to be executed as a delegateCall on the GrowthDeFi Gnosis multisig
+	function runTest() external
+	{
+		adjustDuty();
+	}
+
+	// to be executed as a delegateCall on the GrowthDeFi Gnosis multisig
 	function run() external
 	{
 		// restore final deploy state and transfer admin rights to the shared multisig
 		restoreState();
 		renounceAuth();
-		transferOwnership(0x0000000000000000000000000000000000000000); // TODO use shared multisig
+		transferOwnership(0xe8E59b65E2BeC9F5c4AB6263F6D07A9aFFa406f5);
 	}
 
 	// to be executed as a delegateCall on the GrowthDeFi/ApeSwap shared Gnosis multisig
