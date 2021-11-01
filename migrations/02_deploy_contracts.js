@@ -114,7 +114,7 @@ module.exports = async (deployer, network, [account]) => {
   const web3 = DssDeploy.interfaceAdapter.web3;
   const initialBalance = await web3.eth.getBalance(DEPLOYER);
 
-  const chainId = await web3.eth.net.getId();
+  const chainId = await web3.eth.getChainId();
 
   const config = require('./config/' + CONFIG[chainId] + '.json');
   const config_import = config.import || {};
