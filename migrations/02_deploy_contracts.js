@@ -495,6 +495,7 @@ module.exports = async (deployer, network, [account]) => {
   const Median = artifacts.require('Median');
   const LinkOracle = artifacts.require('LinkOracle');
   const UNIV2LPOracle = artifacts.require('UNIV2LPOracle');
+  const CompOracle = artifacts.require('CompOracle');
   const VaultOracle = artifacts.require('VaultOracle');
   const UniV2TwapOracle = artifacts.require('UniV2TwapOracle');
   const UniswapV2PairLike = artifacts.require('UniswapV2PairLike');
@@ -525,6 +526,15 @@ module.exports = async (deployer, network, [account]) => {
         const orb = VAL_[token_pipDeploy.reserve];
         const vaultOracle = await artifact_deploy(VaultOracle, src, res, orb);
         VAL_[token_name] = vaultOracle.address;
+        console.log('VAL_' + token_name.replace('-', '_') + '=' + VAL_[token_name]);
+      }
+      if (token_pipDeploy.type === 'comp') {
+        console.log('Publishing Comp Oracle...');
+        const src = T_[token_name];
+        const res = T_[token_pipDeploy.reserve];
+        const orb = VAL_[token_pipDeploy.reserve];
+        const compOracle = await artifact_deploy(CompOracle, src, res, orb);
+        VAL_[token_name] = compOracle.address;
         console.log('VAL_' + token_name.replace('-', '_') + '=' + VAL_[token_name]);
       }
       if (token_pipDeploy.type === 'univ2lp') {
@@ -1195,6 +1205,10 @@ module.exports = async (deployer, network, [account]) => {
           const osmReserve = await artifact_at(OSM, VAL_[token_pipDeploy.reserve]);
           await osmReserve.methods['kiss(address)'](PIP_[token_name]);
         }
+        if (token_pipDeploy.type === 'comp') {
+          const osmReserve = await artifact_at(OSM, VAL_[token_pipDeploy.reserve]);
+          await osmReserve.methods['kiss(address)'](PIP_[token_name]);
+        }
         if (token_pipDeploy.type === 'univ2lp') {
           const osmToken0 = await artifact_at(OSM, VAL_[token_pipDeploy.token0]);
           await osmToken0.methods['kiss(address)'](PIP_[token_name]);
@@ -1609,6 +1623,10 @@ module.exports = async (deployer, network, [account]) => {
           const vaultOracle = await artifact_at(VaultOracle, VAL_[token_name]);
           await vaultOracle.methods['kiss(address)'](PIP_[token_name]);
         }
+        if (token_pipDeploy.type === 'comp') {
+          const compOracle = await artifact_at(CompOracle, VAL_[token_name]);
+          await compOracle.methods['kiss(address)'](PIP_[token_name]);
+        }
         if (token_pipDeploy.type === 'univ2lp') {
           const univ2lpOracle = await artifact_at(UNIV2LPOracle, VAL_[token_name]);
           await univ2lpOracle.methods['kiss(address)'](PIP_[token_name]);
@@ -1725,6 +1743,11 @@ module.exports = async (deployer, network, [account]) => {
         const vaultOracle = await artifact_at(VaultOracle, VAL_[token_name]);
         await vaultOracle.rely(MCD_PAUSE_PROXY);
         await vaultOracle.deny(DEPLOYER);
+      }
+      if (token_pipDeploy.type === 'comp') {
+        const compOracle = await artifact_at(CompOracle, VAL_[token_name]);
+        await compOracle.rely(MCD_PAUSE_PROXY);
+        await compOracle.deny(DEPLOYER);
       }
       if (token_pipDeploy.type === 'univ2lp') {
         const univ2lpOracle = await artifact_at(UNIV2LPOracle, VAL_[token_name]);
