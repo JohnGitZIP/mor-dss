@@ -18,7 +18,7 @@ contract CompOracle is DSNote, PipLike {
     function rely(address _usr) external note auth { wards[_usr] = 1;  }
     function deny(address _usr) external note auth { wards[_usr] = 0; }
     modifier auth {
-        require(wards[msg.sender] == 1, "VaultOracle/not-authorized");
+        require(wards[msg.sender] == 1, "CompOracle/not-authorized");
         _;
     }
 
@@ -28,36 +28,41 @@ contract CompOracle is DSNote, PipLike {
     }
 
     address public immutable ctoken; // cToken for which shares are being priced
+    uint256 public immutable factor; // price divisor
 
     address public orb;              // oracle for the underlying token
 
     // --- Whitelisting ---
     mapping (address => uint256) public bud;
-    modifier toll { require(bud[msg.sender] == 1, "VaultOracle/contract-not-whitelisted"); _; }
+    modifier toll { require(bud[msg.sender] == 1, "CompOracle/contract-not-whitelisted"); _; }
 
     constructor (address _ctoken, address _underlying, address _orb) public {
-        require(_ctoken != address(0), "VaultOracle/invalid-ctoken-address");
-        require(_orb    != address(0), "VaultOracle/invalid-oracle-address");
-        require(_underlying == CompLike(_ctoken).underlying(), "VaultOracle/invalid-underlying-address");
+        require(_ctoken                     !=                     address(0), "CompOracle/invalid-ctoken-address");
+        require(DSToken(_ctoken).decimals() ==                              8, "CompOracle/invalid-dec-places");
+        require(_orb                        !=                     address(0), "CompOracle/invalid-oracle-address");
+        require(_underlying                 == CompLike(_ctoken).underlying(), "CompOracle/invalid-underlying-address");
+        uint8 _dec = DSToken(_underlying).decimals();
+        require(_dec                        <=                             18, "CompOracle/invalid-underlying-dec-places");
         wards[msg.sender] = 1;
         ctoken = _ctoken;
         orb = _orb;
+        factor = 10 ** (10 + uint256(_dec));
     }
 
     function link(address _orb) external note auth {
-        require(_orb != address(0), "VaultOracle/no-contract");
+        require(_orb != address(0), "CompOracle/no-contract");
         orb = _orb;
     }
 
     function read() external view override toll returns (bytes32) {
         uint256 underlyingPrice = uint256(PipLike(orb).read());
-        require(underlyingPrice != 0, "VaultOracle/invalid-oracle-price");
+        require(underlyingPrice != 0, "CompOracle/invalid-oracle-price");
 
         uint256 exchangeRate = CompLike(ctoken).exchangeRateStored();
-        require(exchangeRate != 0, "VaultOracle/invalid-exchange-rate");
+        require(exchangeRate != 0, "CompOracle/invalid-exchange-rate");
 
-        uint256 sharePrice = mul(underlyingPrice, exchangeRate) / 1e18;
-        require(sharePrice > 0, "VaultOracle/invalid-price-feed");
+        uint256 sharePrice = mul(underlyingPrice, exchangeRate) / factor;
+        require(sharePrice > 0, "CompOracle/invalid-price-feed");
 
         return bytes32(sharePrice);
     }
@@ -70,14 +75,14 @@ contract CompOracle is DSNote, PipLike {
         uint256 exchangeRate = CompLike(ctoken).exchangeRateStored();
         if (valid) valid = exchangeRate != 0;
 
-        uint256 sharePrice = mul(underlyingPrice, exchangeRate) / 1e18;
+        uint256 sharePrice = mul(underlyingPrice, exchangeRate) / factor;
         if (valid) valid = sharePrice > 0;
 
         return (bytes32(sharePrice), valid);
     }
 
     function kiss(address a) external note auth {
-        require(a != address(0), "VaultOracle/no-contract-0");
+        require(a != address(0), "CompOracle/no-contract-0");
         bud[a] = 1;
     }
 
@@ -87,7 +92,7 @@ contract CompOracle is DSNote, PipLike {
 
     function kiss(address[] calldata a) external note auth {
         for(uint i = 0; i < a.length; i++) {
-            require(a[i] != address(0), "VaultOracle/no-contract-0");
+            require(a[i] != address(0), "CompOracle/no-contract-0");
             bud[a[i]] = 1;
         }
     }
