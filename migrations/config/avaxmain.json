@@ -829,7 +829,7 @@
       "pipDeploy": {
         "osmDelay": "0",
         "type": "vault",
-        "reserve": "STKAVAXMIM"
+        "reserve": "TDJAVAXMIM"
       },
       "ilks": {
         "A": {
