@@ -314,7 +314,11 @@
           "duty": "0",
           "psmDeploy": {
             "tin": "0.001",
-            "tout": "0.01"
+            "tout": "0.01",
+            "donors": [
+              "0xdC4D358B34619e4fE7feb28bE301B2FBe4F3aFf9",
+              "0x67E5830CCef2Dc38aebEf4eC7D06baD5b5957D44"
+            ]
           },
           "clipDeploy": {
             "chop": "13",

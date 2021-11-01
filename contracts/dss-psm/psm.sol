@@ -46,12 +46,13 @@ contract DssPsm {
     uint256 public tin;         // toll in [wad]
     uint256 public tout;        // toll out [wad]
 
-    mapping (address => bool) donors; // injects gem for no dai
+    mapping (address => bool) donors; // addresses that inject gem for no dai
 
     // --- Events ---
     event Rely(address indexed usr);
     event Deny(address indexed usr);
     event File(bytes32 indexed what, uint256 data);
+    event Donor(address indexed usr, bool flag);
     event SellGem(address indexed owner, uint256 value, uint256 fee);
     event BuyGem(address indexed owner, uint256 value, uint256 fee);
 
@@ -103,6 +104,7 @@ contract DssPsm {
 
     function donor(address usr, bool flag) external auth {
         donors[usr] = flag;
+        emit Donor(usr, flag);
     }
 
     // --- Primary Functions ---

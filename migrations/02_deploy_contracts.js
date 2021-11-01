@@ -784,8 +784,10 @@ module.exports = async (deployer, network, [account]) => {
         const ilk_name = web3.utils.asciiToHex(token_name + '-' + ilk);
         const tin = units(ilk_psmDeploy.tin, 18);
         const tout = units(ilk_psmDeploy.tout, 18);
+        const donors = ilk_psmDeploy.donors || [];
         console.log('@psm.tin', ilk_psmDeploy.tin, tin);
         console.log('@psm.tout', ilk_psmDeploy.tout, tout);
+        console.log('@psm.donors', ilk_psmDeploy.donors, donors);
 
         console.log('Deploying Dss Psm...');
         const DssPsm = artifacts.require('DssPsm');
@@ -794,6 +796,9 @@ module.exports = async (deployer, network, [account]) => {
         console.log('MCD_' + token_name.replace('-', '_') + '_' + ilk + '=' + MCD_PSM_[token_name][ilk]);
         await dssPsm.file(web3.utils.asciiToHex('tin'), tin);
         await dssPsm.file(web3.utils.asciiToHex('tout'), tout);
+        for (const donor of donors) {
+          await dssPsm.donor(donor, true);
+        }
         await dssPsm.rely(MCD_PAUSE_PROXY);
         await dssPsm.deny(DEPLOYER);
 
