@@ -46,6 +46,8 @@ contract DssPsm {
     uint256 public tin;         // toll in [wad]
     uint256 public tout;        // toll out [wad]
 
+    mapping (address => bool) donors; // injects gem for no dai
+
     // --- Events ---
     event Rely(address indexed usr);
     event Deny(address indexed usr);
@@ -99,10 +101,14 @@ contract DssPsm {
         vat.nope(usr);
     }
 
+    function donor(address usr, bool flag) external auth {
+        donors[usr] = flag;
+    }
+
     // --- Primary Functions ---
     function sellGem(address usr, uint256 gemAmt) external {
         uint256 gemAmt18 = mul(gemAmt, to18ConversionFactor);
-        uint256 fee = mul(gemAmt18, tin) / WAD;
+        uint256 fee = mul(gemAmt18, donors[msg.sender] ? WAD : tin) / WAD;
         uint256 daiAmt = sub(gemAmt18, fee);
         gemJoin.join(address(this), gemAmt, msg.sender);
         vat.frob(ilk, address(this), address(this), address(this), int256(gemAmt18), int256(gemAmt18));
