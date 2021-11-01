@@ -29,6 +29,8 @@
     "deploy:bsctest": "truffle migrate --network bsctest",
     "deploy:maticmain": "truffle migrate --network maticmain",
     "deploy:matictest": "truffle migrate --network matictest",
+    "deploy:avaxmain": "truffle migrate --network avaxmain",
+    "deploy:avaxtest": "truffle migrate --network avaxtest",
     "source": "truffle-flattener contracts/*.sol contracts/*/*.sol contracts/*/*/*.sol | sed '/^.*SPDX-License-Identifier:.*$/d' | sed '1s/^/\\/\\/ SPDX-License-Identifier: GPL-3.0-only\\n\\n/' > Contracts.sol",
     "test": "truffle test",
     "test:mainnet": "GAS_LIMIT=15000000 truffle test",
@@ -39,7 +41,9 @@
     "test:bscmain": "GAS_LIMIT=60000000 truffle test",
     "test:bsctest": "GAS_LIMIT=60000000 truffle test",
     "test:maticmain": "GAS_LIMIT=20000000 truffle test",
-    "test:matictest": "GAS_LIMIT=20000000 truffle test"
+    "test:matictest": "GAS_LIMIT=20000000 truffle test",
+    "test:avaxmain": "GAS_LIMIT=8000000 truffle test",
+    "test:avaxtest": "GAS_LIMIT=8000000 truffle test"
   },
   "repository": {
     "type": "git",

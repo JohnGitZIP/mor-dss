@@ -81,6 +81,19 @@ module.exports = {
       // provider: () => new HDWalletProvider(privateKey, 'wss://apis.ankr.com/wss/' + ankrApikeyMatictest + '/' + ankrProjectId + '/polygon/full/test'),
       skipDryRun: true,
     },
+    avaxmain: {
+      network_id: 43114,
+      gasPrice,
+      networkCheckTimeout: 10000, // fixes truffle bug
+      provider: () => new HDWalletProvider(privateKey, 'wss://api.avax.network/ext/bc/C/ws'),
+      skipDryRun: false,
+    },
+    avaxtest: {
+      network_id: 43113,
+      networkCheckTimeout: 10000, // fixes truffle bug
+      provider: () => new HDWalletProvider(privateKey, 'wss://api.avax-test.network/ext/bc/C/ws'),
+      skipDryRun: true,
+    },
     development: {
       network_id: '*',
       gas: gasLimit,

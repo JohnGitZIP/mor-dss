@@ -24,6 +24,8 @@ const CONFIG = {
   '97': 'testnet',    // bsctest
   '137': 'maticmain', // maticmain
   '80001': 'testnet', // matictest
+  '43114': 'avaxmain',// avaxmain
+  '43113': 'testnet', // avaxtest
 };
 
 module.exports = async (deployer, network, [account]) => {
