@@ -540,7 +540,7 @@
     },
     "STKTDJAVAXJOE": {
       "import": {
-        "gem": "0x156a4aD3aDbD14599F96dDC24e690e0B2841aB28"
+        "gem": "0x3F08bc573aCe23b45a797e6F9b54128F1a7679b5"
       },
       "joinDeploy": {
         "src": "GemJoin",
