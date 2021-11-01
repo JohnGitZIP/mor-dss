@@ -1,0 +1,675 @@
+{
+  "description": "Avalanche mainnet deployment",
+  "pauseDelay": "0",
+  "vat_line": "10000000000",
+  "vow_wait": "0",
+  "vow_bump": "10000",
+  "vow_dump": "0.01",
+  "vow_sump": "0.1",
+  "vow_hump": "10000000",
+  "cat_box": "100000000",
+  "dog_hole": "100000000",
+  "jug_base": "0",
+  "pot_dsr": "0",
+  "end_wait": "3600",
+  "esm_min": "30000",
+  "flap_beg": "5",
+  "flap_ttl": "3600",
+  "flap_tau": "18000",
+  "flop_beg": "5",
+  "flop_pad": "0",
+  "flop_ttl": "10800",
+  "flop_tau": "172800",
+  "flash_max": "100000000",
+  "flash_toll": "0.1",
+  "import": {
+    "gov": "",
+    "faucet": "0x0000000000000000000000000000000000000000"
+  },
+  "tokens": {
+    "STKJOE": {
+      "import": {
+        "gem": "0x3eC9379c79ace6510574EE2c3B0B67aeeE1C23AC"
+      },
+      "joinDeploy": {
+        "src": "GemJoin",
+        "extraParams": []
+      },
+      "pipDeploy": {
+        "osmDelay": "0",
+        "type": "vault",
+        "reserve": "JOE"
+      },
+      "ilks": {
+        "A": {
+          "mat": "150",
+          "line": "0",
+          "autoLine": "50000000",
+          "autoLineGap": "10000000",
+          "autoLineTtl": "43200",
+          "dust": "100",
+          "duty": "-8",
+          "clipDeploy": {
+            "chop": "15",
+            "hole": "30000000",
+            "chip": "0",
+            "tip": "5",
+            "buf": "130",
+            "tail": "16800",
+            "cusp": "40",
+            "calc": {
+              "type": "StairstepExponentialDecrease",
+              "step": "180",
+              "cut": "99"
+            },
+            "cm_tolerance": "50"
+          }
+        }
+      }
+    },
+    "STKAVAX": {
+      "import": {
+        "gem": "0x4cea7726Eea4a0B342f8422D003Df735eAfDB195"
+      },
+      "joinDeploy": {
+        "src": "GemJoin",
+        "extraParams": []
+      },
+      "pipDeploy": {
+        "osmDelay": "0",
+        "type": "vault",
+        "reserve": "AVAX"
+      },
+      "ilks": {
+        "A": {
+          "mat": "150",
+          "line": "0",
+          "autoLine": "200000000",
+          "autoLineGap": "50000000",
+          "autoLineTtl": "43200",
+          "dust": "100",
+          "duty": "0",
+          "clipDeploy": {
+            "chop": "15",
+            "hole": "100000000",
+            "chip": "0",
+            "tip": "5",
+            "buf": "130",
+            "tail": "16800",
+            "cusp": "40",
+            "calc": {
+              "type": "StairstepExponentialDecrease",
+              "step": "180",
+              "cut": "99"
+            },
+            "cm_tolerance": "50"
+          }
+        }
+      }
+    },
+    "STKWETH": {
+      "import": {
+        "gem": "0x4291474e88E2fEE6eC5B8c28F4Ed2075cEf5B803"
+      },
+      "joinDeploy": {
+        "src": "GemJoin",
+        "extraParams": []
+      },
+      "pipDeploy": {
+        "osmDelay": "0",
+        "type": "vault",
+        "reserve": "WETH"
+      },
+      "ilks": {
+        "A": {
+          "mat": "150",
+          "line": "0",
+          "autoLine": "10000000",
+          "autoLineGap": "5000000",
+          "autoLineTtl": "43200",
+          "dust": "100",
+          "duty": "0",
+          "clipDeploy": {
+            "chop": "15",
+            "hole": "100000000",
+            "chip": "0",
+            "tip": "5",
+            "buf": "130",
+            "tail": "16800",
+            "cusp": "40",
+            "calc": {
+              "type": "StairstepExponentialDecrease",
+              "step": "180",
+              "cut": "99"
+            },
+            "cm_tolerance": "50"
+          }
+        }
+      }
+    },
+    "STKWBTC": {
+      "import": {
+        "gem": "0x59Da30Dd4C55F0b756710DB290ed4A1686D13dba"
+      },
+      "joinDeploy": {
+        "src": "GemJoin",
+        "extraParams": []
+      },
+      "pipDeploy": {
+        "osmDelay": "0",
+        "type": "vault",
+        "reserve": "WBTC"
+      },
+      "ilks": {
+        "A": {
+          "mat": "150",
+          "line": "0",
+          "autoLine": "10000000",
+          "autoLineGap": "5000000",
+          "autoLineTtl": "43200",
+          "dust": "100",
+          "duty": "0",
+          "clipDeploy": {
+            "chop": "15",
+            "hole": "100000000",
+            "chip": "0",
+            "tip": "5",
+            "buf": "130",
+            "tail": "16800",
+            "cusp": "40",
+            "calc": {
+              "type": "StairstepExponentialDecrease",
+              "step": "180",
+              "cut": "99"
+            },
+            "cm_tolerance": "50"
+          }
+        }
+      }
+    },
+    "STKLINK": {
+      "import": {
+        "gem": "0x1766798c6B7f0d6eA40d5B8B2215BF97fFB2AE85"
+      },
+      "joinDeploy": {
+        "src": "GemJoin",
+        "extraParams": []
+      },
+      "pipDeploy": {
+        "osmDelay": "0",
+        "type": "vault",
+        "reserve": "LINK"
+      },
+      "ilks": {
+        "A": {
+          "mat": "150",
+          "line": "0",
+          "autoLine": "5000000",
+          "autoLineGap": "5000000",
+          "autoLineTtl": "43200",
+          "dust": "100",
+          "duty": "0",
+          "clipDeploy": {
+            "chop": "15",
+            "hole": "100000000",
+            "chip": "0",
+            "tip": "5",
+            "buf": "130",
+            "tail": "16800",
+            "cusp": "40",
+            "calc": {
+              "type": "StairstepExponentialDecrease",
+              "step": "180",
+              "cut": "99"
+            },
+            "cm_tolerance": "50"
+          }
+        }
+      }
+    },
+    "STKAVAXJOE": {
+      "import": {
+        "gem": "0x1766798c6B7f0d6eA40d5B8B2215BF97fFB2AE85"
+      },
+      "joinDeploy": {
+        "src": "GemJoin",
+        "extraParams": []
+      },
+      "pipDeploy": {
+        "osmDelay": "0",
+        "type": "vault",
+        "reserve": "AVAXJOE"
+      },
+      "ilks": {
+        "A": {
+          "mat": "150",
+          "line": "0",
+          "autoLine": "50000000",
+          "autoLineGap": "10000000",
+          "autoLineTtl": "43200",
+          "dust": "100",
+          "duty": "-25",
+          "clipDeploy": {
+            "chop": "15",
+            "hole": "100000000",
+            "chip": "0",
+            "tip": "5",
+            "buf": "130",
+            "tail": "16800",
+            "cusp": "40",
+            "calc": {
+              "type": "StairstepExponentialDecrease",
+              "step": "180",
+              "cut": "99"
+            },
+            "cm_tolerance": "50"
+          }
+        }
+      }
+    },
+    "STKAVAXWETH": {
+      "import": {
+        "gem": "0x53073f685474341cdc765F97E7CFB2F427BD9db9"
+      },
+      "joinDeploy": {
+        "src": "GemJoin",
+        "extraParams": []
+      },
+      "pipDeploy": {
+        "osmDelay": "0",
+        "type": "vault",
+        "reserve": "AVAXWETH"
+      },
+      "ilks": {
+        "A": {
+          "mat": "150",
+          "line": "0",
+          "autoLine": "50000000",
+          "autoLineGap": "10000000",
+          "autoLineTtl": "43200",
+          "dust": "100",
+          "duty": "-10",
+          "clipDeploy": {
+            "chop": "15",
+            "hole": "100000000",
+            "chip": "0",
+            "tip": "5",
+            "buf": "130",
+            "tail": "16800",
+            "cusp": "40",
+            "calc": {
+              "type": "StairstepExponentialDecrease",
+              "step": "180",
+              "cut": "99"
+            },
+            "cm_tolerance": "50"
+          }
+        }
+      }
+    },
+    "STKAVAXWBTC": {
+      "import": {
+        "gem": "0x14955760d8c09D51a984C1c977e5A306C6133891"
+      },
+      "joinDeploy": {
+        "src": "GemJoin",
+        "extraParams": []
+      },
+      "pipDeploy": {
+        "osmDelay": "0",
+        "type": "vault",
+        "reserve": "AVAXWBTC"
+      },
+      "ilks": {
+        "A": {
+          "mat": "150",
+          "line": "0",
+          "autoLine": "50000000",
+          "autoLineGap": "10000000",
+          "autoLineTtl": "43200",
+          "dust": "100",
+          "duty": "-10",
+          "clipDeploy": {
+            "chop": "15",
+            "hole": "100000000",
+            "chip": "0",
+            "tip": "5",
+            "buf": "130",
+            "tail": "16800",
+            "cusp": "40",
+            "calc": {
+              "type": "StairstepExponentialDecrease",
+              "step": "180",
+              "cut": "99"
+            },
+            "cm_tolerance": "50"
+          }
+        }
+      }
+    },
+    "STKAVAXDAI": {
+      "import": {
+        "gem": "0xf5aFfe3459813AB193329E53f17098806709046A"
+      },
+      "joinDeploy": {
+        "src": "GemJoin",
+        "extraParams": []
+      },
+      "pipDeploy": {
+        "osmDelay": "0",
+        "type": "vault",
+        "reserve": "AVAXDAI"
+      },
+      "ilks": {
+        "A": {
+          "mat": "140",
+          "line": "0",
+          "autoLine": "10000000",
+          "autoLineGap": "2000000",
+          "autoLineTtl": "43200",
+          "dust": "100",
+          "duty": "-12",
+          "clipDeploy": {
+            "chop": "15",
+            "hole": "100000000",
+            "chip": "0",
+            "tip": "5",
+            "buf": "130",
+            "tail": "16800",
+            "cusp": "40",
+            "calc": {
+              "type": "StairstepExponentialDecrease",
+              "step": "180",
+              "cut": "99"
+            },
+            "cm_tolerance": "50"
+          }
+        }
+      }
+    },
+    "STKAVAXUSDC": {
+      "import": {
+        "gem": "0xDf93E61037DeEf5ca280e4A915bEB62e1bdE481F"
+      },
+      "joinDeploy": {
+        "src": "GemJoin",
+        "extraParams": []
+      },
+      "pipDeploy": {
+        "osmDelay": "0",
+        "type": "vault",
+        "reserve": "AVAXUSDC"
+      },
+      "ilks": {
+        "A": {
+          "mat": "140",
+          "line": "0",
+          "autoLine": "100000000",
+          "autoLineGap": "20000000",
+          "autoLineTtl": "43200",
+          "dust": "100",
+          "duty": "-14",
+          "clipDeploy": {
+            "chop": "15",
+            "hole": "100000000",
+            "chip": "0",
+            "tip": "5",
+            "buf": "130",
+            "tail": "16800",
+            "cusp": "40",
+            "calc": {
+              "type": "StairstepExponentialDecrease",
+              "step": "180",
+              "cut": "99"
+            },
+            "cm_tolerance": "50"
+          }
+        }
+      }
+    },
+    "STKAVAXUSDT": {
+      "import": {
+        "gem": "0x215C456652576eEAF8C8606549bf75D55C144d2d"
+      },
+      "joinDeploy": {
+        "src": "GemJoin",
+        "extraParams": []
+      },
+      "pipDeploy": {
+        "osmDelay": "0",
+        "type": "vault",
+        "reserve": "AVAXUSDT"
+      },
+      "ilks": {
+        "A": {
+          "mat": "140",
+          "line": "0",
+          "autoLine": "50000000",
+          "autoLineGap": "10000000",
+          "autoLineTtl": "43200",
+          "dust": "100",
+          "duty": "-12",
+          "clipDeploy": {
+            "chop": "15",
+            "hole": "100000000",
+            "chip": "0",
+            "tip": "5",
+            "buf": "130",
+            "tail": "16800",
+            "cusp": "40",
+            "calc": {
+              "type": "StairstepExponentialDecrease",
+              "step": "180",
+              "cut": "99"
+            },
+            "cm_tolerance": "50"
+          }
+        }
+      }
+    },
+    "STKAVAXMIM": {
+      "import": {
+        "gem": "0x0B32788B77c77265D08bf13E12FcE4C4978c64E8"
+      },
+      "joinDeploy": {
+        "src": "GemJoin",
+        "extraParams": []
+      },
+      "pipDeploy": {
+        "osmDelay": "0",
+        "type": "vault",
+        "reserve": "AVAXMIM"
+      },
+      "ilks": {
+        "A": {
+          "mat": "140",
+          "line": "0",
+          "autoLine": "10000000",
+          "autoLineGap": "5000000",
+          "autoLineTtl": "43200",
+          "dust": "100",
+          "duty": "-20",
+          "clipDeploy": {
+            "chop": "15",
+            "hole": "100000000",
+            "chip": "0",
+            "tip": "5",
+            "buf": "130",
+            "tail": "16800",
+            "cusp": "40",
+            "calc": {
+              "type": "StairstepExponentialDecrease",
+              "step": "180",
+              "cut": "99"
+            },
+            "cm_tolerance": "50"
+          }
+        }
+      }
+    },
+    "STKAVAXLINK": {
+      "import": {
+        "gem": "0x5141da4ab5b3e13ceE7B10980aE6bB848FdB59Cd"
+      },
+      "joinDeploy": {
+        "src": "GemJoin",
+        "extraParams": []
+      },
+      "pipDeploy": {
+        "osmDelay": "0",
+        "type": "vault",
+        "reserve": "AVAXLINK"
+      },
+      "ilks": {
+        "A": {
+          "mat": "150",
+          "line": "0",
+          "autoLine": "10000000",
+          "autoLineGap": "5000000",
+          "autoLineTtl": "43200",
+          "dust": "100",
+          "duty": "-12",
+          "clipDeploy": {
+            "chop": "15",
+            "hole": "100000000",
+            "chip": "0",
+            "tip": "5",
+            "buf": "130",
+            "tail": "16800",
+            "cusp": "40",
+            "calc": {
+              "type": "StairstepExponentialDecrease",
+              "step": "180",
+              "cut": "99"
+            },
+            "cm_tolerance": "50"
+          }
+        }
+      }
+    },
+    "STKJOEUSDC": {
+      "import": {
+        "gem": "0x691e486b5F7E39e90d37485164fAbDDd93aE43cD"
+      },
+      "joinDeploy": {
+        "src": "GemJoin",
+        "extraParams": []
+      },
+      "pipDeploy": {
+        "osmDelay": "0",
+        "type": "vault",
+        "reserve": "JOEUSDC"
+      },
+      "ilks": {
+        "A": {
+          "mat": "140",
+          "line": "0",
+          "autoLine": "5000000",
+          "autoLineGap": "2000000",
+          "autoLineTtl": "43200",
+          "dust": "100",
+          "duty": "-30",
+          "clipDeploy": {
+            "chop": "15",
+            "hole": "100000000",
+            "chip": "0",
+            "tip": "5",
+            "buf": "130",
+            "tail": "16800",
+            "cusp": "40",
+            "calc": {
+              "type": "StairstepExponentialDecrease",
+              "step": "180",
+              "cut": "99"
+            },
+            "cm_tolerance": "50"
+          }
+        }
+      }
+    },
+    "STKJOEUSDT": {
+      "import": {
+        "gem": "0xB1429FB053242fd5b8483Ed452E22c688E405CB5"
+      },
+      "joinDeploy": {
+        "src": "GemJoin",
+        "extraParams": []
+      },
+      "pipDeploy": {
+        "osmDelay": "0",
+        "type": "vault",
+        "reserve": "JOEUSDT"
+      },
+      "ilks": {
+        "A": {
+          "mat": "140",
+          "line": "0",
+          "autoLine": "3000000",
+          "autoLineGap": "2000000",
+          "autoLineTtl": "43200",
+          "dust": "100",
+          "duty": "-30",
+          "clipDeploy": {
+            "chop": "15",
+            "hole": "100000000",
+            "chip": "0",
+            "tip": "5",
+            "buf": "130",
+            "tail": "16800",
+            "cusp": "40",
+            "calc": {
+              "type": "StairstepExponentialDecrease",
+              "step": "180",
+              "cut": "99"
+            },
+            "cm_tolerance": "50"
+          }
+        }
+      }
+    },
+    "PSM-USDC": {
+      "import": {
+        "gem": "0xdC4D358B34619e4fE7feb28bE301B2FBe4F3aFf9"
+      },
+      "joinDeploy": {
+        "src": "AuthGemJoin",
+        "extraParams": []
+      },
+      "pipDeploy": {
+        "osmDelay": "0",
+        "type": "value",
+        "price": "1"
+      },
+      "psmDeploy": {
+        "tin": "0.001",
+        "tout": "0.01"
+      },
+      "ilks": {
+        "A": {
+          "mat": "100",
+          "line": "10000000000",
+          "autoLine": "0",
+          "autoLineGap": "0",
+          "autoLineTtl": "0",
+          "dust": "0",
+          "duty": "0",
+          "clipDeploy": {
+            "chop": "13",
+            "hole": "0",
+            "chip": "0.1",
+            "tip": "300",
+            "buf": "105",
+            "tail": "13200",
+            "cusp": "90",
+            "calc": {
+              "type": "StairstepExponentialDecrease",
+              "step": "120",
+              "cut": "99"
+            },
+            "cm_tolerance": "95"
+          }
+        }
+      }
+    }
+  }
+}
