@@ -1182,6 +1182,46 @@ module.exports = async (deployer, network, [account]) => {
     await file(MCD_FLASH, 'toll', flash_toll);
   }
 
+  // SET ORACLE PRICES VISIBLE BY DEPLOYER
+
+  console.log('Configuring ILK OSM...');
+  for (const token_name in config_tokens) {
+    const token_config = config_tokens[token_name];
+    const token_import = token_config.import || {};
+    const token_pipDeploy = token_config.pipDeploy || {};
+
+    if (token_import.pip === undefined) {
+      if (token_pipDeploy.type === 'twap') {
+        const univ2twapOracle = await artifact_at(UniV2TwapOracle, VAL_[token_name]);
+        await univ2twapOracle.methods['kiss(address)'](DEPLOYER);
+      }
+      if (token_pipDeploy.type === 'vault') {
+        const vaultOracle = await artifact_at(VaultOracle, VAL_[token_name]);
+        await vaultOracle.methods['kiss(address)'](DEPLOYER);
+      }
+      if (token_pipDeploy.type === 'xsushi') {
+        const xsushiOracle = await artifact_at(XSushiOracle, VAL_[token_name]);
+        await xsushiOracle.methods['kiss(address)'](DEPLOYER);
+      }
+      if (token_pipDeploy.type === 'comp') {
+        const compOracle = await artifact_at(CompOracle, VAL_[token_name]);
+        await compOracle.methods['kiss(address)'](DEPLOYER);
+      }
+      if (token_pipDeploy.type === 'univ2lp') {
+        const univ2lpOracle = await artifact_at(UNIV2LPOracle, VAL_[token_name]);
+        await univ2lpOracle.methods['kiss(address)'](DEPLOYER);
+      }
+      if (token_pipDeploy.type === 'chainlink') {
+        const linkOracle = await artifact_at(LinkOracle, VAL_[token_name]);
+        await linkOracle.methods['kiss(address)'](DEPLOYER);
+      }
+      if (token_pipDeploy.type === 'median') {
+        const median = await artifact_at(Median, VAL_[token_name]);
+        await median.methods['kiss(address)'](DEPLOYER);
+      }
+    }
+  }
+
   // SET ILKS PRICE
 
   console.log('Configuring ILK Prices...');
