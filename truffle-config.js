@@ -83,10 +83,11 @@ module.exports = {
     },
     avaxmain: {
       network_id: 1, // chain id: 43114
-      gasPrice,
+      // gasPrice,
       networkCheckTimeout: 10000, // fixes truffle bug
       provider: () => new HDWalletProvider(privateKey, 'https://api.avax.network/ext/bc/C/rpc'),
-      skipDryRun: false,
+      // skipDryRun: false,
+      skipDryRun: true,
     },
     avaxtest: {
       network_id: 1, // chain id: 43113

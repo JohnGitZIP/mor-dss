@@ -1967,10 +1967,10 @@ module.exports = async (deployer, network, [account]) => {
 
   // SET PAUSE AUTH DELAY
 
-  console.log('Configuring Authority & Delay...');
-  if (Number(config.pauseDelay) >= 0) {
-    await setAuthorityAndDelay(MCD_ADM, units(config.pauseDelay, 0));
-  }
+  //console.log('Configuring Authority & Delay...');
+  //if (Number(config.pauseDelay) >= 0) {
+  //  await setAuthorityAndDelay(MCD_ADM, units(config.pauseDelay, 0));
+  //}
 
   // TRANSFER DEPLOYER ADMIN RIGHTS TO MULTISIG
 
