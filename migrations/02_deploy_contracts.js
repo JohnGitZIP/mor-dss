@@ -136,12 +136,47 @@ module.exports = async (deployer, network, [account]) => {
 
   const MULTISIG = MULTISIG_CONFIG[chainId];
 
+  const MULTICALL = '0x0b78ad358dDa2887285eaD72e84b47242360b872';
+  const PROXY_FACTORY = '0xb05b13496A6451A1Eb2fB18393232368b345C577';
+  const PROXY_REGISTRY = '0x4939C03546FEAeC270507e8D4a819BeB40A2BD59';
+  const VAT_FAB = '0x741C6E1ef20f3932148468b97d18267520D94994';
+  const JUG_FAB = '0x8A1F8ce3De0F3d54F8D3218b42390637eF6037E0';
+  const VOW_FAB = '0xe090fbA275a39A66f37487801D86EE099F75148a';
+  const CAT_FAB = '0x2eb0DCb9eDfCA6DcC944Aa541B9f075Cb54D4576';
+  const DOG_FAB = '0x2a276BB021426EA89536e918e0105D3243FD3b86';
+  const DAI_FAB = '0x0B9D71FecE78E8F93Ab6C35A12A02513Eb0D8e79';
+  const MCD_JOIN_FAB = '0x45777E44d2d59b4d3bADB198CC5ece59524c7cce';
+  const FLAP_FAB = '0xB319297a68E6b3d25D6d3C34b773614186EdB0C5';
+  const FLOP_FAB = '0x17dC3B78E2eCb298187B8d0c2929B00C8A154746';
+  const FLIP_FAB = '0x30623E39aed9483c033FEd109f5fd009ff7F0bAf';
+  const CLIP_FAB = '0xC1A9385d9953d4C0552db4Ad321b71B97309b1b1';
+  const SPOT_FAB = '0xc652b9c2aB4Fe6E17EBA677dcc7Bb0b7F6e76770';
+  const POT_FAB = '0x7E98Da8124baa6d800f9c021643996595485BA80';
+  const END_FAB = '0x1e674E1D2B8a1bF8431AD099B94a3B6E49847ED6';
+  const ESM_FAB = '0xA7E3ef1BCE9f894d9f8205AAbD478a8e461e0610';
+  const PAUSE_FAB = '0xa5e94e7BB58df6471FcFFdeaE14F3e4b16a48420';
+  const MCD_DEPLOY = '0xa10d039d4AD03f15FFF3e49916F62D35923238f6';
+  const MCD_ADM_TEMP = '0xDacf9095314275E65b9aF40c0e6b0BB8969ad684';
+  const MCD_VAT = '0x713C28b2Ef6F89750BDf97f7Bbf307f6F949b3fF';
+  const MCD_SPOT = '0x7C4925D62d24A826F8d945130E620fdC510d0f68';
+  const MCD_DAI = '0x87BAde473ea0513D4aA7085484aEAA6cB6EBE7e3';
+  const MCD_JOIN_DAI = '0x9438760f1ac27F7cFE638D686d889C56eb42F4D0';
+  const MCD_JUG = '0xb2d474EAAB89DD0134B8A98a9AB38aC41a537c6C';
+  const MCD_POT = '0x6e22DA49b28dc5aB70aC7527CC0cc04bD35eB615';
+  const MCD_FLAP = '0x3Bf3C5146c5b1259f8886d3B2480aD53A835F795';
+  const MCD_FLOP = '0xbb37ccb8eFd844abD260AfC68025F5491570AC9d';
+  const MCD_VOW = '0x3fD4046b25cD0a43f6d8076D06160E005e388490';
+  const MCD_CAT = '0xDea7563440195eA7Ea83900DE38F603C25a37594';
+  const MCD_DOG = '0x0dA4fefdAef2d283B438fDb5453934B7aF6f0B57';
+  const MCD_END = '0x67D8cda3131890a0603379B03cd1B8Ed39753DA6';
+  const MCD_PAUSE = '0x194964F933be66736c55E672239b2A3c07B564BB';
+  const MCD_PAUSE_PROXY = '0x309bdB8C09Ab92dBEC88001A51Bf54E74b346C10';
+  const MCD_ESM = '0x7d46C7685A3c44Ad65c4dCc84b51BE4b189b52D3';
+
   // MULTICALL
 
-  console.log('Publishing Multicall...');
   const Multicall = artifacts.require('Multicall');
-  const multicall = await artifact_deploy(Multicall);
-  const MULTICALL = multicall.address;
+  const multicall = await artifact_at(Multicall, MULTICALL);
   console.log('MULTICALL=' + MULTICALL);
 
   // FAUCET
@@ -150,128 +185,87 @@ module.exports = async (deployer, network, [account]) => {
   let restrictedTokenFaucet;
   const RestrictedTokenFaucet = artifacts.require('RestrictedTokenFaucet');
   if (config_import.faucet === undefined) {
-    console.log('Publishing Token Faucet...');
-    restrictedTokenFaucet = await artifact_deploy(RestrictedTokenFaucet);
-    FAUCET = restrictedTokenFaucet.address;
+    restrictedTokenFaucet = await artifact_at(RestrictedTokenFaucet, FAUCET);
     console.log('FAUCET=' + FAUCET);
-    await restrictedTokenFaucet.hope(ZERO_ADDRESS);
   }
 
   // PROXY REGISTRY
 
-  let PROXY_FACTORY = ZERO_ADDRESS;
-  let PROXY_REGISTRY = config_import.proxyRegistry;
   const ProxyRegistry = artifacts.require('ProxyRegistry');
   if (config_import.proxyRegistry === undefined) {
-    console.log('Publishing Proxy Factory...');
     const DSProxyFactory = artifacts.require('DSProxyFactory');
-    const dsProxyFactory = await artifact_deploy(DSProxyFactory);
-    PROXY_FACTORY = dsProxyFactory.address;
+    const dsProxyFactory = await artifact_at(DSProxyFactory, PROXY_FACTORY);
     console.log('PROXY_FACTORY=' + PROXY_FACTORY);
 
-    console.log('Publishing Proxy Registry...');
-    const proxyRegistry = await artifact_deploy(ProxyRegistry, PROXY_FACTORY);
-    PROXY_REGISTRY = proxyRegistry.address;
+    const proxyRegistry = await artifact_at(ProxyRegistry, PROXY_REGISTRY);
     console.log('PROXY_REGISTRY=' + PROXY_REGISTRY);
   }
   const proxyRegistry = await artifact_at(ProxyRegistry, PROXY_REGISTRY);
 
   // FABS
 
-  console.log('Publishing VatFab...');
   const VatFab = artifacts.require('VatFab');
-  const vatFab = await artifact_deploy(VatFab);
-  const VAT_FAB = vatFab.address;
+  const vatFab = await artifact_at(VatFab, VAT_FAB);
   console.log('VAT_FAB=' + VAT_FAB);
 
-  console.log('Publishing JugFab...');
   const JugFab = artifacts.require('JugFab');
-  const jugFab = await artifact_deploy(JugFab);
-  const JUG_FAB = jugFab.address;
+  const jugFab = await artifact_at(JugFab, JUG_FAB);
   console.log('JUG_FAB=' + JUG_FAB);
 
-  console.log('Publishing VowFab...');
   const VowFab = artifacts.require('VowFab');
-  const vowFab = await artifact_deploy(VowFab);
-  const VOW_FAB = vowFab.address;
+  const vowFab = await artifact_at(VowFab, VOW_FAB);
   console.log('VOW_FAB=' + VOW_FAB);
 
-  console.log('Publishing CatFab...');
   const CatFab = artifacts.require('CatFab');
-  const catFab = await artifact_deploy(CatFab);
-  const CAT_FAB = catFab.address;
+  const catFab = await artifact_at(CatFab, CAT_FAB);
   console.log('CAT_FAB=' + CAT_FAB);
 
-  console.log('Publishing DogFab...');
   const DogFab = artifacts.require('DogFab');
-  const dogFab = await artifact_deploy(DogFab);
-  const DOG_FAB = dogFab.address;
+  const dogFab = await artifact_at(DogFab, DOG_FAB);
   console.log('DOG_FAB=' + DOG_FAB);
 
-  console.log('Publishing DaiFab...');
   const DaiFab = artifacts.require('DaiFab');
-  const daiFab = await artifact_deploy(DaiFab);
-  const DAI_FAB = daiFab.address;
+  const daiFab = await artifact_at(DaiFab, DAI_FAB);
   console.log('DAI_FAB=' + DAI_FAB);
 
-  console.log('Publishing DaiJoinFab...');
   const DaiJoinFab = artifacts.require('DaiJoinFab');
-  const daiJoinFab = await artifact_deploy(DaiJoinFab);
-  const MCD_JOIN_FAB = daiJoinFab.address;
+  const daiJoinFab = await artifact_at(DaiJoinFab, MCD_JOIN_FAB);
   console.log('MCD_JOIN_FAB=' + MCD_JOIN_FAB);
 
-  console.log('Publishing FlapFab...');
   const FlapFab = artifacts.require('FlapFab');
-  const flapFab = await artifact_deploy(FlapFab);
-  const FLAP_FAB = flapFab.address;
+  const flapFab = await artifact_at(FlapFab, FLAP_FAB);
   console.log('FLAP_FAB=' + FLAP_FAB);
 
-  console.log('Publishing FlopFab...');
   const FlopFab = artifacts.require('FlopFab');
-  const flopFab = await artifact_deploy(FlopFab);
-  const FLOP_FAB = flopFab.address;
+  const flopFab = await artifact_at(FlopFab, FLOP_FAB);
   console.log('FLOP_FAB=' + FLOP_FAB);
 
-  console.log('Publishing FlipFab...');
   const FlipFab = artifacts.require('FlipFab');
-  const flipFab = await artifact_deploy(FlipFab);
-  const FLIP_FAB = flipFab.address;
+  const flipFab = await artifact_at(FlipFab, FLIP_FAB);
   console.log('FLIP_FAB=' + FLIP_FAB);
 
-  console.log('Publishing ClipFab...');
   const ClipFab = artifacts.require('ClipFab');
-  const clipFab = await artifact_deploy(ClipFab);
-  const CLIP_FAB = clipFab.address;
+  const clipFab = await artifact_at(ClipFab, CLIP_FAB);
   console.log('CLIP_FAB=' + CLIP_FAB);
 
-  console.log('Publishing SpotFab...');
   const SpotFab = artifacts.require('SpotFab');
-  const spotFab = await artifact_deploy(SpotFab);
-  const SPOT_FAB = spotFab.address;
+  const spotFab = await artifact_at(SpotFab, SPOT_FAB);
   console.log('SPOT_FAB=' + SPOT_FAB);
 
-  console.log('Publishing PotFab...');
   const PotFab = artifacts.require('PotFab');
-  const potFab = await artifact_deploy(PotFab);
-  const POT_FAB = potFab.address;
+  const potFab = await artifact_at(PotFab, POT_FAB);
   console.log('POT_FAB=' + POT_FAB);
 
-  console.log('Publishing EndFab...');
   const EndFab = artifacts.require('EndFab');
-  const endFab = await artifact_deploy(EndFab);
-  const END_FAB = endFab.address;
+  const endFab = await artifact_at(EndFab, END_FAB);
   console.log('END_FAB=' + END_FAB);
 
-  console.log('Publishing ESMFab...');
   const ESMFab = artifacts.require('ESMFab');
-  const esmFab = await artifact_deploy(ESMFab);
-  const ESM_FAB = esmFab.address;
+  const esmFab = await artifact_at(ESMFab, ESM_FAB);
   console.log('ESM_FAB=' + ESM_FAB);
 
-  console.log('Publishing PauseFab...');
   const PauseFab = artifacts.require('PauseFab');
-  const pauseFab = await artifact_deploy(PauseFab);
-  const PAUSE_FAB = pauseFab.address;
+  const pauseFab = await artifact_at(PauseFab, PAUSE_FAB);
   console.log('PAUSE_FAB=' + PAUSE_FAB);
 
   // GOV TOKEN
@@ -279,182 +273,93 @@ module.exports = async (deployer, network, [account]) => {
   let MCD_GOV = config_import.gov;
   const DSToken = artifacts.require('DSToken');
   if (config_import.gov === undefined) {
-    console.log('Publishing Stock/Gov Token...');
-    const govToken = await artifact_deploy(DSToken, 'STK');
-    MCD_GOV = govToken.address;
+    const govToken = await artifact_at(DSToken, MCD_GOV);
     console.log('MCD_GOV=' + MCD_GOV);
-    await govToken.setName('Stock');
   }
   const govToken = await artifact_at(DSToken, MCD_GOV);
 
   // CORE DEPLOYER
 
-  console.log('Publishing DssDeploy...');
-  const dssDeploy = await artifact_deploy(DssDeploy, VAT_FAB, JUG_FAB, VOW_FAB, CAT_FAB, DOG_FAB, DAI_FAB, MCD_JOIN_FAB, FLAP_FAB, FLOP_FAB, FLIP_FAB, CLIP_FAB, SPOT_FAB, POT_FAB, END_FAB, ESM_FAB, PAUSE_FAB);
-  const MCD_DEPLOY = dssDeploy.address;
+  const dssDeploy = await artifact_at(DssDeploy, MCD_DEPLOY);
   console.log('MCD_DEPLOY=' + MCD_DEPLOY);
 
   // AUTHORITY
 
-  console.log('Deploying DSRoles...');
   const DSRoles = artifacts.require('DSRoles');
-  const dsRoles = await artifact_deploy(DSRoles);
-  const MCD_ADM_TEMP = dsRoles.address;
+  const dsRoles = await artifact_at(DSRoles, MCD_ADM_TEMP);
   console.log('MCD_ADM_TEMP=' + MCD_ADM_TEMP);
-  await dsRoles.setRootUser(DEPLOYER, true);
 
   // CORE
 
-  console.log('Deploying Core...');
-
   // Deploy Vat
   const Vat = artifacts.require('Vat');
-  const vat = await artifact_deploy(Vat);
-  const MCD_VAT = vat.address;
+  const vat = await artifact_at(Vat, MCD_VAT);
   console.log('MCD_VAT=' + MCD_VAT);
   const Spotter = artifacts.require('Spotter');
-  const spotter = await artifact_deploy(Spotter, MCD_VAT);
-  const MCD_SPOT = spotter.address;
+  const spotter = await artifact_at(Spotter, MCD_SPOT);
   console.log('MCD_SPOT=' + MCD_SPOT);
-  await vat.rely(MCD_SPOT);
 
   // Deploy Dai
   const Dai = artifacts.require('Dai');
-  const dai = await artifact_deploy(Dai, chainId);
-  const MCD_DAI = dai.address;
+  const dai = await artifact_at(Dai, MCD_DAI);
   console.log('MCD_DAI=' + MCD_DAI);
   const dai_name = await dai.symbol();
   const DaiJoin = artifacts.require('DaiJoin');
-  const daiJoin = await artifact_deploy(DaiJoin, MCD_VAT, MCD_DAI);
-  const MCD_JOIN_DAI = daiJoin.address;
+  const daiJoin = await artifact_at(DaiJoin, MCD_JOIN_DAI);
   console.log('MCD_JOIN_DAI=' + MCD_JOIN_DAI);
-  await dai.rely(MCD_JOIN_DAI);
 
   // Deploy Taxation
   const Jug = artifacts.require('Jug');
-  const jug = await artifact_deploy(Jug, MCD_VAT);
-  const MCD_JUG = jug.address;
+  const jug = await artifact_at(Jug, MCD_JUG);
   console.log('MCD_JUG=' + MCD_JUG);
   const Pot = artifacts.require('Pot');
-  const pot = await artifact_deploy(Pot, MCD_VAT);
-  const MCD_POT = pot.address;
+  const pot = await artifact_at(Pot, MCD_POT);
   console.log('MCD_POT=' + MCD_POT);
-  await vat.rely(MCD_JUG);
-  await vat.rely(MCD_POT);
 
   // Deploy Auctions
   const Flapper = artifacts.require('Flapper');
-  const flap = await artifact_deploy(Flapper, MCD_VAT, MCD_GOV);
-  const MCD_FLAP = flap.address;
+  const flap = await artifact_at(Flapper, MCD_FLAP);
   console.log('MCD_FLAP=' + MCD_FLAP);
   const Flopper = artifacts.require('Flopper');
-  const flop = await artifact_deploy(Flopper, MCD_VAT, MCD_GOV);
-  const MCD_FLOP = flop.address;
+  const flop = await artifact_at(Flopper, MCD_FLOP);
   console.log('MCD_FLOP=' + MCD_FLOP);
   const Vow = artifacts.require('Vow');
-  const vow = await artifact_deploy(Vow, MCD_VAT, MCD_FLAP, MCD_FLOP);
-  const MCD_VOW = vow.address;
+  const vow = await artifact_at(Vow, MCD_VOW);
   console.log('MCD_VOW=' + MCD_VOW);
-  await jug.file(web3.utils.asciiToHex('vow'), MCD_VOW);
-  await pot.file(web3.utils.asciiToHex('vow'), MCD_VOW);
-  await vat.rely(MCD_FLOP);
-  await flap.rely(MCD_VOW);
-  await flop.rely(MCD_VOW);
 
   // Deploy Liquidator
   const Cat = artifacts.require('Cat');
-  const cat = await artifact_deploy(Cat, MCD_VAT);
-  const MCD_CAT = cat.address;
+  const cat = await artifact_at(Cat, MCD_CAT);
   console.log('MCD_CAT=' + MCD_CAT);
   const Dog = artifacts.require('Dog');
-  const dog = await artifact_deploy(Dog, MCD_VAT);
-  const MCD_DOG = dog.address;
+  const dog = await artifact_at(Dog, MCD_DOG);
   console.log('MCD_DOG=' + MCD_DOG);
-  await cat.file(web3.utils.asciiToHex('vow'), MCD_VOW);
-  await dog.file(web3.utils.asciiToHex('vow'), MCD_VOW);
-  await vat.rely(MCD_CAT);
-  await vat.rely(MCD_DOG);
-  await vow.rely(MCD_CAT);
-  await vow.rely(MCD_DOG);
 
   // Deploy End
   const End = artifacts.require('End');
-  const end = await artifact_deploy(End);
-  const MCD_END = end.address;
+  const end = await artifact_at(End, MCD_END);
   console.log('MCD_END=' + MCD_END);
-  await end.file(web3.utils.asciiToHex('vat'), MCD_VAT);
-  await end.file(web3.utils.asciiToHex('cat'), MCD_CAT);
-  await end.file(web3.utils.asciiToHex('dog'), MCD_DOG);
-  await end.file(web3.utils.asciiToHex('vow'), MCD_VOW);
-  await end.file(web3.utils.asciiToHex('pot'), MCD_POT);
-  await end.file(web3.utils.asciiToHex('spot'), MCD_SPOT);
-  await vat.rely(MCD_END);
-  await cat.rely(MCD_END);
-  await dog.rely(MCD_END);
-  await vow.rely(MCD_END);
-  await pot.rely(MCD_END);
-  await spotter.rely(MCD_END);
 
   // Deploy Pause
   const DSPause = artifacts.require('DSPause');
-  const pause = await artifact_deploy(DSPause, 0, ZERO_ADDRESS, MCD_ADM_TEMP);
-  const MCD_PAUSE = pause.address;
+  const pause = await artifact_at(DSPause, MCD_PAUSE);
   console.log('MCD_PAUSE=' + MCD_PAUSE);
-  const MCD_PAUSE_PROXY = await pause.proxy();
   console.log('MCD_PAUSE_PROXY=' + MCD_PAUSE_PROXY);
-  await vat.rely(MCD_PAUSE_PROXY);
-  await cat.rely(MCD_PAUSE_PROXY);
-  await dog.rely(MCD_PAUSE_PROXY);
-  await vow.rely(MCD_PAUSE_PROXY);
-  await jug.rely(MCD_PAUSE_PROXY);
-  await pot.rely(MCD_PAUSE_PROXY);
-  await spotter.rely(MCD_PAUSE_PROXY);
-  await flap.rely(MCD_PAUSE_PROXY);
-  await flop.rely(MCD_PAUSE_PROXY);
-  await end.rely(MCD_PAUSE_PROXY);
 
   // Deploy ESM
   const esm_min = units(config.esm_min, 18);
   const ESM = artifacts.require('ESM');
-  console.log('@esm_min', config.esm_min, esm_min);
-  const esm = await artifact_deploy(ESM, MCD_GOV, MCD_END, MCD_PAUSE_PROXY, esm_min);
-  const MCD_ESM = esm.address;
+  const esm = await artifact_at(ESM, MCD_ESM);
   console.log('MCD_ESM=' + MCD_ESM);
-  await end.rely(MCD_ESM);
-  await vat.rely(MCD_ESM);
-
-  await vat.rely(MCD_DEPLOY);
-  await spotter.rely(MCD_DEPLOY);
-  await dai.rely(MCD_DEPLOY);
-  await jug.rely(MCD_DEPLOY);
-  await pot.rely(MCD_DEPLOY);
-  await flap.rely(MCD_DEPLOY);
-  await flop.rely(MCD_DEPLOY);
-  await vow.rely(MCD_DEPLOY);
-  await cat.rely(MCD_DEPLOY);
-  await dog.rely(MCD_DEPLOY);
-  await end.rely(MCD_DEPLOY);
-  await dssDeploy.updateDeployed(MCD_VAT, MCD_JUG, MCD_VOW, MCD_CAT, MCD_DOG, MCD_DAI, MCD_JOIN_DAI, MCD_FLAP, MCD_FLOP, MCD_SPOT, MCD_POT, MCD_END, MCD_ESM, MCD_PAUSE);
 
   // FAUCET CONFIG
 
   let GOV_GUARD  = ZERO_ADDRESS;
   let mkrAuthority;
   if (config_import.gov === undefined) {
-    console.log('Configuring Faucet...');
-    await govToken.mint(FAUCET, units('1000000', 18));
-    await restrictedTokenFaucet.gulp(MCD_GOV);
-    await restrictedTokenFaucet.setAmt(MCD_GOV, units('1000', 18));
-
-    console.log('Publishing MKR Authority ...');
     const MkrAuthority = artifacts.require('MkrAuthority');
-    mkrAuthority = await artifact_deploy(MkrAuthority);
-    GOV_GUARD = mkrAuthority.address;
+    mkrAuthority = await artifact_at(MkrAuthority, GOV_GUARD);
     console.log('GOV_GUARD=' + GOV_GUARD);
-    govToken.setAuthority(GOV_GUARD);
-    govToken.setOwner(MCD_PAUSE_PROXY);
-    mkrAuthority.rely(MCD_FLOP);
-    mkrAuthority.setRoot(MCD_PAUSE_PROXY);
   }
 
   // DEPLOY COLLATERALS
@@ -496,9 +401,7 @@ module.exports = async (deployer, network, [account]) => {
       case 'dss-gem-joins/ZRX': GemToken = artifacts.require('ZRX'); break;
       default: throw new Error('Unknown gem: ' + src);
       }
-      console.log('Publishing Gem Token...');
-      const gemToken = await artifact_deploy(GemToken, ...params);
-      T_[token_name] = gemToken.address;
+      const gemToken = await artifact_at(GemToken, T_[token_name]);
       console.log(token_name.replace('-', '_') + '=' + T_[token_name]);
     }
   }
@@ -507,6 +410,46 @@ module.exports = async (deployer, network, [account]) => {
 
   const VAL_ = {};
   const PIP_ = {};
+  VAL_['AVAX'] = '0xd4d7BCF6c7b54349C91f39cAd89B228C53FE6BD7';
+  VAL_['WETH'] = '0x63c2E42758EF8776BF7b70afb00E0e2748Ad3F05';
+  VAL_['WBTC'] = '0x7622ce6588116c1C7F1a4E61A153C1efC7226f78';
+  VAL_['DAI'] = '0x585707c57413e09a4BE58e89798f5074b2B89De1';
+  VAL_['USDC'] = '0x447FE0cc2145F27127Cf60C6FD6D9025A4208b8B';
+  VAL_['USDT'] = '0x6Ee2E2d648698357Cc518D1D5E8170586dca5348';
+  VAL_['LINK'] = '0x326Db2b9640e51077fD9B70767855f5c2128e91A';
+  VAL_['MIM'] = '0x1B87083Af792cB8355C4c954c491255482992E79';
+  VAL_['JOE'] = '0x1a06452B84456728Ee4054AE6157d3feDF56C295';
+  VAL_['XJOE'] = '0xF49390eE384C5df2e82ac99909a6236051a4E82B';
+  VAL_['JAVAX'] = '0x8BBcd7E4da4395E391Fbfc2A11775debe3ca0D58';
+  VAL_['JWETH'] = '0xAB47baC3C131eD3ac9d8F993fD2D902cad460c0f';
+  VAL_['JWBTC'] = '0xcf55226EE56F174B3cB3F75a5182d2300e788e91';
+  VAL_['JLINK'] = '0xB31fF116f5fEC1C0Aee2Aa86d5E78e3105CC4274';
+  VAL_['TDJAVAXJOE'] = '0xC5065b47A133071fe8cD94f46950fCfBA53864C6';
+  VAL_['TDJAVAXWETH'] = '0x3d4604395595Bb30A8B7754b5dDBF0B3F680564b';
+  VAL_['TDJAVAXWBTC'] = '0x1e1ee1AcD4B7ad405A0D701884F093d54DF7fba4';
+  VAL_['TDJAVAXDAI'] = '0x58849cE72b4E4338C00f0760Ca6AfCe11b5ee370';
+  VAL_['TDJAVAXUSDC'] = '0xc690F38430Db2057C992c3d3190D9902CD7E0294';
+  VAL_['TDJAVAXUSDT'] = '0xeE991787C4ffE1de8c8c7c45e3EF14bFc47A2735';
+  VAL_['TDJAVAXLINK'] = '0x5Df1B3212EB26f506af448cE25cd4E315BEdf630';
+  VAL_['TDJAVAXMIM'] = '0x0Ca167778392473E0868503522a11f1e749bbF82';
+  VAL_['TDJUSDCJOE'] = '0x7bA715959A52ef046BE76c4E32f1de1d161E2888';
+  VAL_['TDJUSDTJOE'] = '0xeBcb52E5696A2a90D684C76cDf7095534F265370';
+  VAL_['PSM-STKUSDC'] = '0x68697fF7Ec17F528E3E4862A1dbE6d7D9cBBd5C6';
+  VAL_['STKXJOE'] = '0xf72f07b96D4Ee64d1065951cAfac032B63C767bb';
+  VAL_['STKJAVAX'] = '0xeeF286Af1d7601EA5E40473741D79e55770498d8';
+  VAL_['STKJWETH'] = '0xa9b68E3E65966B1C08cfa6002E8527E091e5664e';
+  VAL_['STKJWBTC'] = '0x5ef900FD5aACd6CFe994b2E13c3d4aBDD9fFea2b';
+  VAL_['STKJLINK'] = '0x3728Bd61F582dA0b22cFe7EDC59aC33f7402c4e0';
+  VAL_['STKTDJAVAXJOE'] = '0xca70528209917F4D0443Dd3e90C863b19584CCAF';
+  VAL_['STKTDJAVAXWETH'] = '0x352C748Ff550Eec6355e37Ee62459210909709DD';
+  VAL_['STKTDJAVAXWBTC'] = '0x260e6061233A3F05213a54103A9F0460857f9E9c';
+  VAL_['STKTDJAVAXDAI'] = '0x9605863bf02E983861C0a4ac28a7527Fcf36732b';
+  VAL_['STKTDJAVAXUSDC'] = '0x2117C852417B008d18E292D18ab196f49AA896cf';
+  VAL_['STKTDJAVAXUSDT'] = '0x6B61e028199BCC4760fD9CC5DEfC7430d977FC08';
+  VAL_['STKTDJAVAXLINK'] = '0x4A1dB63A8240A030C7E8678c594711D139a1c39f';
+  VAL_['STKTDJAVAXMIM'] = '0x842B07b7D9C77A6bE833a660FB628C6d28Bda0a8';
+  VAL_['STKTDJUSDCJOE'] = '0x7253bC2Ca443807391451a54cAF1bC1915A8b584';
+  VAL_['STKTDJUSDTJOE'] = '0xed219cD2aF00625e0c1aD21b7cC7aa0f77601860';
   const DSValue = artifacts.require('DSValue');
   const Median = artifacts.require('Median');
   const LinkOracle = artifacts.require('LinkOracle');
@@ -521,50 +464,39 @@ module.exports = async (deployer, network, [account]) => {
     const token_import = token_config.import || {};
     const token_pipDeploy = token_config.pipDeploy || {};
 
-    VAL_[token_name] = token_import.pip;
     if (token_import.pip === undefined) {
       if (token_pipDeploy.type === 'twap') {
-        console.log('Publishing TWAP Oracle...');
         const stwap = token_pipDeploy.stwap;
         const ltwap = token_pipDeploy.ltwap;
         const src = token_pipDeploy.src;
         const token = await artifact_at(DSToken, T_[token_name]);
         const dec = Number(await token.decimals());
         const cap = units(token_pipDeploy.cap, dec);
-        console.log('@pip.cap', token_pipDeploy.cap, cap);
-        const univ2twapOracle = await artifact_deploy(UniV2TwapOracle, stwap, ltwap, src, token.address, cap);
-        VAL_[token_name] = univ2twapOracle.address;
+        const univ2twapOracle = await artifact_at(UniV2TwapOracle, VAL_[token_name]);
         console.log('VAL_' + token_name.replace('-', '_') + '=' + VAL_[token_name]);
       }
       if (token_pipDeploy.type === 'vault') {
-        console.log('Publishing Vault Oracle...');
         const src = T_[token_name];
         const res = T_[token_pipDeploy.reserve];
         const orb = VAL_[token_pipDeploy.reserve];
-        const vaultOracle = await artifact_deploy(VaultOracle, src, res, orb);
-        VAL_[token_name] = vaultOracle.address;
+        const vaultOracle = await artifact_at(VaultOracle, VAL_[token_name]);
         console.log('VAL_' + token_name.replace('-', '_') + '=' + VAL_[token_name]);
       }
       if (token_pipDeploy.type === 'xsushi') {
-        console.log('Publishing XSushi Oracle...');
         const src = T_[token_name];
         const res = T_[token_pipDeploy.reserve];
         const orb = VAL_[token_pipDeploy.reserve];
-        const xsushiOracle = await artifact_deploy(XSushiOracle, src, res, orb);
-        VAL_[token_name] = xsushiOracle.address;
+        const xsushiOracle = await artifact_at(XSushiOracle, VAL_[token_name]);
         console.log('VAL_' + token_name.replace('-', '_') + '=' + VAL_[token_name]);
       }
       if (token_pipDeploy.type === 'comp') {
-        console.log('Publishing Comp Oracle...');
         const src = T_[token_name];
         const res = T_[token_pipDeploy.reserve];
         const orb = VAL_[token_pipDeploy.reserve];
-        const compOracle = await artifact_deploy(CompOracle, src, res, orb);
-        VAL_[token_name] = compOracle.address;
+        const compOracle = await artifact_at(CompOracle, VAL_[token_name]);
         console.log('VAL_' + token_name.replace('-', '_') + '=' + VAL_[token_name]);
       }
       if (token_pipDeploy.type === 'univ2lp') {
-        console.log('Publishing Uniswap V2 LP Oracle...');
         const src = T_[token_name];
         const wat = web3.utils.asciiToHex(token_name);
         const orb0 = VAL_[token_pipDeploy.token0];
@@ -575,35 +507,25 @@ module.exports = async (deployer, network, [account]) => {
         if (token0 !== T_[token_pipDeploy.token0] || token1 !== T_[token_pipDeploy.token1]) {
           throw new Error('Configuration Inconsistency')
         }
-        const univ2lpOracle = await artifact_deploy(UNIV2LPOracle, src, wat, orb0, orb1);
-        VAL_[token_name] = univ2lpOracle.address;
+        const univ2lpOracle = await artifact_at(UNIV2LPOracle, VAL_[token_name]);
         console.log('VAL_' + token_name.replace('-', '_') + '=' + VAL_[token_name]);
-        const hop = units(token_pipDeploy.hop, 0);
-        console.log('@pip.hop', token_pipDeploy.hop, hop);
-        await univ2lpOracle.step(hop);
       }
       if (token_pipDeploy.type === 'chainlink') {
-        console.log('Publishing LinkOracle...');
         const src = token_pipDeploy.src;
-        const linkOracle = await artifact_deploy(LinkOracle, src);
-        VAL_[token_name] = linkOracle.address;
+        const linkOracle = await artifact_at(LinkOracle, VAL_[token_name]);
         console.log('VAL_' + token_name.replace('-', '_') + '=' + VAL_[token_name]);
       }
       if (token_pipDeploy.type === 'median') {
-        console.log('Publishing Median...');
         const wat = web3.utils.asciiToHex(token_name.replace('-', '_') + 'USD');
-        const median = await artifact_deploy(Median, wat);
-        VAL_[token_name] = median.address;
+        const median = await artifact_at(Median, VAL_[token_name]);
         console.log('VAL_' + token_name.replace('-', '_') + '=' + VAL_[token_name]);
-        await median.lift(token_pipDeploy.signers);
-        await median.setBar(3);
       }
       if (token_pipDeploy.type === 'value') {
-        console.log('Publishing DsValue...');
-        const dsValue = await artifact_deploy(DSValue);
-        VAL_[token_name] = dsValue.address;
+        const dsValue = await artifact_at(DSValue, VAL_[token_name]);
         console.log('VAL_' + token_name.replace('-', '_') + '=' + VAL_[token_name]);
       }
+    } else {
+      VAL_[token_name] = token_import.pip;
     }
     PIP_[token_name] = VAL_[token_name];
   }
@@ -614,6 +536,85 @@ module.exports = async (deployer, network, [account]) => {
   const MCD_FLIP_ = {};
   const MCD_CLIP_ = {};
   const MCD_CLIP_CALC_ = {};
+
+  MCD_JOIN_['PSM-STKUSDC']= {};
+  MCD_CLIP_CALC_['PSM-STKUSDC'] = {};
+  MCD_CLIP_['PSM-STKUSDC'] = {};
+  MCD_JOIN_['STKXJOE'] = {};
+  MCD_CLIP_CALC_['STKXJOE'] = {};
+  MCD_CLIP_['STKXJOE'] = {};
+  MCD_JOIN_['STKJAVAX'] = {};
+  MCD_CLIP_CALC_['STKJAVAX'] = {};
+  MCD_CLIP_['STKJAVAX'] = {};
+  MCD_JOIN_['STKJWETH'] = {};
+  MCD_CLIP_CALC_['STKJWETH'] = {};
+  MCD_CLIP_['STKJWETH'] = {};
+  MCD_JOIN_['STKJWBTC'] = {};
+  MCD_CLIP_CALC_['STKJWBTC'] = {};
+  MCD_CLIP_['STKJWBTC'] = {};
+  MCD_JOIN_['STKJLINK'] = {};
+  MCD_CLIP_CALC_['STKJLINK'] = {};
+  MCD_CLIP_['STKJLINK'] = {};
+  MCD_JOIN_['STKTDJAVAXJOE'] = {};
+  MCD_CLIP_CALC_['STKTDJAVAXJOE'] = {};
+  MCD_CLIP_['STKTDJAVAXJOE'] = {};
+  MCD_JOIN_['STKTDJAVAXWETH'] = {};
+  MCD_CLIP_CALC_['STKTDJAVAXWETH'] = {};
+  MCD_CLIP_['STKTDJAVAXWETH'] = {};
+  MCD_JOIN_['STKTDJAVAXWBTC'] = {};
+  MCD_CLIP_CALC_['STKTDJAVAXWBTC'] = {};
+  MCD_CLIP_['STKTDJAVAXWBTC'] = {};
+  MCD_JOIN_['STKTDJAVAXDAI'] = {};
+  MCD_CLIP_CALC_['STKTDJAVAXDAI'] = {};
+  MCD_CLIP_['STKTDJAVAXDAI'] = {};
+  MCD_JOIN_['STKTDJAVAXUSDC'] = {};
+  MCD_CLIP_CALC_['STKTDJAVAXUSDC'] = {};
+  MCD_CLIP_['STKTDJAVAXUSDC'] = {};
+  MCD_JOIN_['STKTDJAVAXUSDT'] = {};
+  MCD_CLIP_CALC_['STKTDJAVAXUSDT'] = {};
+  MCD_CLIP_['STKTDJAVAXUSDT'] = {};
+  MCD_JOIN_['STKTDJAVAXLINK'] = {};
+  MCD_CLIP_CALC_['STKTDJAVAXLINK'] = {};
+  MCD_CLIP_['STKTDJAVAXLINK'] = {};
+  MCD_JOIN_['PSM-STKUSDC']['A'] = '0x65764167EC4B38D611F961515B51a40628614018';
+  MCD_CLIP_CALC_['PSM-STKUSDC']['A'] = '0x74a08d8D88Aaf7d83087aa159B5e17F017cd1cFD';
+  MCD_CLIP_['PSM-STKUSDC']['A'] = '0x61C8CF1e4E1DBdF88fceDd55e2956345b4df6B21';
+  MCD_JOIN_['STKXJOE']['A'] = '0x3a6a2d813Bc8C51E72d3348311c62EB2D1D9dEe2';
+  MCD_CLIP_CALC_['STKXJOE']['A'] = '0xbC60e5B3E667f0EE15647c31bE0a7b27D306aC44';
+  MCD_CLIP_['STKXJOE']['A'] = '0xFFAee04Db99530DeCAe1133DbEc5fD7Cc3BcC4aD';
+  MCD_JOIN_['STKJAVAX']['A'] = '0x0c88e124AF319af1A1a6BD4C3d1CB70070Fd421f';
+  MCD_CLIP_CALC_['STKJAVAX']['A'] = '0x554F427Bda6Cf8f972E518389da3e1c492fe75D4';
+  MCD_CLIP_['STKJAVAX']['A'] = '0x62711202EF9368e5401eCeaFD90E71A411286Edd';
+  MCD_JOIN_['STKJWETH']['A'] = '0x7a96803F857D854878A95fa07F290B34Ab2981a7';
+  MCD_CLIP_CALC_['STKJWETH']['A'] = '0x77a5E69955E1837B0c3f50159577ccb7468d6a4d';
+  MCD_CLIP_['STKJWETH']['A'] = '0x0c6eEaE3a36ec66B30A58917166D526f499e431B';
+  MCD_JOIN_['STKJWBTC']['A'] = '0x781E44923fb912b1d0aa892BBf62dD1b4dfC9cd5';
+  MCD_CLIP_CALC_['STKJWBTC']['A'] = '0xd6e80B0ae1f84A37AB145084a80893854c27ecc0';
+  MCD_CLIP_['STKJWBTC']['A'] = '0x6f77799B3D36a61FdF8eb82E0DdEDcF4BA041042';
+  MCD_JOIN_['STKJLINK']['A'] = '0x972F78558B4F8D677d84c8d1d4A73836c8DE4900';
+  MCD_CLIP_CALC_['STKJLINK']['A'] = '0x579Ef8feFE39Edbefc00141ED7fB5f3D3221d2aB';
+  MCD_CLIP_['STKJLINK']['A'] = '0x940aA35E47d54a5EE4dc3C6Ff6Eb1bdec065c2A5';
+  MCD_JOIN_['STKTDJAVAXJOE']['A'] = '0x136EF4EbB71c147969AFB9666D4b900756C64b27';
+  MCD_CLIP_CALC_['STKTDJAVAXJOE']['A'] = '0x563d13664023a7d63463b8cdc443552c047642Cb';
+  MCD_CLIP_['STKTDJAVAXJOE']['A'] = '0x8641BdBECE44c3f05b1991922f721C4585f22456';
+  MCD_JOIN_['STKTDJAVAXWETH']['A'] = '0x7dB700723a20511Beb367694e8c33b8dc23418bB';
+  MCD_CLIP_CALC_['STKTDJAVAXWETH']['A'] = '0xD56d12F8afaE2bf9CfcF1201F00a3c4560B93276';
+  MCD_CLIP_['STKTDJAVAXWETH']['A'] = '0x226d0e1AC4C8b6253caf5CEda067fb5a6EDCDF6F';
+  MCD_JOIN_['STKTDJAVAXWBTC']['A'] = '0x8cCC3E5EAe76977C65936332d0BB082c50f21433';
+  MCD_CLIP_CALC_['STKTDJAVAXWBTC']['A'] = '0xCB30401313dfB5Eaa63978b61aC4E5555AD28B8D';
+  MCD_CLIP_['STKTDJAVAXWBTC']['A'] = '0x435D4017b6A4C21f25077ccd5849F083F3e20452';
+  MCD_JOIN_['STKTDJAVAXDAI']['A'] = '0x6061A183Ce7b75b78E60F8662cfbb88f69324d54';
+  MCD_CLIP_CALC_['STKTDJAVAXDAI']['A'] = '0xeF5f65443D1208d8aD44b884eE1f60fC908460Ce';
+  MCD_CLIP_['STKTDJAVAXDAI']['A'] = '0x754e4D6fbbDdE2e77c390E4BAC54C7e0E48901Ab';
+  MCD_JOIN_['STKTDJAVAXUSDC']['A'] = '0x85A837a58abcF09c45C7871aC395039951F1Ba9c';
+  MCD_CLIP_CALC_['STKTDJAVAXUSDC']['A'] = '0x397c5613b83C214198264BB548BB9F6e5fe2B8A9';
+  MCD_CLIP_['STKTDJAVAXUSDC']['A'] = '0xbCa0650FF329211D3784C82196421A885FDB0451';
+  MCD_JOIN_['STKTDJAVAXUSDT']['A'] = '0x60C725d424a057d5DFD1d9d2d5e5dd2Bf08B31cb';
+  MCD_CLIP_CALC_['STKTDJAVAXUSDT']['A'] = '0x591B511aE03c29c52d6F6B624B2651D5C02E8715';
+  MCD_CLIP_['STKTDJAVAXUSDT']['A'] = '0x9E4D1b626a39065142420d518adA0654606e9AEa';
+  MCD_JOIN_['STKTDJAVAXLINK']['A'] = '0x99F1F47393079FD19D206a935B09016619Cb3bd2';
+  MCD_CLIP_CALC_['STKTDJAVAXLINK']['A'] = '0xbD69CD541E7676222d4003aB0dB6ecff59E9503c';
+  MCD_CLIP_['STKTDJAVAXLINK']['A'] = '0xa4f9600534190d96bc60D33A3594E0b0869cAdaB';
   for (const token_name in config_tokens) {
     const token_config = config_tokens[token_name];
     const token_joinDeploy = token_config.joinDeploy || {};
@@ -646,6 +647,34 @@ module.exports = async (deployer, network, [account]) => {
       const ilk_flipDeploy = ilk_config.flipDeploy || {};
       const ilk_clipDeploy = ilk_config.clipDeploy || {};
       const ilk_name = web3.utils.asciiToHex(token_name + '-' + ilk);
+
+      if (!['STKTDJAVAXMIM', 'STKTDJUSDCJOE', 'STKTDJUSDTJOE'].includes(token_name)) {
+        const gemJoin = await artifact_at(GemJoin, MCD_JOIN_[token_name][ilk]);
+        console.log('MCD_JOIN_' + token_name.replace('-', '_') + '_' + ilk + '=' + MCD_JOIN_[token_name][ilk]);
+
+        if (ilk_config.flipDeploy !== undefined) {
+          console.log('MCD_FLIP_' + token_name.replace('-', '_') + '_' + ilk + '=' + MCD_FLIP_[token_name][ilk]);
+        }
+
+        if (ilk_config.clipDeploy !== undefined) {
+          const calc_config = ilk_clipDeploy.calc || {};
+
+          let Calc;
+          switch (calc_config.type) {
+          case 'LinearDecrease': Calc = artifacts.require('LinearDecrease'); break;
+          case 'StairstepExponentialDecrease': Calc = artifacts.require('StairstepExponentialDecrease'); break;
+          case 'ExponentialDecrease': Calc = artifacts.require('ExponentialDecrease'); break;
+          default: throw new Error('Unknown calc: ' + calc_config.type);
+          }
+
+          const calc = await artifact_at(Calc, MCD_CLIP_CALC_[token_name][ilk]);
+          console.log('MCD_CLIP_CALC_' + token_name.replace('-', '_') + '_' + ilk + '=' + MCD_CLIP_CALC_[token_name][ilk]);
+
+          console.log('MCD_CLIP_' + token_name.replace('-', '_') + '_' + ilk + '=' + MCD_CLIP_[token_name][ilk]);
+        }
+
+        continue;
+      }
 
       console.log('Publishing Gem Join...');
       const gemJoin = await artifact_deploy(GemJoin, MCD_VAT, ilk_name, T_[token_name], ...extraParams);
