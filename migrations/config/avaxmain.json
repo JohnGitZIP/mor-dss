@@ -340,7 +340,7 @@
     },
     "STKXJOE": {
       "import": {
-        "gem": "0x3eC9379c79ace6510574EE2c3B0B67aeeE1C23AC"
+        "gem": "0x2E53F47a807F0c45c61C899e62504336B0b5dBDf"
       },
       "joinDeploy": {
         "src": "GemJoin",
@@ -540,7 +540,7 @@
     },
     "STKTDJAVAXJOE": {
       "import": {
-        "gem": "0x3F08bc573aCe23b45a797e6F9b54128F1a7679b5"
+        "gem": "0x04abDB55DCd0167BFcE8FA0fA125F102c4734C62"
       },
       "joinDeploy": {
         "src": "GemJoin",
@@ -580,7 +580,7 @@
     },
     "STKTDJAVAXWETH": {
       "import": {
-        "gem": "0x53073f685474341cdc765F97E7CFB2F427BD9db9"
+        "gem": "0xE70aA236f2c2dABC346e193F606986Bb843bA3d9"
       },
       "joinDeploy": {
         "src": "GemJoin",
@@ -620,7 +620,7 @@
     },
     "STKTDJAVAXWBTC": {
       "import": {
-        "gem": "0x14955760d8c09D51a984C1c977e5A306C6133891"
+        "gem": "0xeB8e1c316694742E7042882be1ac55ebbD2bCEbB"
       },
       "joinDeploy": {
         "src": "GemJoin",
@@ -660,7 +660,7 @@
     },
     "STKTDJAVAXDAI": {
       "import": {
-        "gem": "0xf5aFfe3459813AB193329E53f17098806709046A"
+        "gem": "0xe46a3E475dd4D18A7D2A009b7FA1B113f2bd2903"
       },
       "joinDeploy": {
         "src": "GemJoin",
@@ -700,7 +700,7 @@
     },
     "STKTDJAVAXUSDC": {
       "import": {
-        "gem": "0xDf93E61037DeEf5ca280e4A915bEB62e1bdE481F"
+        "gem": "0xed98897f99F0Bb8732afF727f3DBD01bA95D25b4"
       },
       "joinDeploy": {
         "src": "GemJoin",
@@ -740,7 +740,7 @@
     },
     "STKTDJAVAXUSDT": {
       "import": {
-        "gem": "0x215C456652576eEAF8C8606549bf75D55C144d2d"
+        "gem": "0x38fBF8e6ADbfa44072688BeBd921Fdc6b4b6f328"
       },
       "joinDeploy": {
         "src": "GemJoin",
@@ -780,7 +780,7 @@
     },
     "STKTDJAVAXLINK": {
       "import": {
-        "gem": "0x5141da4ab5b3e13ceE7B10980aE6bB848FdB59Cd"
+        "gem": "0x235B1E29dc44bA33d0A6518a62A998bCFd8D62e9"
       },
       "joinDeploy": {
         "src": "GemJoin",
@@ -820,7 +820,7 @@
     },
     "STKTDJAVAXMIM": {
       "import": {
-        "gem": "0x0B32788B77c77265D08bf13E12FcE4C4978c64E8"
+        "gem": "0xAFe0d419658dEbEF3f8eDc23b011877770594360"
       },
       "joinDeploy": {
         "src": "GemJoin",
@@ -860,7 +860,7 @@
     },
     "STKTDJUSDCJOE": {
       "import": {
-        "gem": "0x691e486b5F7E39e90d37485164fAbDDd93aE43cD"
+        "gem": "0x0A0E72c79b5559B9266deD694bccf91d7C60c300"
       },
       "joinDeploy": {
         "src": "GemJoin",
@@ -900,7 +900,7 @@
     },
     "STKTDJUSDTJOE": {
       "import": {
-        "gem": "0xB1429FB053242fd5b8483Ed452E22c688E405CB5"
+        "gem": "0x731010369d41147523e6ae65aD3dB4Dea1Eb13ff"
       },
       "joinDeploy": {
         "src": "GemJoin",
