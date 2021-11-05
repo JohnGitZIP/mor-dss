@@ -28,6 +28,20 @@ const CONFIG = {
   '43113': 'testnet', // avaxtest
 };
 
+const MULTISIG_CONFIG = {
+  '1': '0x2F80922CF7350e06F4924766Cb7EEEC783c1C8ce',     // mainnet
+  '3': '0x2F80922CF7350e06F4924766Cb7EEEC783c1C8ce',     // ropsten
+  '4': '0x2F80922CF7350e06F4924766Cb7EEEC783c1C8ce',     // rinkeby
+  '42': '0x2F80922CF7350e06F4924766Cb7EEEC783c1C8ce',    // kovan
+  '5': '0x2F80922CF7350e06F4924766Cb7EEEC783c1C8ce',     // goerli
+  '56': '0x392681Eaf8AD9BC65e74BE37Afe7503D92802b7d',    // bscmain
+  '97': '0x2F80922CF7350e06F4924766Cb7EEEC783c1C8ce',    // bsctest
+  '137': '0x2F80922CF7350e06F4924766Cb7EEEC783c1C8ce',   // maticmain
+  '80001': '0x2F80922CF7350e06F4924766Cb7EEEC783c1C8ce', // matictest
+  '43114': '0x1d64CeAF2cDBC9b6d41eB0f2f7CDA8F04c47d1Ac', // avaxmain
+  '43113': '0x2F80922CF7350e06F4924766Cb7EEEC783c1C8ce', // avaxtest
+};
+
 module.exports = async (deployer, network, [account]) => {
 
   function sleep(delay) {
@@ -119,6 +133,8 @@ module.exports = async (deployer, network, [account]) => {
   const config = require('./config/' + CONFIG[chainId] + '.json');
   const config_import = config.import || {};
   const config_tokens = config.tokens || {};
+
+  const MULTISIG = MULTISIG_CONFIG[chainId];
 
   // MULTICALL
 
@@ -861,6 +877,7 @@ module.exports = async (deployer, network, [account]) => {
       }
     }
   }
+  await dssDeploy.setOwner(MCD_PAUSE_PROXY);
 
   // GOV ACTIONS
 
@@ -1914,6 +1931,13 @@ module.exports = async (deployer, network, [account]) => {
   if (Number(config.pauseDelay) >= 0) {
     await setAuthorityAndDelay(MCD_ADM, units(config.pauseDelay, 0));
   }
+
+  // TRANSFER DEPLOYER ADMIN RIGHTS TO MULTISIG
+
+  await dsRoles.setRootUser(MULTISIG, true);
+  await dsRoles.setRootUser(DEPLOYER, false);
+  await dsRoles.setOwner(MULTISIG);
+  await proxyDeployer.setOwner(MULTISIG);
 
   const finalBalance = await web3.eth.getBalance(DEPLOYER);
   console.log('TOTAL COST:', BigInt(initialBalance) - BigInt(finalBalance));
