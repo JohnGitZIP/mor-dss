@@ -794,8 +794,6 @@ module.exports = async (deployer, network, [account]) => {
   console.log('Releasing Auth...');
 
   for (const token_name in config_tokens) {
-    if (!['STKJLINK', 'STKTDJAVAXJOE', 'STKTDJAVAXWETH', 'STKTDJAVAXWBTC', 'STKTDJAVAXDAI', 'STKTDJAVAXUSDC', 'STKTDJAVAXUSDT', 'STKTDJAVAXLINK', 'STKTDJAVAXMIM', 'STKTDJUSDCJOE', 'STKTDJUSDTJOE'].includes(token_name)) continue;
-
     const token_config = config_tokens[token_name];
     const token_ilks = token_config.ilks || {};
 
@@ -805,54 +803,38 @@ module.exports = async (deployer, network, [account]) => {
 
       const GemJoin = artifacts.require('GemJoin');
       const gemJoin = await artifact_at(GemJoin, MCD_JOIN_[token_name][ilk]);
-      if (token_name !== 'STKJLINK') {
-        await gemJoin.rely(MCD_PAUSE_PROXY);
-        await gemJoin.deny(DEPLOYER);
-      }
       if (ilk_config.flipDeploy !== undefined) {
-        await dssDeploy.releaseAuthFlip(ilk_name);
-        // const Flipper = artifacts.require('Flipper');
-        // const flip = await artifact_at(Flipper, MCD_FLIP_[token_name][ilk]);
-        // await flip.deny(DEPLOYER);
       }
       if (ilk_config.clipDeploy !== undefined) {
-        await dssDeploy.releaseAuthClip(ilk_name);
-        // const Clipper = artifacts.require('Clipper');
-        // const clip = await artifact_at(Clipper, MCD_CLIP_[token_name][ilk]);
-        // await clip.deny(DEPLOYER);
       }
     }
   }
-  await dssDeploy.setOwner(MCD_PAUSE_PROXY);
+
+  const MCD_GOV_ACTIONS = '0xEC2EbC6e5C53Def0bc3AF8d612bC75972CA401E8';
+  const PROXY_PAUSE_ACTIONS = '0x123d878dbFD90112890ac8DF1063930E70C880Ba';
 
   // GOV ACTIONS
 
-  console.log('Deploying Gov Actions...');
   const GovActions = artifacts.require('GovActions');
-  const govActions = await artifact_deploy(GovActions);
-  const MCD_GOV_ACTIONS = govActions.address;
+  const govActions = await artifact_at(GovActions, MCD_GOV_ACTIONS);
   console.log('MCD_GOV_ACTIONS=' + MCD_GOV_ACTIONS);
 
   // PAUSE PROXY ACTIONS
 
-  console.log('Deploying Pause Proxy Actions...');
   const DssDeployPauseProxyActions = artifacts.require('DssDeployPauseProxyActions');
-  const dssDeployPauseProxyActions = await artifact_deploy(DssDeployPauseProxyActions);
-  const PROXY_PAUSE_ACTIONS = dssDeployPauseProxyActions.address;
+  const dssDeployPauseProxyActions = await artifact_at(DssDeployPauseProxyActions, PROXY_PAUSE_ACTIONS);
   console.log('PROXY_PAUSE_ACTIONS=' + PROXY_PAUSE_ACTIONS);
 
   // PROXY DEPLOYER
 
   let PROXY_DEPLOYER = await proxyRegistry.proxies(DEPLOYER);
   if (PROXY_DEPLOYER === ZERO_ADDRESS) {
-    console.log('Building Proxy Deployer...');
     await proxyRegistry.build();
     PROXY_DEPLOYER = await proxyRegistry.proxies(DEPLOYER);
   }
   console.log('PROXY_DEPLOYER=' + PROXY_DEPLOYER);
   const DSProxy = artifacts.require('DSProxy');
   const proxyDeployer = await artifact_at(DSProxy, PROXY_DEPLOYER);
-  await dsRoles.setRootUser(PROXY_DEPLOYER, true);
 
   async function rely(who, to) {
     const jsonInterface = {
@@ -950,50 +932,39 @@ module.exports = async (deployer, network, [account]) => {
     return await proxyDeployer.methods['execute(address,bytes)'](PROXY_PAUSE_ACTIONS, calldata);
   }
 
+  const MCD_IOU = '0x56D323395aB03d1f964535b334062D4C28ce7752';
+  const MCD_ADM = '0x86fCF1b49372d98fA275cA916D6c1a08fE05A125';
+  const VOTE_PROXY_FACTORY = '0xBa548526f9390666d52B3F482300d77871D228fb';
+  const MCD_POLLING_EMITTER = '0xB5e8f7f2D7c1523b1Fa23E225c8Ed253e41B4FC2';
+  const VOTE_DELEGATE_PROXY_FACTORY = '0x5F1c3fcEc7b0FbA96a797272Ed899aFf67f3b2aa';
+
   // ADM CHIEF
 
-  let VOTE_DELEGATE_PROXY_FACTORY = ZERO_ADDRESS;
-  let VOTE_PROXY_FACTORY = ZERO_ADDRESS;
-  let MCD_ADM = config_import.authority;
-  if (MCD_ADM === undefined) {
-    const symbol = await govToken.symbol();
-    console.log('Publishing gov' + symbol + '/IOU Token...');
-    const iouToken = await artifact_deploy(DSToken, 'gov' + symbol);
-    const MCD_IOU = iouToken.address;
-    console.log('MCD_IOU=' + MCD_IOU);
-    await iouToken.setName('governance ' + symbol);
+  const symbol = await govToken.symbol();
+  const iouToken = await artifact_at(DSToken, MCD_IOU);
+  console.log('MCD_IOU=' + MCD_IOU);
 
-    console.log('Publishing DS Chief...');
-    const DSChief = artifacts.require('DSChief');
-    const dsChief = await artifact_deploy(DSChief, MCD_GOV, MCD_IOU, 5);
-    MCD_ADM = dsChief.address;
-    console.log('MCD_ADM=' + MCD_ADM);
-    iouToken.setOwner(MCD_ADM);
+  const DSChief = artifacts.require('DSChief');
+  const dsChief = await artifact_at(DSChief, MCD_ADM);
+  console.log('MCD_ADM=' + MCD_ADM);
 
-    // VOTE PROXY FACTORY
+  // VOTE PROXY FACTORY
 
-    console.log('Publishing Vote Proxy Factory...');
-    const VoteProxyFactory = artifacts.require('VoteProxyFactory');
-    const voteProxyFactory = await artifact_deploy(VoteProxyFactory, MCD_ADM);
-    VOTE_PROXY_FACTORY = voteProxyFactory.address;
-    console.log('VOTE_PROXY_FACTORY=' + VOTE_PROXY_FACTORY);
+  const VoteProxyFactory = artifacts.require('VoteProxyFactory');
+  const voteProxyFactory = await artifact_at(VoteProxyFactory, VOTE_PROXY_FACTORY);
+  console.log('VOTE_PROXY_FACTORY=' + VOTE_PROXY_FACTORY);
 
-    // POLLING EMITTER
+  // POLLING EMITTER
 
-    console.log('Publishing Polling Emitter...');
-    const PollingEmitter = artifacts.require('PollingEmitter');
-    const pollingEmitter = await artifact_deploy(PollingEmitter);
-    const MCD_POLLING_EMITTER = pollingEmitter.address;
-    console.log('MCD_POLLING_EMITTER=' + MCD_POLLING_EMITTER);
+  const PollingEmitter = artifacts.require('PollingEmitter');
+  const pollingEmitter = await artifact_at(PollingEmitter, MCD_POLLING_EMITTER);
+  console.log('MCD_POLLING_EMITTER=' + MCD_POLLING_EMITTER);
 
-    // VOTE DELEGATE FACTORY
+  // VOTE DELEGATE FACTORY
 
-    console.log('Publishing Vote Delegate Factory...');
-    const VoteDelegateFactory = artifacts.require('VoteDelegateFactory');
-    const voteDelegateFactory = await artifact_deploy(VoteDelegateFactory, MCD_ADM, MCD_POLLING_EMITTER);
-    VOTE_DELEGATE_PROXY_FACTORY = voteDelegateFactory.address;
-    console.log('VOTE_DELEGATE_PROXY_FACTORY=' + VOTE_DELEGATE_PROXY_FACTORY);
-  }
+  const VoteDelegateFactory = artifacts.require('VoteDelegateFactory');
+  const voteDelegateFactory = await artifact_at(VoteDelegateFactory, VOTE_DELEGATE_PROXY_FACTORY);
+  console.log('VOTE_DELEGATE_PROXY_FACTORY=' + VOTE_DELEGATE_PROXY_FACTORY);
 
   // AUTO LINE
 
