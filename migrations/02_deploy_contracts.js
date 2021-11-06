@@ -936,6 +936,8 @@ module.exports = async (deployer, network, [account]) => {
   const MCD_POLLING_EMITTER = '0xB5e8f7f2D7c1523b1Fa23E225c8Ed253e41B4FC2';
   const VOTE_DELEGATE_PROXY_FACTORY = '0x5F1c3fcEc7b0FbA96a797272Ed899aFf67f3b2aa';
   const MCD_IAM_AUTO_LINE = '0xd2Adc9747FB2F64b8474C446B4f8DB5b39EdfcFC';
+  const MCD_FLASH = '0xcEE5b4497F8A041efB79aa4FC2fd81Ad07b73Ec0';
+  const CHANGELOG = '0xd1a85349D73BaA4fFA6737474fdce9347B887cB2';
 
   // ADM CHIEF
 
@@ -973,26 +975,18 @@ module.exports = async (deployer, network, [account]) => {
 
   // FLASH
 
-  console.log('Publishing Flash...');
   const DssFlash = artifacts.require('DssFlash');
-  const dssFlash = await artifact_deploy(DssFlash, MCD_JOIN_DAI, MCD_VOW);
-  const MCD_FLASH = dssFlash.address;
+  const dssFlash = await artifact_at(DssFlash, MCD_FLASH);
   console.log('MCD_FLASH=' + MCD_FLASH);
-  await rely(MCD_VAT, MCD_FLASH);
-  await dssFlash.rely(MCD_PAUSE_PROXY);
-  await dssFlash.deny(DEPLOYER);
 
   // CHAIN LOG
 
-  console.log('Publishing Chain Log...');
   const ChainLog = artifacts.require('ChainLog');
-  const chainLog = await artifact_deploy(ChainLog);
-  const CHANGELOG = chainLog.address;
+  const chainLog = await artifact_at(ChainLog, CHANGELOG);
   console.log('CHANGELOG=' + CHANGELOG);
-  await chainLog.rely(MCD_PAUSE_PROXY);
 
   // CORE CONFIG
-
+/*
   console.log('Configuring Core...');
   if (Number(config.vat_line) > 0) {
     const vat_line = units(config.vat_line, 45);
@@ -1094,11 +1088,29 @@ module.exports = async (deployer, network, [account]) => {
     console.log('@flash_toll', config.flash_toll, flash_toll);
     await file(MCD_FLASH, 'toll', flash_toll);
   }
-
+*/
   // SET ORACLE PRICES VISIBLE BY DEPLOYER
 
   console.log('Configuring ILK OSM...');
   for (const token_name in config_tokens) {
+
+    if (![
+      'STKJAVAX',
+      'STKJWETH',
+      'STKJWBTC',
+      'STKJLINK',
+      'STKTDJAVAXJOE',
+      'STKTDJAVAXWETH',
+      'STKTDJAVAXWBTC',
+      'STKTDJAVAXDAI',
+      'STKTDJAVAXUSDC',
+      'STKTDJAVAXUSDT',
+      'STKTDJAVAXLINK',
+      'STKTDJAVAXMIM',
+      'STKTDJUSDCJOE',
+      'STKTDJUSDTJOE',
+    ].includes(token_name)) continue;
+
     const token_config = config_tokens[token_name];
     const token_import = token_config.import || {};
     const token_pipDeploy = token_config.pipDeploy || {};
