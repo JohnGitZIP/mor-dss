@@ -700,6 +700,8 @@ module.exports = async (deployer, network, [account]) => {
   const DSR_MANAGER = '0xb38163E59b508Af28B12be8fE17A880aa2508d2d';
   const OSM_MOM = '0x21E4F0d97422fE6A119bE3f3F148cb0189eDF4Fe';
   const FLIPPER_MOM = '0x9F42FDEfd78EBdF401928bE2CFCBBA80b12a3363';
+  const CLIPPER_MOM = '0xa4F76146B4fB439363e83d3F9391a763F1fd6F34';
+  const ILK_REGISTRY = '0x03A90f53DeEac9104Ef699DB8Ca6Cc1EFfc7a0DC';
 
   // PROXY ACTIONS
 
@@ -746,23 +748,21 @@ module.exports = async (deployer, network, [account]) => {
 
   // CLIPPER MOM
 
-  console.log('Deploying Clipper Mom...');
   const ClipperMom = artifacts.require('ClipperMom');
-  const clipperMom = await artifact_deploy(ClipperMom, MCD_SPOT);
-  const CLIPPER_MOM = clipperMom.address;
+  const clipperMom = await artifact_at(ClipperMom, CLIPPER_MOM);
   console.log('CLIPPER_MOM=' + CLIPPER_MOM);
 
   // ILK REGISTRY
 
-  console.log('Deploying ILK Registry...');
   const IlkRegistry = artifacts.require('IlkRegistry');
-  const ilkRegistry = await artifact_deploy(IlkRegistry, MCD_VAT, MCD_DOG, MCD_CAT, MCD_SPOT);
-  const ILK_REGISTRY = ilkRegistry.address;
+  const ilkRegistry = await artifact_at(IlkRegistry, ILK_REGISTRY);
   console.log('ILK_REGISTRY=' + ILK_REGISTRY);
 
   // PSM
 
   const MCD_PSM_ = {};
+  MCD_PSM_['PSM-STKUSDC'] = {};
+  MCD_PSM_['PSM-STKUSDC']['A'] = '0xd86f2618e32235969EA700FE605ACF0fb10129e3';
   for (const token_name in config_tokens) {
     const token_config = config_tokens[token_name];
     const token_ilks = token_config.ilks || {};
@@ -778,26 +778,13 @@ module.exports = async (deployer, network, [account]) => {
         const tin = units(ilk_psmDeploy.tin, 18);
         const tout = units(ilk_psmDeploy.tout, 18);
         const donors = ilk_psmDeploy.donors || [];
-        console.log('@psm.tin', ilk_psmDeploy.tin, tin);
-        console.log('@psm.tout', ilk_psmDeploy.tout, tout);
-        console.log('@psm.donors', ilk_psmDeploy.donors, donors);
 
-        console.log('Deploying Dss Psm...');
         const DssPsm = artifacts.require('DssPsm');
-        const dssPsm = await artifact_deploy(DssPsm, MCD_JOIN_[token_name][ilk], MCD_JOIN_DAI, MCD_VOW);
-        MCD_PSM_[token_name][ilk] = dssPsm.address;
+        const dssPsm = await artifact_at(DssPsm, MCD_PSM_[token_name][ilk]);
         console.log('MCD_' + token_name.replace('-', '_') + '_' + ilk + '=' + MCD_PSM_[token_name][ilk]);
-        await dssPsm.file(web3.utils.asciiToHex('tin'), tin);
-        await dssPsm.file(web3.utils.asciiToHex('tout'), tout);
-        for (const donor of donors) {
-          await dssPsm.donor(donor, true);
-        }
-        await dssPsm.rely(MCD_PAUSE_PROXY);
-        await dssPsm.deny(DEPLOYER);
 
         const AuthGemJoin = artifacts.require('AuthGemJoin');
         const authGemJoin = await artifact_at(AuthGemJoin, MCD_JOIN_[token_name][ilk]);
-        await authGemJoin.rely(MCD_PSM_[token_name][ilk]);
       }
     }
   }
@@ -805,20 +792,10 @@ module.exports = async (deployer, network, [account]) => {
   // REMOVE AUTH
 
   console.log('Releasing Auth...');
-  await dssDeploy.releaseAuth();
-  await vat.deny(DEPLOYER);
-  await cat.deny(DEPLOYER);
-  await dog.deny(DEPLOYER);
-  await vow.deny(DEPLOYER);
-  await jug.deny(DEPLOYER);
-  await pot.deny(DEPLOYER);
-  await dai.deny(DEPLOYER);
-  await spotter.deny(DEPLOYER);
-  await flap.deny(DEPLOYER);
-  await flop.deny(DEPLOYER);
-  await end.deny(DEPLOYER);
 
   for (const token_name in config_tokens) {
+    if (!['STKJLINK', 'STKTDJAVAXJOE', 'STKTDJAVAXWETH', 'STKTDJAVAXWBTC', 'STKTDJAVAXDAI', 'STKTDJAVAXUSDC', 'STKTDJAVAXUSDT', 'STKTDJAVAXLINK', 'STKTDJAVAXMIM', 'STKTDJUSDCJOE', 'STKTDJUSDTJOE'].includes(token_name)) continue;
+
     const token_config = config_tokens[token_name];
     const token_ilks = token_config.ilks || {};
 
@@ -828,8 +805,10 @@ module.exports = async (deployer, network, [account]) => {
 
       const GemJoin = artifacts.require('GemJoin');
       const gemJoin = await artifact_at(GemJoin, MCD_JOIN_[token_name][ilk]);
-      await gemJoin.rely(MCD_PAUSE_PROXY);
-      await gemJoin.deny(DEPLOYER);
+      if (token_name !== 'STKJLINK') {
+        await gemJoin.rely(MCD_PAUSE_PROXY);
+        await gemJoin.deny(DEPLOYER);
+      }
       if (ilk_config.flipDeploy !== undefined) {
         await dssDeploy.releaseAuthFlip(ilk_name);
         // const Flipper = artifacts.require('Flipper');
