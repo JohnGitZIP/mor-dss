@@ -576,6 +576,9 @@ module.exports = async (deployer, network, [account]) => {
   MCD_JOIN_['STKTDJAVAXLINK'] = {};
   MCD_CLIP_CALC_['STKTDJAVAXLINK'] = {};
   MCD_CLIP_['STKTDJAVAXLINK'] = {};
+  MCD_JOIN_['STKTDJAVAXMIM'] = {};
+  MCD_CLIP_CALC_['STKTDJAVAXMIM'] = {};
+  MCD_CLIP_['STKTDJAVAXMIM'] = {};
   MCD_JOIN_['PSM-STKUSDC']['A'] = '0x65764167EC4B38D611F961515B51a40628614018';
   MCD_CLIP_CALC_['PSM-STKUSDC']['A'] = '0x74a08d8D88Aaf7d83087aa159B5e17F017cd1cFD';
   MCD_CLIP_['PSM-STKUSDC']['A'] = '0x61C8CF1e4E1DBdF88fceDd55e2956345b4df6B21';
@@ -615,6 +618,9 @@ module.exports = async (deployer, network, [account]) => {
   MCD_JOIN_['STKTDJAVAXLINK']['A'] = '0x99F1F47393079FD19D206a935B09016619Cb3bd2';
   MCD_CLIP_CALC_['STKTDJAVAXLINK']['A'] = '0xbD69CD541E7676222d4003aB0dB6ecff59E9503c';
   MCD_CLIP_['STKTDJAVAXLINK']['A'] = '0xa4f9600534190d96bc60D33A3594E0b0869cAdaB';
+  MCD_JOIN_['STKTDJAVAXMIM']['A'] = '0x5E0978e898A03463D9De497991E1C6278271c323';
+  MCD_CLIP_CALC_['STKTDJAVAXMIM']['A'] = '0x926E0b08522B6bA732551E548e9d85d5c982Cf0A';
+  MCD_CLIP_['STKTDJAVAXMIM']['A'] = '0x97B9187242fAB11A6b0922F1ba328B1C760e7d0f';
   for (const token_name in config_tokens) {
     const token_config = config_tokens[token_name];
     const token_joinDeploy = token_config.joinDeploy || {};
@@ -648,7 +654,7 @@ module.exports = async (deployer, network, [account]) => {
       const ilk_clipDeploy = ilk_config.clipDeploy || {};
       const ilk_name = web3.utils.asciiToHex(token_name + '-' + ilk);
 
-      if (!['STKTDJAVAXMIM', 'STKTDJUSDCJOE', 'STKTDJUSDTJOE'].includes(token_name)) {
+      if (!['STKTDJUSDCJOE', 'STKTDJUSDTJOE'].includes(token_name)) {
         const gemJoin = await artifact_at(GemJoin, MCD_JOIN_[token_name][ilk]);
         console.log('MCD_JOIN_' + token_name.replace('-', '_') + '_' + ilk + '=' + MCD_JOIN_[token_name][ilk]);
 
