@@ -1159,25 +1159,9 @@ module.exports = async (deployer, network, [account]) => {
   }
 */
   // SET ILKS PIP WHITELIST
-
+/*
   console.log('Configuring ILK PIP Whitelists...');
   for (const token_name in config_tokens) {
-
-    if (![
-      'STKJWBTC',
-      'STKJLINK',
-      'STKTDJAVAXJOE',
-      'STKTDJAVAXWETH',
-      'STKTDJAVAXWBTC',
-      'STKTDJAVAXDAI',
-      'STKTDJAVAXUSDC',
-      'STKTDJAVAXUSDT',
-      'STKTDJAVAXLINK',
-      'STKTDJAVAXMIM',
-      'STKTDJUSDCJOE',
-      'STKTDJUSDTJOE',
-    ].includes(token_name)) continue;
-
     const token_config = config_tokens[token_name];
     const token_import = token_config.import || {};
     const token_pipDeploy = token_config.pipDeploy || {};
@@ -1218,9 +1202,9 @@ module.exports = async (deployer, network, [account]) => {
       }
     }
   }
-
+*/
   // SET ILKS MAT
-
+/*
   console.log('Configuring ILK Mats...');
   for (const token_name in config_tokens) {
     const token_config = config_tokens[token_name];
@@ -1235,8 +1219,10 @@ module.exports = async (deployer, network, [account]) => {
       await filex(MCD_SPOT, ilk_name, 'mat', mat);
     }
   }
-
+*/
   // SET ILKS LINE
+
+  await rely(MCD_VAT, MCD_IAM_AUTO_LINE);
 
   console.log('Configuring ILK Lines...');
   for (const token_name in config_tokens) {
