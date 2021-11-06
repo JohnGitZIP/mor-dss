@@ -1221,9 +1221,7 @@ module.exports = async (deployer, network, [account]) => {
   }
 */
   // SET ILKS LINE
-
-  await rely(MCD_VAT, MCD_IAM_AUTO_LINE);
-
+/*
   console.log('Configuring ILK Lines...');
   for (const token_name in config_tokens) {
     const token_config = config_tokens[token_name];
@@ -1252,9 +1250,9 @@ module.exports = async (deployer, network, [account]) => {
   }
   await dssAutoLine.rely(MCD_PAUSE_PROXY);
   await dssAutoLine.deny(DEPLOYER);
-
+*/
   // SET ILKS DUST
-
+/*
   console.log('Configuring ILK Dusts...');
   for (const token_name in config_tokens) {
     const token_config = config_tokens[token_name];
@@ -1269,11 +1267,13 @@ module.exports = async (deployer, network, [account]) => {
       await filex(MCD_VAT, ilk_name, 'dust', dust);
     }
   }
-
+*/
   // SET ILKS DUTY
 
   console.log('Configuring ILK Duties...');
   for (const token_name in config_tokens) {
+    if (!['STKTDJAVAXLINK', 'STKTDJAVAXMIM', 'STKTDJUSDCJOE', 'STKTDJUSDTJOE'].includes(token_name)) continue;
+
     const token_config = config_tokens[token_name];
     const token_ilks = token_config.ilks || {};
 
