@@ -791,8 +791,6 @@ module.exports = async (deployer, network, [account]) => {
 
   // REMOVE AUTH
 
-  console.log('Releasing Auth...');
-
   for (const token_name in config_tokens) {
     const token_config = config_tokens[token_name];
     const token_ilks = token_config.ilks || {};
@@ -937,6 +935,7 @@ module.exports = async (deployer, network, [account]) => {
   const VOTE_PROXY_FACTORY = '0xBa548526f9390666d52B3F482300d77871D228fb';
   const MCD_POLLING_EMITTER = '0xB5e8f7f2D7c1523b1Fa23E225c8Ed253e41B4FC2';
   const VOTE_DELEGATE_PROXY_FACTORY = '0x5F1c3fcEc7b0FbA96a797272Ed899aFf67f3b2aa';
+  const MCD_IAM_AUTO_LINE = '0xd2Adc9747FB2F64b8474C446B4f8DB5b39EdfcFC';
 
   // ADM CHIEF
 
@@ -968,7 +967,6 @@ module.exports = async (deployer, network, [account]) => {
 
   // AUTO LINE
 
-  console.log('Publishing Auto Line...');
   const DssAutoLine = artifacts.require('DssAutoLine');
   const dssAutoLine = await artifact_at(DssAutoLine, MCD_IAM_AUTO_LINE);
   console.log('MCD_IAM_AUTO_LINE=' + MCD_IAM_AUTO_LINE);
