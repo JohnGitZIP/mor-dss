@@ -415,12 +415,12 @@ async function poke(privateKey, network, address, nonce) {
 
 let lastPoke;
 
-function readLastPoke() {
-  try { lastPoke = JSON.parse(fs.readFileSync('pokebot.json')); } catch (e) { }
+function readLastPoke(network) {
+  try { lastPoke = JSON.parse(fs.readFileSync('pokebot-' + network + '.json')); } catch (e) { }
 }
 
-function writeLastPoke() {
-  try { fs.writeFileSync('pokebot.json', JSON.stringify(lastPoke, undefined, 2)); } catch (e) { }
+function writeLastPoke(network) {
+  try { fs.writeFileSync('pokebot-' + network + '.json', JSON.stringify(lastPoke, undefined, 2)); } catch (e) { }
 }
 
 async function pokeAll(network, lines = []) {
@@ -512,11 +512,11 @@ async function pokeAll(network, lines = []) {
 }
 
 async function main(args) {
-  const network = 'bscmain';
+  const network = args[2] || 'bscmain';
 
   const TIMEFRAME = 4 * 60 * 60 * 1000; // 4 hours
 
-  readLastPoke();
+  readLastPoke(network);
 
   await sendTelegramMessage('<i>PokeBot (' + network + ') Initiated</i>');
 
@@ -556,7 +556,7 @@ async function main(args) {
     }
 
     lastPoke = Date.now();
-    writeLastPoke();
+    writeLastPoke(network);
 
     console.log('CYCLE COMPLETED');
   }

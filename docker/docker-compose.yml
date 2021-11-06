@@ -8,8 +8,15 @@ x-pokebot: &pokebot
   restart: always
 
 services:
-  pokebot:
+  pokebot-bscmain:
     <<: *pokebot
-    container_name: pokebot
+    container_name: pokebot-bscmain
+    command: node /repo/scripts/pokebot.js bscmain
+    environment:
+      PRIVATE_KEY: ${POKEBOT_PRIVATE_KEY}
+  pokebot-avaxmain:
+    <<: *pokebot
+    container_name: pokebot-avaxmain
+    command: node /repo/scripts/pokebot.js avaxmain
     environment:
       PRIVATE_KEY: ${POKEBOT_PRIVATE_KEY}
