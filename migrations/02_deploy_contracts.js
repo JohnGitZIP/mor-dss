@@ -970,10 +970,8 @@ module.exports = async (deployer, network, [account]) => {
 
   console.log('Publishing Auto Line...');
   const DssAutoLine = artifacts.require('DssAutoLine');
-  const dssAutoLine = await artifact_deploy(DssAutoLine, MCD_VAT);
-  const MCD_IAM_AUTO_LINE = dssAutoLine.address;
+  const dssAutoLine = await artifact_at(DssAutoLine, MCD_IAM_AUTO_LINE);
   console.log('MCD_IAM_AUTO_LINE=' + MCD_IAM_AUTO_LINE);
-  await rely(MCD_VAT, MCD_IAM_AUTO_LINE);
 
   // FLASH
 
