@@ -1090,26 +1090,9 @@ module.exports = async (deployer, network, [account]) => {
   }
 */
   // SET ORACLE PRICES VISIBLE BY DEPLOYER
-
+/*
   console.log('Configuring ILK OSM...');
   for (const token_name in config_tokens) {
-
-    if (![
-      'STKJAVAX',
-      'STKJWETH',
-      'STKJWBTC',
-      'STKJLINK',
-      'STKTDJAVAXJOE',
-      'STKTDJAVAXWETH',
-      'STKTDJAVAXWBTC',
-      'STKTDJAVAXDAI',
-      'STKTDJAVAXUSDC',
-      'STKTDJAVAXUSDT',
-      'STKTDJAVAXLINK',
-      'STKTDJAVAXMIM',
-      'STKTDJUSDCJOE',
-      'STKTDJUSDTJOE',
-    ].includes(token_name)) continue;
 
     const token_config = config_tokens[token_name];
     const token_import = token_config.import || {};
@@ -1146,9 +1129,9 @@ module.exports = async (deployer, network, [account]) => {
       }
     }
   }
-
+*/
   // SET ILKS PRICE
-
+/*
   console.log('Configuring ILK Prices...');
   for (const token_name in config_tokens) {
     const token_config = config_tokens[token_name];
@@ -1174,11 +1157,27 @@ module.exports = async (deployer, network, [account]) => {
       }
     }
   }
-
+*/
   // SET ILKS PIP WHITELIST
 
   console.log('Configuring ILK PIP Whitelists...');
   for (const token_name in config_tokens) {
+
+    if (![
+      'STKJWBTC',
+      'STKJLINK',
+      'STKTDJAVAXJOE',
+      'STKTDJAVAXWETH',
+      'STKTDJAVAXWBTC',
+      'STKTDJAVAXDAI',
+      'STKTDJAVAXUSDC',
+      'STKTDJAVAXUSDT',
+      'STKTDJAVAXLINK',
+      'STKTDJAVAXMIM',
+      'STKTDJUSDCJOE',
+      'STKTDJUSDTJOE',
+    ].includes(token_name)) continue;
+
     const token_config = config_tokens[token_name];
     const token_import = token_config.import || {};
     const token_pipDeploy = token_config.pipDeploy || {};
