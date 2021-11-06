@@ -579,6 +579,12 @@ module.exports = async (deployer, network, [account]) => {
   MCD_JOIN_['STKTDJAVAXMIM'] = {};
   MCD_CLIP_CALC_['STKTDJAVAXMIM'] = {};
   MCD_CLIP_['STKTDJAVAXMIM'] = {};
+  MCD_JOIN_['STKTDJUSDCJOE'] = {};
+  MCD_CLIP_CALC_['STKTDJUSDCJOE'] = {};
+  MCD_CLIP_['STKTDJUSDCJOE'] = {};
+  MCD_JOIN_['STKTDJUSDTJOE'] = {};
+  MCD_CLIP_CALC_['STKTDJUSDTJOE'] = {};
+  MCD_CLIP_['STKTDJUSDTJOE'] = {};
   MCD_JOIN_['PSM-STKUSDC']['A'] = '0x65764167EC4B38D611F961515B51a40628614018';
   MCD_CLIP_CALC_['PSM-STKUSDC']['A'] = '0x74a08d8D88Aaf7d83087aa159B5e17F017cd1cFD';
   MCD_CLIP_['PSM-STKUSDC']['A'] = '0x61C8CF1e4E1DBdF88fceDd55e2956345b4df6B21';
@@ -621,6 +627,12 @@ module.exports = async (deployer, network, [account]) => {
   MCD_JOIN_['STKTDJAVAXMIM']['A'] = '0x5E0978e898A03463D9De497991E1C6278271c323';
   MCD_CLIP_CALC_['STKTDJAVAXMIM']['A'] = '0x926E0b08522B6bA732551E548e9d85d5c982Cf0A';
   MCD_CLIP_['STKTDJAVAXMIM']['A'] = '0x97B9187242fAB11A6b0922F1ba328B1C760e7d0f';
+  MCD_JOIN_['STKTDJUSDCJOE']['A'] = '0xc1E1d478296F3b0F2CA9Cc88F620de0b791aBf27';
+  MCD_CLIP_CALC_['STKTDJUSDCJOE']['A'] = '0xb28854F44478f8e0C4De2EF14f3CdfF868354637';
+  MCD_CLIP_['STKTDJUSDCJOE']['A'] = '0x8A0baDba6E13097AAa869b5BC25a8f32FbD46b3c';
+  MCD_JOIN_['STKTDJUSDTJOE']['A'] = '0xC4861931532bcf4fb59Ead8080c22A3363389a76';
+  MCD_CLIP_CALC_['STKTDJUSDTJOE']['A'] = '0xd8BfF1BE3d57d874003340A91018480BD53a17C4';
+  MCD_CLIP_['STKTDJUSDTJOE']['A'] = '0x2C5972dCc9886F5FaF9230148D7076dba5C39002';
   for (const token_name in config_tokens) {
     const token_config = config_tokens[token_name];
     const token_joinDeploy = token_config.joinDeploy || {};
@@ -654,59 +666,11 @@ module.exports = async (deployer, network, [account]) => {
       const ilk_clipDeploy = ilk_config.clipDeploy || {};
       const ilk_name = web3.utils.asciiToHex(token_name + '-' + ilk);
 
-      if (!['STKTDJUSDCJOE', 'STKTDJUSDTJOE'].includes(token_name)) {
-        const gemJoin = await artifact_at(GemJoin, MCD_JOIN_[token_name][ilk]);
-        console.log('MCD_JOIN_' + token_name.replace('-', '_') + '_' + ilk + '=' + MCD_JOIN_[token_name][ilk]);
-
-        if (ilk_config.flipDeploy !== undefined) {
-          console.log('MCD_FLIP_' + token_name.replace('-', '_') + '_' + ilk + '=' + MCD_FLIP_[token_name][ilk]);
-        }
-
-        if (ilk_config.clipDeploy !== undefined) {
-          const calc_config = ilk_clipDeploy.calc || {};
-
-          let Calc;
-          switch (calc_config.type) {
-          case 'LinearDecrease': Calc = artifacts.require('LinearDecrease'); break;
-          case 'StairstepExponentialDecrease': Calc = artifacts.require('StairstepExponentialDecrease'); break;
-          case 'ExponentialDecrease': Calc = artifacts.require('ExponentialDecrease'); break;
-          default: throw new Error('Unknown calc: ' + calc_config.type);
-          }
-
-          const calc = await artifact_at(Calc, MCD_CLIP_CALC_[token_name][ilk]);
-          console.log('MCD_CLIP_CALC_' + token_name.replace('-', '_') + '_' + ilk + '=' + MCD_CLIP_CALC_[token_name][ilk]);
-
-          console.log('MCD_CLIP_' + token_name.replace('-', '_') + '_' + ilk + '=' + MCD_CLIP_[token_name][ilk]);
-        }
-
-        continue;
-      }
-
-      console.log('Publishing Gem Join...');
-      const gemJoin = await artifact_deploy(GemJoin, MCD_VAT, ilk_name, T_[token_name], ...extraParams);
-      MCD_JOIN_[token_name][ilk] = gemJoin.address;
+      const gemJoin = await artifact_at(GemJoin, MCD_JOIN_[token_name][ilk]);
       console.log('MCD_JOIN_' + token_name.replace('-', '_') + '_' + ilk + '=' + MCD_JOIN_[token_name][ilk]);
 
       if (ilk_config.flipDeploy !== undefined) {
-        console.log('Publishing Flip...');
-        await dssDeploy.deployCollateralFlip(ilk_name, MCD_JOIN_[token_name][ilk], PIP_[token_name]);
-        const { flip } = await dssDeploy.ilks(ilk_name);
-        MCD_FLIP_[token_name][ilk] = flip;
         console.log('MCD_FLIP_' + token_name.replace('-', '_') + '_' + ilk + '=' + MCD_FLIP_[token_name][ilk]);
-        // const Flipper = artifacts.require('Flipper');
-        // const flip = await artifact_deploy(Flipper, MCD_VAT, MCD_CAT, ilk_name);
-        // MCD_FLIP_[token_name][ilk] = flip.address;
-        // console.log('MCD_FLIP_' + token_name.replace('-', '_') + '_' + ilk + '=' + MCD_FLIP_[token_name][ilk]);
-        // await spotter.file(ilk_name, web3.utils.asciiToHex('pip'), PIP_[token_name]);
-        // await cat.file(ilk_name, web3.utils.asciiToHex('flip'), MCD_FLIP_[token_name][ilk]);
-        // await vat.init(ilk_name);
-        // await jug.init(ilk_name);
-        // await vat.rely(MCD_JOIN_[token_name][ilk]);
-        // await cat.rely(MCD_FLIP_[token_name][ilk]);
-        // await flip.rely(MCD_CAT);
-        // await flip.rely(MCD_END);
-        // await flip.rely(MCD_ESM);
-        // await flip.rely(MCD_PAUSE_PROXY);
       }
 
       if (ilk_config.clipDeploy !== undefined) {
@@ -720,96 +684,64 @@ module.exports = async (deployer, network, [account]) => {
         default: throw new Error('Unknown calc: ' + calc_config.type);
         }
 
-        console.log('Publishing Calc...');
-        const calc = await artifact_deploy(Calc);
-        MCD_CLIP_CALC_[token_name][ilk] = calc.address;
+        const calc = await artifact_at(Calc, MCD_CLIP_CALC_[token_name][ilk]);
         console.log('MCD_CLIP_CALC_' + token_name.replace('-', '_') + '_' + ilk + '=' + MCD_CLIP_CALC_[token_name][ilk]);
-        await calc.rely(MCD_PAUSE_PROXY);
-        await calc.deny(DEPLOYER);
 
-        console.log('Publishing Clip...');
-        await dssDeploy.deployCollateralClip(ilk_name, MCD_JOIN_[token_name][ilk], PIP_[token_name], MCD_CLIP_CALC_[token_name][ilk]);
-        const { clip } = await dssDeploy.ilks(ilk_name);
-        MCD_CLIP_[token_name][ilk] = clip;
         console.log('MCD_CLIP_' + token_name.replace('-', '_') + '_' + ilk + '=' + MCD_CLIP_[token_name][ilk]);
-        // const Clipper = artifacts.require('Clipper');
-        // const clip = await artifact_deploy(Clipper, MCD_VAT, MCD_SPOT, MCD_DOG, ilk_name);
-        // MCD_CLIP_[token_name][ilk] = clip.address;
-        // console.log('MCD_CLIP_' + token_name.replace('-', '_') + '_' + ilk + '=' + MCD_CLIP_[token_name][ilk]);
-        // await spotter.file(ilk_name, web3.utils.asciiToHex('pip'), PIP_[token_name]);
-        // await dog.file(ilk_name, web3.utils.asciiToHex('clip'), MCD_CLIP_[token_name][ilk]);
-        // await clip.file(web3.utils.asciiToHex('vow'), MCD_VOW);
-        // await clip.file(web3.utils.asciiToHex('calc'), MCD_CLIP_CALC_[token_name][ilk]);
-        // await vat.init(ilk_name);
-        // await jug.init(ilk_name);
-        // await vat.rely(MCD_JOIN_[token_name][ilk]);
-        // await vat.rely(MCD_CLIP_[token_name][ilk]);
-        // await dog.rely(MCD_CLIP_[token_name][ilk]);
-        // await clip.rely(MCD_DOG);
-        // await clip.rely(MCD_END);
-        // await clip.rely(MCD_ESM);
-        // await clip.rely(MCD_PAUSE_PROXY);
       }
     }
   }
 
+  const PROXY_ACTIONS = '0x90bEF2f1531d3a28ffc8e889631E67476b5EA970';
+  const PROXY_ACTIONS_END = '0x4c74e6A914F748125cFB3f0978A19531aDA1784E';
+  const PROXY_ACTIONS_DSR = '0x737Ebe8814F9D8ec472Eb25808775FD9EaA5f2dd';
+  const CDP_MANAGER = '0x224C2697f5D0d999c2018CE71393AEB0A9ba02f4';
+  const GET_CDPS = '0x4b841367a5D10Efe58877269a866da02D9DCE5b5';
+  const DSR_MANAGER = '0xb38163E59b508Af28B12be8fE17A880aa2508d2d';
+  const OSM_MOM = '0x21E4F0d97422fE6A119bE3f3F148cb0189eDF4Fe';
+  const FLIPPER_MOM = '0x9F42FDEfd78EBdF401928bE2CFCBBA80b12a3363';
+
   // PROXY ACTIONS
 
-  console.log('Deploying Proxy Actions...');
   const DssProxyActions = artifacts.require('DssProxyActions');
-  const dssProxyActions = await artifact_deploy(DssProxyActions);
-  const PROXY_ACTIONS = dssProxyActions.address;
+  const dssProxyActions = await artifact_at(DssProxyActions, PROXY_ACTIONS);
   console.log('PROXY_ACTIONS=' + PROXY_ACTIONS);
 
-  console.log('Deploying Proxy Actions End...');
   const DssProxyActionsEnd = artifacts.require('DssProxyActionsEnd');
-  const dssProxyActionsEnd = await artifact_deploy(DssProxyActionsEnd);
-  const PROXY_ACTIONS_END = dssProxyActionsEnd.address;
+  const dssProxyActionsEnd = await artifact_at(DssProxyActionsEnd, PROXY_ACTIONS_END);
   console.log('PROXY_ACTIONS_END=' + PROXY_ACTIONS_END);
 
-  console.log('Deploying Proxy Actions Dsr...');
   const DssProxyActionsDsr = artifacts.require('DssProxyActionsDsr');
-  const dssProxyActionsDsr = await artifact_deploy(DssProxyActionsDsr);
-  const PROXY_ACTIONS_DSR = dssProxyActionsDsr.address;
+  const dssProxyActionsDsr = await artifact_at(DssProxyActionsDsr, PROXY_ACTIONS_DSR);
   console.log('PROXY_ACTIONS_DSR=' + PROXY_ACTIONS_DSR);
 
   // CDP MANAGER
 
-  console.log('Deploying CDP Manager...');
   const DssCdpManager = artifacts.require('DssCdpManager');
-  const dssCdpManager = await artifact_deploy(DssCdpManager, MCD_VAT);
-  const CDP_MANAGER = dssCdpManager.address;
+  const dssCdpManager = await artifact_at(DssCdpManager, CDP_MANAGER);
   console.log('CDP_MANAGER=' + CDP_MANAGER);
 
-  console.log('Deploying Get CDPs...');
   const GetCdps = artifacts.require('GetCdps');
-  const getCdps = await artifact_deploy(GetCdps);
-  const GET_CDPS = getCdps.address;
+  const getCdps = await artifact_at(GetCdps, GET_CDPS);
   console.log('GET_CDPS=' + GET_CDPS);
 
   // DSR MANAGER
 
-  console.log('Deploying DSR Manager...');
   const DsrManager = artifacts.require('DsrManager');
-  const dsrManager = await artifact_deploy(DsrManager, MCD_POT, MCD_JOIN_DAI);
-  const DSR_MANAGER = dsrManager.address;
+  const dsrManager = await artifact_at(DsrManager, DSR_MANAGER);
   console.log('DSR_MANAGER=' + DSR_MANAGER);
 
   // OSM MOM
 
-  console.log('Deploying OSM Mom...');
   const OSM = artifacts.require('OSM');
   const OsmMom = artifacts.require('OsmMom');
-  const osmMom = await artifact_deploy(OsmMom);
-  const OSM_MOM = osmMom.address;
+  const osmMom = await artifact_at(OsmMom, OSM_MOM);
   console.log('OSM_MOM=' + OSM_MOM);
 
   // FLIPPER MOM
 
-  console.log('Deploying Flipper Mom...');
   const FlipperMom = artifacts.require('FlipperMom');
-  const flipperMom = await artifact_deploy(FlipperMom, MCD_CAT);
-  const FLIPPER_MOM = flipperMom.address;
+  const flipperMom = await artifact_at(FlipperMom, FLIPPER_MOM);
   console.log('FLIPPER_MOM=' + FLIPPER_MOM);
 
   // CLIPPER MOM
